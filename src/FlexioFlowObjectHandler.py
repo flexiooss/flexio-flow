@@ -1,9 +1,10 @@
 import yaml
 import os
-import pprint
+from src.FlexioFlowValueObject import FlexioFlowValueObject
 
 
 class FileConfig:
+    state: FlexioFlowValueObject
     file_path: str
     FILE_NAME = 'flexio-flow.yml'
 
@@ -12,6 +13,15 @@ class FileConfig:
             raise ValueError(file_path + ' : File not exists')
         self.file_path = file_path
 
-    def parse(self):
+    @property
+    def state(self) -> FlexioFlowValueObject:
+        return self.__state
+
+    @state.setter
+    def state(self, v: FlexioFlowValueObject):
+        self.__state = v
+
+    def loadFileConfig(self):
         data = yaml.load(open(self.file_path, 'r'))
         print(data)
+        self.__state = 'bibi'

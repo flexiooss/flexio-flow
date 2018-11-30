@@ -6,8 +6,8 @@ import os
 import sys
 import getopt
 from pprint import pprint
-from FlexioFlowConfig import FlexioFlowConfig
-from FileConfig import FileConfig
+from src.FlexioFlowValueObject import FlexioFlowValueObject
+import os
 
 SUBJECT = ("init", "hotfix", "release")
 ACTION = ("start", "finish", "plan")
@@ -51,8 +51,9 @@ def extract_subject_action(argv: List[str]) -> Tuple[str, str]:
     subject: str
     action: str
 
+    arg: str
     for arg in argv:
-        arg: str = re.sub('[\s+]', '', arg)
+        arg = re.sub('[\s+]', '', arg)
         if arg in ACTION:
             action = arg
         elif arg in SUBJECT:
@@ -64,10 +65,9 @@ def extract_subject_action(argv: List[str]) -> Tuple[str, str]:
 def main(argv) -> None:
     subject, action = extract_subject_action(argv)
 
+    print(os.getcwd())
     pprint((subject, action))
 
-    fileConfig = FileConfig(FileConfig.FILE_NAME)
-    fileConfig.parse()
 
     sys.exit()
 
