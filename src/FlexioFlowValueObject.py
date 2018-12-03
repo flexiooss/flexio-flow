@@ -1,6 +1,7 @@
 from enum import Enum, unique
 from typing import List
 import re
+from pydantic.dataclasses import dataclass
 
 
 @unique
@@ -16,7 +17,7 @@ class Scheme(Enum):
     COMPOSER: str = 'composer'
     DOCKER: str = 'docker'
 
-
+@dataclass
 class FlexioFlowValueObject:
     version: str
     level: Level = Level.STABLE

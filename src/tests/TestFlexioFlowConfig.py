@@ -1,5 +1,5 @@
 import unittest
-from src.FlexioFlowCFlexioFlowObjectHandleronfig import FlexioFlowObjectHandler
+from FlexioFlowCFlexioFlowObjectHandleronfig import FlexioFlowObjectHandler
 
 
 class TestFlexioFlowConfig(unittest.TestCase):

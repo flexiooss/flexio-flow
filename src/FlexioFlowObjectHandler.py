@@ -1,9 +1,9 @@
 import yaml
 import os
-from src.FlexioFlowValueObject import FlexioFlowValueObject
+from FlexioFlowValueObject import FlexioFlowValueObject
 
 
-class FileConfig:
+class FlexioFlowObjectHandler:
     state: FlexioFlowValueObject
     file_path: str
     FILE_NAME = 'flexio-flow.yml'
