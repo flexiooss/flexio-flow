@@ -1,4 +1,4 @@
-from VersionFlowStep import AbstractVersionFlowStep
+from VersionFlowStep.AbstractVersionFlowStep import AbstractVersionFlowStep
 
 
 class Hotfix(AbstractVersionFlowStep):

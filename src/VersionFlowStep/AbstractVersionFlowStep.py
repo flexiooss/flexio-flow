@@ -1,5 +1,5 @@
 import abc
-from FlexioFlow import FlowAction
+from FlexioFlow.FlowAction import FlowAction
 
 
 class AbstractVersionFlowStep(abc.ABC):

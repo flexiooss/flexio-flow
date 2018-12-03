@@ -1,16 +1,14 @@
 #! /usr/bin/env python3
-from typing import Dict, Tuple, List
+from typing import Tuple, List, Optional
 
 import re
-import os
 import sys
-import getopt
-from pprint import pprint
-from src.FlexioFlowValueObject import FlexioFlowValueObject
 import os
-
-SUBJECT = ("init", "hotfix", "release")
-ACTION = ("start", "finish", "plan")
+from FlexioFlow.FlexioFlow import FlexioFlow
+from utils.EnumUtils import EnumUtils
+from FlexioFlow.FlexioFlowObjectHandler import FlexioFlowObjectHandler
+from FlexioFlow.FlowAction import FlowAction
+from FlexioFlow.VersionFlowStep import VersionFlowStep
 
 
 # def parse_options(argv: List[str]) -> Tuple[str, str]:
@@ -46,29 +44,38 @@ ACTION = ("start", "finish", "plan")
 #
 #     # return subject, action
 
+def extract_subject_action(argv: List[str]) -> Tuple[Optional[VersionFlowStep], FlowAction]:
+    version_flow: Optional[VersionFlowStep] = None
+    action: FlowAction = None
 
-def extract_subject_action(argv: List[str]) -> Tuple[str, str]:
-    subject: str
-    action: str
-
+    # print(argv)
     arg: str
     for arg in argv:
-        arg = re.sub('[\s+]', '', arg)
-        if arg in ACTION:
-            action = arg
-        elif arg in SUBJECT:
-            subject = arg
+        arg = re.sub('[\s+]', '', arg).lower()
+        # print(arg)
+        # print(FlowAction[arg])
+        # print(EnumUtils.has_value(FlowAction, arg))
+        # print(EnumUtils.has_value(VersionFlowStep, arg))
+        if EnumUtils(FlowAction).has_value(arg):
+            # print('FlowAction')
+            # print(FlowAction(arg))
+            action = FlowAction(arg)
+        elif EnumUtils(VersionFlowStep).has_value(arg):
+            # print('VersionFlowStep')
+            # print(VersionFlowStep(arg))
+            version_flow = VersionFlowStep(arg)
 
-    return subject, action
+    return version_flow, action
 
 
 def main(argv) -> None:
-    subject, action = extract_subject_action(argv)
+    ROOT_PATH: str = os.getcwd()
+    print(ROOT_PATH)
 
-    print(os.getcwd())
-    pprint((subject, action))
+    version_flow, action = extract_subject_action(argv)
 
-
+    flexio_flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).loadFileConfig()
+    # FlexioFlow(action, version_flow, flexio_flow_object_handler).process()
     sys.exit()
 
 
