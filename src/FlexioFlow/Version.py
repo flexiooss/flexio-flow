@@ -1,38 +1,45 @@
 from __future__ import annotations
 import re
+from re import Match
 from typing import Dict
+from FlexioFlow.FlexioFlowValueObject import FlexioFlowValueObject
 
 
 class Version:
     SEP: str = '.'
 
-    major: int = 0
-    minor: int = 0
-    patch: int = 0
-
     def __init__(self, major: int, minor: int, patch: int) -> None:
-        self.major = major
-        self.minor = minor
-        self.patch = patch
+        self.major: int = major
+        self.minor: int = minor
+        self.patch: int = patch
 
-    @staticmethod
-    def fromStr(v: str) -> 'Version':
-        matches = re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
-        return Version(
+    @classmethod
+    def from_str(cls, v: str) -> 'Version':
+        matches: Match = cls.parse_str(v)
+
+        return cls(
             major=int(matches.groupdict().get('major')),
             minor=int(matches.groupdict().get('minor')),
             patch=int(matches.groupdict().get('patch'))
         )
 
-    def major(self) -> 'Version':
+    @classmethod
+    def from_flexio_flow(cls, v: FlexioFlowValueObject) -> 'Version':
+        return cls.from_str(v.version)
+
+    @staticmethod
+    def parse_str(v: str) -> Match:
+        return re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
+
+    def next_major(self) -> 'Version':
         self.major += 1
         return self
 
-    def minor(self) -> 'Version':
+    def next_minor(self) -> 'Version':
         self.minor += 1
         return self
 
-    def patch(self) -> 'Version':
+    def next_patch(self) -> 'Version':
         self.patch += 1
         return self
 

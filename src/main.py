@@ -75,6 +75,7 @@ def main(argv) -> None:
     version_flow, action = extract_subject_action(argv)
 
     flexio_flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).loadFileConfig()
+
     # FlexioFlow(action, version_flow, flexio_flow_object_handler).process()
     sys.exit()
 

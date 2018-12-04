@@ -5,8 +5,6 @@ from FlexioFlow.Level import Level
 from FlexioFlow.Scheme import Scheme
 from FlexioFlow.Version import Version
 from utils.EnumUtils import EnumUtils
-from typing import Tuple, NewType
-import re
 
 
 class FlexioFlowObjectHandler:
@@ -45,8 +43,7 @@ class FlexioFlowObjectHandler:
             version=data['version'],
             scheme=EnumUtils(Scheme).list_from_value(data['scheme']),
             level=Level(data['level']))
-        print(repr(self.__state.to_dict()))
-        self.version = Version.fromStr(data['version'])
+        self.version = Version.from_str(data['version'])
         print(self.version)
 
     def filePath(self) -> str:
