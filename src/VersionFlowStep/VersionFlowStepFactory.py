@@ -6,7 +6,7 @@ from FlexioFlow.VersionFlowStep import VersionFlowStep
 
 class VersionFlowStepFactory:
     @staticmethod
-    def get(versionFlowStep: VersionFlowStep) -> AbstractVersionFlowStep:
+    def create(versionFlowStep: VersionFlowStep) -> AbstractVersionFlowStep:
         if versionFlowStep is VersionFlowStep.HOTFIX:
             return Hotfix()
         if versionFlowStep is VersionFlowStep.RELEASE:

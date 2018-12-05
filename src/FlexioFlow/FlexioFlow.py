@@ -19,13 +19,13 @@ class FlexioFlow:
         self.__version_flow = version_flow
         self.__flexio_flow_object_handler = flexio_flow_object_handler
 
-    def initContext(self):
+    def init_context(self):
         pass
 
     def process(self):
         if self.__version_flow is not None:
             print(repr(self.__flexio_flow_object_handler.state))
             # VersionFlowStepFactory() \
-            #     .get(self.__version_flow) \
+            #     .create(self.__version_flow) \
             #     .action(self.__action) \
-            #     .process()
+            #     .set_version()

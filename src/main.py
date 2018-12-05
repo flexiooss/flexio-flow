@@ -74,9 +74,10 @@ def main(argv) -> None:
 
     version_flow, action = extract_subject_action(argv)
 
-    flexio_flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).loadFileConfig()
+    flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).loadFileConfig()
+    print(str(flow_object_handler.state.version))
 
-    # FlexioFlow(action, version_flow, flexio_flow_object_handler).process()
+    # FlexioFlow(action, version_flow, flexio_flow_object_handler).set_version()
     sys.exit()
 
 

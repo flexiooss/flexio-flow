@@ -1,7 +1,6 @@
 from __future__ import annotations
 import re
-from typing import Dict, Match, Any, Optional, TypeVar
-from FlexioFlow.FlexioFlowValueObject import FlexioFlowValueObject
+from typing import Dict, Match
 
 
 class Version:
@@ -21,10 +20,6 @@ class Version:
             minor=int(matches.groupdict().get('minor', 0)),
             patch=int(matches.groupdict().get('patch', 0))
         )
-
-    @classmethod
-    def from_flexio_flow(cls, v: FlexioFlowValueObject) -> Version:
-        return cls.from_str(v.version)
 
     @staticmethod
     def parse_str(v: str) -> Match:
