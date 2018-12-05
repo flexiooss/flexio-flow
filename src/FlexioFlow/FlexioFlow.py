@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional, Type, Dict
 from Branches.BranchFactory import BranchFactory
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.FlowAction import FlowAction
@@ -7,18 +7,18 @@ from Branches.Branch import Branch
 
 
 class FlexioFlow:
-    __branch: Optional[Branches]
-    __action: FlowAction
-    __state_handler: StateHandler
 
     def __init__(self,
                  action: FlowAction,
                  branch: Optional[Branches],
+                 options: Dict[str, str],
                  state_handler: StateHandler
+
                  ) -> None:
-        self.__action = action
-        self.__branch = branch
-        self.__state_handler = state_handler
+        self.__action: FlowAction = action
+        self.__branch: Optional[Branches] = branch
+        self.__options: Dict[str, str] = options
+        self.__state_handler: StateHandler = state_handler
 
     def init_context(self):
         pass

@@ -26,7 +26,6 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
         if opt in ("-h", "--help"):
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
             print(file.read())
-
             sys.exit()
 
     return args, options
@@ -65,6 +64,7 @@ def main(argv) -> None:
     FlexioFlow(
         action=action,
         branch=branch,
+        options=options,
         state_handler=flow_object_handler
     ).process()
     sys.exit()
