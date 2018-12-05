@@ -6,7 +6,7 @@ from FlexioFlow.VersionFlowStep import VersionFlowStep
 
 
 class FlexioFlow:
-    __version_flow: VersionFlowStep
+    __version_flow: Optional[VersionFlowStep]
     __action: FlowAction
     __flexio_flow_object_handler: FlexioFlowObjectHandler
 
@@ -24,7 +24,7 @@ class FlexioFlow:
 
     def process(self):
         if self.__version_flow is not None:
-            print(repr(self.__flexio_flow_object_handler.__state))
+            print(repr(self.__flexio_flow_object_handler.state))
             # VersionFlowStepFactory() \
             #     .get(self.__version_flow) \
             #     .action(self.__action) \

@@ -46,7 +46,7 @@ from FlexioFlow.VersionFlowStep import VersionFlowStep
 
 def extract_subject_action(argv: List[str]) -> Tuple[Optional[VersionFlowStep], FlowAction]:
     version_flow: Optional[VersionFlowStep] = None
-    action: FlowAction = None
+    action: FlowAction
 
     # print(argv)
     arg: str

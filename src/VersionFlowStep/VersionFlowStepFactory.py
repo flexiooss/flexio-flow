@@ -12,4 +12,4 @@ class VersionFlowStepFactory:
         if versionFlowStep is VersionFlowStep.RELEASE:
             return Release()
 
-        raise ValueError("Bad VersionFlowStepFactory creation: " + versionFlowStep)
+        raise ValueError("Bad VersionFlowStepFactory creation: " + versionFlowStep.value)

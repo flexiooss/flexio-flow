@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 ROOT_PWD=$PWD
-PWD=$PWD'/src'
+cd $PWD'/src'
 echo $PWD
 #python3 -m mypy --ignore-missing-imports main.py "$@"
-python3 -m mypy $PWD/main.py "$@"
-PWD=ROOT_PWD
+python3 -m mypy main.py "$@"
+cd $ROOT_PWD

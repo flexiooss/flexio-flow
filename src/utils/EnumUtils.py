@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import List
+from typing import List, Type
 
 
 class EnumUtils():
-    def __init__(self, enum: Enum):
+    def __init__(self, enum: Type[Enum]):
         if not issubclass(enum, Enum):
             raise TypeError('EnumUtils enums arg should be instance of Enum')
         self.__enum = enum

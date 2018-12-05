@@ -1,7 +1,6 @@
 from __future__ import annotations
 import re
-from re import Match
-from typing import Dict
+from typing import Dict, Match, Any, Optional, TypeVar
 from FlexioFlow.FlexioFlowValueObject import FlexioFlowValueObject
 
 
@@ -14,36 +13,39 @@ class Version:
         self.patch: int = patch
 
     @classmethod
-    def from_str(cls, v: str) -> 'Version':
+    def from_str(cls, v: str) -> Version:
         matches: Match = cls.parse_str(v)
 
         return cls(
-            major=int(matches.groupdict().get('major')),
-            minor=int(matches.groupdict().get('minor')),
-            patch=int(matches.groupdict().get('patch'))
+            major=int(matches.groupdict().get('major', 0)),
+            minor=int(matches.groupdict().get('minor', 0)),
+            patch=int(matches.groupdict().get('patch', 0))
         )
 
     @classmethod
-    def from_flexio_flow(cls, v: FlexioFlowValueObject) -> 'Version':
+    def from_flexio_flow(cls, v: FlexioFlowValueObject) -> Version:
         return cls.from_str(v.version)
 
     @staticmethod
     def parse_str(v: str) -> Match:
-        return re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
+        matches = re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
+        if not isinstance(matches, Match):
+            raise ValueError(v + 'should be ^\d+\.\d+\.\d+$')
+        return matches
 
-    def next_major(self) -> 'Version':
+    def next_major(self) -> Version:
         self.major += 1
         return self
 
-    def next_minor(self) -> 'Version':
+    def next_minor(self) -> Version:
         self.minor += 1
         return self
 
-    def next_patch(self) -> 'Version':
+    def next_patch(self) -> Version:
         self.patch += 1
         return self
 
-    def reset_patch(self) -> 'Version':
+    def reset_patch(self) -> Version:
         self.patch = 0
         return self
 
