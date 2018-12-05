@@ -9,14 +9,14 @@ from utils.EnumUtils import EnumUtils
 
 
 class FlexioFlowObjectHandler:
-    __state: FlexioFlowValueObject
     FILE_NAME = 'flexio-flow.yml'
+    __state: FlexioFlowValueObject
     __version: Version
 
-    def __init__(self, file_path: str):
-        if not os.path.exists(file_path):
-            raise ValueError(file_path + ' : File not exists')
-        self.file_path: str = file_path
+    def __init__(self, dir_path: str):
+        if not os.path.exists(dir_path):
+            raise ValueError(dir_path + ' : File not exists')
+        self.dir_path: str = dir_path.rstrip('/') + '/'
 
     @property
     def state(self) -> FlexioFlowValueObject:
@@ -36,8 +36,8 @@ class FlexioFlowObjectHandler:
             raise TypeError('version should be an instance of FlexioFlow.Version')
         self.__version = v
 
-    def loadFileConfig(self) -> FlexioFlowObjectHandler:
-        data = yaml.load(open(self.filePath(), 'r'))
+    def load_file_config(self) -> FlexioFlowObjectHandler:
+        data = yaml.load(open(self.file_path(), 'r'))
 
         self.__state = FlexioFlowValueObject(
             version=Version.from_str(data['version']),
@@ -45,5 +45,5 @@ class FlexioFlowObjectHandler:
             level=Level(data['level']))
         return self
 
-    def filePath(self) -> str:
-        return self.file_path + '/' + self.FILE_NAME
+    def file_path(self) -> str:
+        return self.dir_path + self.FILE_NAME
