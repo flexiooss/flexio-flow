@@ -4,7 +4,7 @@ from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
 
 
-class FlexioFlowValueObject:
+class State:
 
     def __init__(self, version: Version, scheme: List[Schemes], level: Level) -> None:
         self.version: Version = version

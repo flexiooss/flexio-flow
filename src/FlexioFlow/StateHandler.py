@@ -1,17 +1,15 @@
 from __future__ import annotations
 import yaml
 import os
-from FlexioFlow.FlexioFlowValueObject import FlexioFlowValueObject
+from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
-from utils.EnumUtils import EnumUtils
 
 
-class FlexioFlowObjectHandler:
+class StateHandler:
     FILE_NAME = 'flexio-flow.yml'
-    __state: FlexioFlowValueObject
-    __version: Version
+    __state: State
 
     def __init__(self, dir_path: str):
         if not os.path.exists(dir_path):
@@ -19,27 +17,17 @@ class FlexioFlowObjectHandler:
         self.dir_path: str = dir_path.rstrip('/') + '/'
 
     @property
-    def state(self) -> FlexioFlowValueObject:
+    def state(self) -> State:
         return self.__state
 
     @state.setter
-    def state(self, v: FlexioFlowValueObject):
+    def state(self, v: State):
         self.__state = v
 
-    @property
-    def version(self) -> Version:
-        return self.__version
-
-    @version.setter
-    def version(self, v: Version):
-        if not isinstance(v, Version):
-            raise TypeError('version should be an instance of FlexioFlow.Version')
-        self.__version = v
-
-    def load_file_config(self) -> FlexioFlowObjectHandler:
+    def load_file_config(self) -> StateHandler:
         data = yaml.load(open(self.file_path(), 'r'))
 
-        self.__state = FlexioFlowValueObject(
+        self.__state = State(
             version=Version.from_str(data['version']),
             scheme=Schemes.list_from_value(data['scheme']),
             level=Level(data['level']))

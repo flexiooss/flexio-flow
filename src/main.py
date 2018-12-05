@@ -6,7 +6,7 @@ import sys
 import os
 from FlexioFlow.FlexioFlow import FlexioFlow
 from utils.EnumUtils import EnumUtils
-from FlexioFlow.FlexioFlowObjectHandler import FlexioFlowObjectHandler
+from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.FlowAction import FlowAction
 from Branches.Branches import Branches
 
@@ -74,13 +74,13 @@ def main(argv) -> None:
 
     branch, action = extract_subject_action(argv)
 
-    flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).load_file_config()
+    flow_object_handler: StateHandler = StateHandler(ROOT_PATH).load_file_config()
     print(str(flow_object_handler.state.version))
 
     FlexioFlow(
         action=action,
         branch=branch,
-        flow_object_handler=flow_object_handler
+        state_handler=flow_object_handler
     ).process()
     sys.exit()
 
