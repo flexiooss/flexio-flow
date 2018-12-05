@@ -41,7 +41,7 @@ class FlexioFlowObjectHandler:
 
         self.__state = FlexioFlowValueObject(
             version=Version.from_str(data['version']),
-            scheme=EnumUtils(Schemes).list_from_value(data['scheme']),
+            scheme=Schemes.list_from_value(data['scheme']),
             level=Level(data['level']))
         return self
 

@@ -1,31 +1,29 @@
-from typing import Optional
-from VersionFlowStep.VersionFlowStepFactory import VersionFlowStepFactory
+from typing import Optional, Type
+from Branches.BranchFactory import BranchFactory
 from FlexioFlow.FlexioFlowObjectHandler import FlexioFlowObjectHandler
 from FlexioFlow.FlowAction import FlowAction
-from FlexioFlow.VersionFlowStep import VersionFlowStep
+from Branches.Branches import Branches
+from Branches.Branch import Branch
 
 
 class FlexioFlow:
-    __version_flow: Optional[VersionFlowStep]
+    __branch: Optional[Branches]
     __action: FlowAction
-    __flexio_flow_object_handler: FlexioFlowObjectHandler
+    __flow_object_handler: FlexioFlowObjectHandler
 
     def __init__(self,
                  action: FlowAction,
-                 version_flow: Optional[VersionFlowStep],
-                 flexio_flow_object_handler: FlexioFlowObjectHandler
+                 branch: Optional[Branches],
+                 flow_object_handler: FlexioFlowObjectHandler
                  ) -> None:
         self.__action = action
-        self.__version_flow = version_flow
-        self.__flexio_flow_object_handler = flexio_flow_object_handler
+        self.__branch = branch
+        self.__flow_object_handler = flow_object_handler
 
     def init_context(self):
         pass
 
     def process(self):
-        if self.__version_flow is not None:
-            print(repr(self.__flexio_flow_object_handler.state))
-            # VersionFlowStepFactory() \
-            #     .create(self.__version_flow) \
-            #     .action(self.__action) \
-            #     .set_version()
+        if self.__branch is not None:
+            print(repr(self.__flow_object_handler.state))
+            version_handler: Type[Branch] = BranchFactory.create(self.__branch).set_action(self.__action).process()

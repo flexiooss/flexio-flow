@@ -8,7 +8,7 @@ from FlexioFlow.FlexioFlow import FlexioFlow
 from utils.EnumUtils import EnumUtils
 from FlexioFlow.FlexioFlowObjectHandler import FlexioFlowObjectHandler
 from FlexioFlow.FlowAction import FlowAction
-from FlexioFlow.VersionFlowStep import VersionFlowStep
+from Branches.Branches import Branches
 
 
 # def parse_options(argv: List[str]) -> Tuple[str, str]:
@@ -44,8 +44,8 @@ from FlexioFlow.VersionFlowStep import VersionFlowStep
 #
 #     # return subject, action
 
-def extract_subject_action(argv: List[str]) -> Tuple[Optional[VersionFlowStep], FlowAction]:
-    version_flow: Optional[VersionFlowStep] = None
+def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], FlowAction]:
+    branch: Optional[Branches] = None
     action: FlowAction
 
     # print(argv)
@@ -55,29 +55,33 @@ def extract_subject_action(argv: List[str]) -> Tuple[Optional[VersionFlowStep], 
         # print(arg)
         # print(FlowAction[arg])
         # print(EnumUtils.has_value(FlowAction, arg))
-        # print(EnumUtils.has_value(VersionFlowStep, arg))
+        # print(EnumUtils.has_value(Branches, arg))
         if EnumUtils(FlowAction).has_value(arg):
             # print('FlowAction')
             # print(FlowAction(arg))
             action = FlowAction(arg)
-        elif EnumUtils(VersionFlowStep).has_value(arg):
-            # print('VersionFlowStep')
-            # print(VersionFlowStep(arg))
-            version_flow = VersionFlowStep(arg)
+        elif EnumUtils(Branches).has_value(arg):
+            # print('Branches')
+            # print(Branches(arg))
+            branch = Branches(arg)
 
-    return version_flow, action
+    return branch, action
 
 
 def main(argv) -> None:
     ROOT_PATH: str = os.getcwd()
     print(ROOT_PATH)
 
-    version_flow, action = extract_subject_action(argv)
+    branch, action = extract_subject_action(argv)
 
     flow_object_handler: FlexioFlowObjectHandler = FlexioFlowObjectHandler(ROOT_PATH).load_file_config()
     print(str(flow_object_handler.state.version))
 
-    # FlexioFlow(action, version_flow, flexio_flow_object_handler).set_version()
+    FlexioFlow(
+        action=action,
+        branch=branch,
+        flow_object_handler=flow_object_handler
+    ).process()
     sys.exit()
 
 
