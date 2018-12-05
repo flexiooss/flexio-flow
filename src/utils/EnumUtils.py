@@ -11,7 +11,7 @@ class EnumUtils():
     def has_value(self, value) -> bool:
         return bool(any(value == item.value for item in self.__enum))
 
-    def list_from_value(self, list: List[str]) -> List[Enum]:
+    def list_from_value(self, list: List[str]) -> List[Type[Enum]]:
         ret = []
         for item in self.__enum:
             if item.value in list:
