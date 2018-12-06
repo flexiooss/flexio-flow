@@ -1,6 +1,8 @@
 # flexio-flow
 
-requirement python3.7 or later
+ - python >= 3.7
+ - python-venv >= 3.7
+ 
 ### Version Flow
 
  ```       
