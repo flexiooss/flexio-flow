@@ -6,8 +6,10 @@ from Schemes.Package.PackageFileHandler import PackageFileHandler
 
 class PackageScheme(Scheme):
 
-    def set_version(self, version: Version) -> PackageScheme:
-        p:PackageFileHandler = PackageFileHandler()
+    def set_version(self) -> PackageScheme:
+        package_handler: PackageFileHandler = PackageFileHandler(self.dir_path)
+        package_handler.set_version(self.state.version).write()
+        return self
 
     def release_plan(self):
         pass

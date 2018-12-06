@@ -19,9 +19,6 @@ class State:
     def version(self, v: Version):
         self.__version = v
 
-    def __str__(self):
-        return str(self.__class__) + ": " + str(self.__dict__)
-
     @property
     def level(self) -> Level:
         return self.__level
@@ -54,3 +51,6 @@ class State:
         for scheme in self.scheme:
             ret.append(scheme.value)
         return ret
+
+    def __str__(self):
+        return str(self.__class__) + ": " + str(self.__dict__)

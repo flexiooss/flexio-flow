@@ -50,12 +50,12 @@ def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], FlowAct
     return branch, action
 
 
-def command_orders(argv: List[str]) -> Tuple[FlowAction, Branches, Dict[str, str], str]:
+def command_orders(argv: List[str]) -> Tuple[FlowAction, Optional[Branches], Dict[str, str], str]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
 
-    branch: Branches
+    branch: Optional[Branches]
     action: FlowAction
     branch, action = extract_subject_action(argv_no_options)
 
@@ -66,7 +66,7 @@ def command_orders(argv: List[str]) -> Tuple[FlowAction, Branches, Dict[str, str
 
 def main(argv) -> None:
     action: FlowAction
-    branch: Branches
+    branch: Optional[Branches]
     options: Dict[str, str]
     dir_path: str
     action, branch, options, dir_path = command_orders(argv)

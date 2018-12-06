@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 ROOT_PWD=$PWD
-cd $PWD'/src/tests'
+cd $PWD'/src'
 if [ $# -ne 0 ]
 then
-  python3.7 "$@"
+  python3.7 -m unittest "$@"
 else
-  python3.7 tests.py
+  python3.7 -m unittest tests.tests
 fi
 
 cd $ROOT_PWD
