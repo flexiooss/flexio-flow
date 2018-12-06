@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python3.7
 from typing import Tuple, List, Optional, Dict
 import getopt
 import re
@@ -14,7 +14,7 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
     options: Dict[str, str] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "h", ["help"])
+        opts, args = getopt.gnu_getopt(argv, "hp:", ["help", "path"])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
@@ -27,6 +27,8 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
             print(file.read())
             sys.exit()
+        if opt in ("-p", "--path"):
+            options.update({'path': arg})
 
     return args, options
 
@@ -47,10 +49,7 @@ def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], FlowAct
     return branch, action
 
 
-
-def main(argv) -> None:
-    ROOT_PATH: str = os.getcwd()
-
+def command_orders(argv: List[str]) -> Tuple[FlowAction, Branches, Dict[str, str], str]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
@@ -59,14 +58,23 @@ def main(argv) -> None:
     action: FlowAction
     branch, action = extract_subject_action(argv_no_options)
 
-    flow_object_handler: StateHandler = StateHandler(ROOT_PATH).load_file_config()
-    print(str(flow_object_handler.state.version))
+    dir_path: str = options.get('path', os.getcwd())
+
+    return action, branch, options, dir_path
+
+
+def main(argv) -> None:
+    action: FlowAction
+    branch: Branches
+    options: Dict[str, str]
+    dir_path: str
+    action, branch, options, dir_path = command_orders(argv)
 
     FlexioFlow(
         action=action,
         branch=branch,
         options=options,
-        state_handler=flow_object_handler
+        dir_path=dir_path
     ).process()
     sys.exit()
 

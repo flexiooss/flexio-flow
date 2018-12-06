@@ -44,9 +44,9 @@ bash ./venv.sh
 ```bash
 source $PWD/venv/bin/activate
 ```
-#### Desactivate virtual environment
+#### Deactivate virtual environment
 ```bash
-desactivate
+deactivate
 ```
 
 #### Update pip requirements

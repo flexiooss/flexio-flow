@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Dict, Any
 from Schemes.Schemes import Schemes
 from FlexioFlow.Level import Level
@@ -6,10 +8,8 @@ from FlexioFlow.Version import Version
 
 class State:
 
-    def __init__(self, version: Version, scheme: List[Schemes], level: Level) -> None:
-        self.version: Version = version
-        self.scheme: List[Schemes] = scheme
-        self.level: Level = level
+    def __init__(self) -> None:
+        pass
 
     @property
     def version(self) -> Version:

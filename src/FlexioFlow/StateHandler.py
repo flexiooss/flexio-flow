@@ -12,9 +12,8 @@ class StateHandler:
     __state: State
 
     def __init__(self, dir_path: str):
-        if not os.path.exists(dir_path):
-            raise ValueError(dir_path + ' : File not exists')
-        self.dir_path: str = dir_path.rstrip('/') + '/'
+        self.dir_path: str = dir_path
+        self.__state = State()
 
     @property
     def state(self) -> State:
@@ -24,14 +23,24 @@ class StateHandler:
     def state(self, v: State):
         self.__state = v
 
+    def file_exists(self) -> bool:
+        return os.path.isfile(self.file_path())
+
     def load_file_config(self) -> StateHandler:
+        if not os.path.isfile(self.file_path()):
+            raise ValueError('Flexio Flow not initialized try : flexio-flow init')
         data = yaml.load(open(self.file_path(), 'r'))
 
-        self.__state = State(
-            version=Version.from_str(data['version']),
-            scheme=Schemes.list_from_value(data['scheme']),
-            level=Level(data['level']))
+        self.__state.version = Version.from_str(data['version'])
+        self.__state.scheme = Schemes.list_from_value(data['scheme'])
+        self.__state.level = Level(data['level'])
+
         return self
+
+    def write_file(self) -> str:
+        stream = open(self.file_path(), 'w')
+        yaml.dump(self.state.to_dict(), stream)
+        return yaml.dump(self.state.to_dict())
 
     def file_path(self) -> str:
         return self.dir_path + self.FILE_NAME
