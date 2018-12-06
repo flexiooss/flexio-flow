@@ -1,6 +1,6 @@
 import json
 import os
-
+from Exceptions.FileNotExistError import FileNotExistError
 
 class PackageFileHandler:
     FILE_NAME: str = 'package.json'
@@ -10,8 +10,8 @@ class PackageFileHandler:
         self.__file_path: str = dir_path + self.FILE_NAME
 
     def __load_file(self):
-        if not os.path.exists(self.__file_path):
-            raise ValueError(self.__file_path + ' : File not exists')
+        if not os.path.isfile(self.__file_path):
+            raise FileNotExistError(self.__file_path)
         with open(self.__file_path) as json_data:
             d = json.load(json_data)
             print(d)

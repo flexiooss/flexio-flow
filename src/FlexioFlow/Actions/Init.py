@@ -4,6 +4,7 @@ from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from typing import List
+from Exceptions.FileExistError import FileExistError
 
 
 class Init:
@@ -11,7 +12,7 @@ class Init:
         self.__state_handler: StateHandler = StateHandler(dir_path)
 
         if self.__state_handler.file_exists():
-            raise ValueError(dir_path + ' : Flexio Flow already initialized')
+            raise FileExistError(self.__state_handler.file_path(), 'Flexio Flow already initialized')
 
     def __start_message(self) -> Init:
         print(
@@ -64,5 +65,5 @@ Enjoy with Flexio FLow
             .__input_version() \
             .__input_level() \
             .__input_schemes() \
-            .__write_file()\
+            .__write_file() \
             .__final_message()

@@ -5,6 +5,7 @@ from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
+from Exceptions.FileNotExistError import FileNotExistError
 
 
 class StateHandler:
@@ -28,7 +29,7 @@ class StateHandler:
 
     def load_file_config(self) -> StateHandler:
         if not os.path.isfile(self.file_path()):
-            raise ValueError('Flexio Flow not initialized try : flexio-flow init')
+            raise FileNotExistError(self.file_path(), 'Flexio Flow not initialized try : flexio-flow init')
         data = yaml.load(open(self.file_path(), 'r'))
 
         self.__state.version = Version.from_str(data['version'])
