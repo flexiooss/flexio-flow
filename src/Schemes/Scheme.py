@@ -2,7 +2,7 @@ from __future__ import annotations
 import abc
 from typing import Type, List, NewType
 from FlexioFlow.State import State
-dependencies = NewType('dependencies', List[str])
+from Schemes.Dependencies import Dependencies
 
 
 class Scheme:
@@ -16,5 +16,5 @@ class Scheme:
         pass
 
     @abc.abstractmethod
-    def release_plan(self) -> dependencies:
+    def release_plan(self) -> Dependencies:
         pass

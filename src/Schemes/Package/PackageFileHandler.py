@@ -3,11 +3,16 @@ import json
 import os
 from Exceptions.FileNotExistError import FileNotExistError
 from FlexioFlow.Version import Version
+from Schemes.Dependencies import Dependencies
+from Exceptions.ReleasePlanException import ReleasePlanException
+from typing import Dict
+import re
 
 
 class PackageFileHandler:
     FILE_NAME: str = 'package.json'
     VERSION_KEY: str = 'version'
+    DEPENDENCIES_KEY: str = 'dependencies'
 
     def __init__(self, dir_path: str):
         self.__file_path: str = dir_path + self.FILE_NAME
@@ -31,3 +36,19 @@ class PackageFileHandler:
         with open(self.__file_path, 'w') as outfile:
             json.dump(self.__data, outfile, indent=2)
         return self
+
+    def release_plan(self) -> Dependencies:
+        package_dependencies: Dict[str, str] = self.__data.get(self.DEPENDENCIES_KEY, {})
+        dependencies: Dependencies = Dependencies()
+
+        id: str
+        version: str
+        for id, version in package_dependencies:
+            if version:
+                dependencies.append(id, version)
+
+        return dependencies
+
+    @staticmethod
+    def is_git_dependency(v: str) -> bool:
+        return re.match('.*(\.git)+.*', v) is not None

@@ -1,10 +1,14 @@
+from Schemes.Dependencies import Dependencies
+
+
 class ReleasePlanException(Exception):
-    def __init__(self, file_path: str, message: str = ''):
-        self.file_path: str = file_path
+    def __init__(self, dependencies: Dependencies, message: str = ''):
+        self.dependencies: Dependencies = dependencies
         self.message: str = message
 
     def __str__(self):
         return """
-File exists : {0!s}
+You should release before : 
+{0!s}
 {1!s}
-""".format(self.file_path, self.message)
+""".format(self.dependencies, self.message)
