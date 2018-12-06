@@ -47,6 +47,7 @@ def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], FlowAct
     return branch, action
 
 
+
 def main(argv) -> None:
     ROOT_PATH: str = os.getcwd()
 

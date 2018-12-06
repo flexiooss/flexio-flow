@@ -1,5 +1,6 @@
 # flexio-flow
 
+requirement python3.7 or later
 ### Version Flow
 
  ```       
@@ -33,3 +34,23 @@ flexio-flow release start
 flexio-flow release plan
 flexio-flow release finish
 ```
+
+### Dev environment
+#### Virtual environment initialisation 
+```bash
+bash ./venv.sh
+```
+#### Activate virtual environment
+```bash
+source $PWD/venv/bin/activate
+```
+#### Desactivate virtual environment
+```bash
+desactivate
+```
+
+#### Update pip requirements
+`with virtual environement activated`
+```bash
+pip freeze > requirements.txt
+````
