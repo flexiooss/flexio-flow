@@ -18,6 +18,10 @@ class PackageFileHandler:
         self.__file_path: str = dir_path + self.FILE_NAME
         self.__data: dict = self.__load_file()
 
+    @property
+    def data(self) -> dict:
+        return self.__data
+
     def __load_file(self):
         if not os.path.isfile(self.__file_path):
             raise FileNotExistError(self.__file_path)
@@ -37,18 +41,6 @@ class PackageFileHandler:
             json.dump(self.__data, outfile, indent=2)
         return self
 
-    def release_plan(self) -> Dependencies:
-        package_dependencies: Dict[str, str] = self.__data.get(self.DEPENDENCIES_KEY, {})
-        dependencies: Dependencies = Dependencies()
-
-        id: str
-        version: str
-        for id, version in package_dependencies:
-            if version:
-                dependencies.append(id, version)
-
-        return dependencies
-
     @staticmethod
     def is_git_dependency(v: str) -> bool:
-        return re.match('.*(\.git)+.*', v) is not None
+        return re.match('.*(.git)+.*', v) is not None

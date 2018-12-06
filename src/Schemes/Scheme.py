@@ -11,6 +11,11 @@ class Scheme:
         self.dir_path: str = dir_path
         self.state: State = state
 
+    @property
+    @abc.abstractmethod
+    def DEV_SUFFIX(self) -> str:
+        pass
+
     @abc.abstractmethod
     def set_version(self) -> Type[Scheme]:
         pass
