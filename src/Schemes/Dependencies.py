@@ -18,9 +18,6 @@ class Dependencies:
         self.__list.append((dep_id, version))
         return self
 
-    def count(self) -> int:
-        return self.__list.count()
-
     def __iter__(self):
         return self
 
@@ -30,3 +27,6 @@ class Dependencies:
         else:
             self.__current += 1
             return self.__list[self.__current - 1]
+
+    def __len__(self):
+        return len(self.__list)

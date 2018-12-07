@@ -14,10 +14,11 @@ class ReleasePlan:
     def process(self) -> Dependencies:
         package_dependencies: Dict[str, str] = self.__package_handler.data.get(PackageFileHandler.DEPENDENCIES_KEY, {})
         dependencies: Dependencies = Dependencies()
+        print(package_dependencies)
 
         dep_id: str
         version: str
-        for dep_id, version in package_dependencies:
+        for dep_id, version in package_dependencies.items():
             if self.is_dev(version):
                 dependencies.append(dep_id, version)
 
