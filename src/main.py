@@ -5,10 +5,9 @@ import re
 import sys
 import os
 from FlexioFlow.FlexioFlow import FlexioFlow
-from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.FlowAction import FlowAction
-from Branches.Branches import Branches
-from Exceptions.FileExistError import FileExistError
+from FlexioFlow.Actions.Actions import Actions
+from VersionControl.Branches import Branches
+from VersionControl.VersionController import VersionController
 
 
 def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
@@ -34,29 +33,29 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
     return args, options
 
 
-def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], FlowAction]:
+def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], Actions]:
     branch: Optional[Branches] = None
-    action: FlowAction
+    action: Actions
 
     arg: str
     for arg in argv:
         arg = re.sub('[\s+]', '', arg).lower()
 
-        if FlowAction.has_value(arg):
-            action = FlowAction(arg)
+        if Actions.has_value(arg):
+            action = Actions(arg)
         elif Branches.has_value(arg):
             branch = Branches(arg)
 
     return branch, action
 
 
-def command_orders(argv: List[str]) -> Tuple[FlowAction, Optional[Branches], Dict[str, str], str]:
+def command_orders(argv: List[str]) -> Tuple[Actions, Optional[Branches], Dict[str, str], str]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
 
     branch: Optional[Branches]
-    action: FlowAction
+    action: Actions
     branch, action = extract_subject_action(argv_no_options)
 
     dir_path: str = options.get('path', os.getcwd())
@@ -65,13 +64,14 @@ def command_orders(argv: List[str]) -> Tuple[FlowAction, Optional[Branches], Dic
 
 
 def main(argv) -> None:
-    action: FlowAction
+    action: Actions
     branch: Optional[Branches]
     options: Dict[str, str]
     dir_path: str
     action, branch, options, dir_path = command_orders(argv)
 
     FlexioFlow(
+        version_controller=VersionController.GITFLOW,
         action=action,
         branch=branch,
         options=options,

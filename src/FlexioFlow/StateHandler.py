@@ -28,8 +28,12 @@ class StateHandler:
         return os.path.isfile(self.file_path())
 
     def load_file_config(self) -> StateHandler:
+
         if not os.path.isfile(self.file_path()):
-            raise FileNotExistError(self.file_path(), 'Flexio Flow not initialized try : flexio-flow init')
+            raise FileNotExistError(
+                self.file_path(),
+                'Flexio Flow not initialized try : flexio-flow init'
+            )
         data = yaml.load(open(self.file_path(), 'r'))
 
         self.__state.version = Version.from_str(data['version'])

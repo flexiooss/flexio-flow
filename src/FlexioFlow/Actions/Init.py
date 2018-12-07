@@ -5,14 +5,18 @@ from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from typing import List
 from Exceptions.FileExistError import FileExistError
+from FlexioFlow.Actions.Action import Action
 
 
-class Init:
+class Init(Action):
+
     def __init__(self, dir_path: str) -> None:
+
         self.__state_handler: StateHandler = StateHandler(dir_path)
 
         if self.__state_handler.file_exists():
             raise FileExistError(self.__state_handler.file_path(), 'Flexio Flow already initialized')
+        # super().__init__()
 
     def __start_message(self) -> Init:
         print(

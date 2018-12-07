@@ -2,7 +2,7 @@ from enum import Enum, unique
 
 
 @unique
-class FlowAction(Enum):
+class Actions(Enum):
     INIT: str = 'init'
     START: str = 'start'
     FINISH: str = 'finish'

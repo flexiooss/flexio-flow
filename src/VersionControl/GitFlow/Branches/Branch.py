@@ -1,12 +1,11 @@
 from __future__ import annotations
 import abc
-from FlexioFlow.FlowAction import FlowAction
+from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.StateHandler import StateHandler
-from typing import Type
 
 
 class Branch(abc.ABC):
-    action: FlowAction
+    action: Actions
 
     def __init__(self, state_handler: StateHandler) -> None:
         self.state_handler: StateHandler = state_handler
@@ -15,6 +14,6 @@ class Branch(abc.ABC):
     def process(self):
         pass
 
-    def set_action(self, action: FlowAction) -> Branch:
-        self.action: FlowAction = action
+    def set_action(self, action: Actions) -> Branch:
+        self.action: Actions = action
         return self

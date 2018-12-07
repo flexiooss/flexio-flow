@@ -1,10 +1,8 @@
-from Branches.Hotfix.Hotfix import Hotfix
-from Branches.Release.Release import Release
-from Branches.Branches import Branches
-from Branches.Branch import Branch
+from VersionControl.GitFlow.Branches.Hotfix.Hotfix import Hotfix
+from VersionControl.GitFlow.Branches.Release.Release import Release
+from VersionControl.Branches import Branches
+from VersionControl.GitFlow.Branches.Branch import Branch
 from FlexioFlow.StateHandler import StateHandler
-
-from typing import Type
 
 
 class BranchFactory:
