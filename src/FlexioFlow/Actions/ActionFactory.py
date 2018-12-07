@@ -19,7 +19,7 @@ class ActionFactory:
             branch: Optional[Branches],
             state_handler: StateHandler,
             options: Dict[str, str]
-    ) -> Type[Action]:
+    ) -> Action:
 
         if action is Actions.START:
             return Start(version_control, branch, state_handler, options)
