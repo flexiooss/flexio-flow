@@ -18,7 +18,7 @@ class Start:
         print(workdir.as_posix())
 
         subprocess.Popen(["pwd"])
-        os.chdir(workdir)
+        os.chdir(workdir.as_posix())
         # subprocess.Popen(["cd", workdir.as_posix()])
         subprocess.Popen(["pwd"])
         subprocess.Popen(["git", "flow", "init"])
