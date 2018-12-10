@@ -6,7 +6,7 @@ from FlexioFlow.StateHandler import StateHandler
 
 class VersionControlFactory:
     @staticmethod
-    def create(versionController: VersionController, state_handler:StateHandler) -> Type[VersionControl]:
+    def create(versionController: VersionController, state_handler:StateHandler) -> VersionControl:
         if versionController is VersionController.GITFLOW:
             return GitFlow(state_handler)
 

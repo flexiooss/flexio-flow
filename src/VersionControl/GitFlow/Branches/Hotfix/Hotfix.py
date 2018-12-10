@@ -1,5 +1,5 @@
 from __future__ import annotations
-from VersionControl.GitFlow.Branches.Branch import Branch
+from VersionControl.Branch import Branch
 from FlexioFlow.Actions.Actions import Actions
 
 class Hotfix(Branch):

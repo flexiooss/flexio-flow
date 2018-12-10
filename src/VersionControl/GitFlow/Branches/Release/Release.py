@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from VersionControl.GitFlow.Branches.Branch import Branch
+from VersionControl.Branch import Branch
 from FlexioFlow.Actions.Actions import Actions
 
 
@@ -11,6 +11,6 @@ class Release(Branch):
             print('Release start')
         if self.action is Actions.FINISH:
             print('Release finish')
-        if self.action is Actions.PLAN:
-            print('Release plan')
+        if self.action is Actions.PRECHECK:
+            print('Release precheck')
         print(self.__dict__)

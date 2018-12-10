@@ -14,7 +14,7 @@ class Action(abc.ABC):
                  state_handler: StateHandler,
                  options: Dict[str, str]
                  ) -> None:
-        self.version_control: VersionControl = version_control
+        self.version_control: Type[VersionControl] = version_control
         self.branch: Optional[Branches] = branch
         self.state_handler: StateHandler = state_handler
         self.options: Dict[str, str] = options
