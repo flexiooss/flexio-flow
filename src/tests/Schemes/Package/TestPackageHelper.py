@@ -33,7 +33,7 @@ class TestPackageHelper:
     def fake_state(version: str = '1.5.8') -> State:
         state: State = State()
         state.version = Version.from_str(version)
-        state.scheme = [Schemes.PACKAGE]
+        state.schemes = [Schemes.PACKAGE]
         state.level = Level.STABLE
         return state
 

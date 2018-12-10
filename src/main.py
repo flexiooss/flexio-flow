@@ -9,7 +9,6 @@ from FlexioFlow.Actions.Actions import Actions
 from VersionControl.Branches import Branches
 from VersionControl.VersionController import VersionController
 from pathlib import Path
-import pprint
 
 
 def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:

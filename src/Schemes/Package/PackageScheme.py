@@ -19,5 +19,5 @@ class PackageScheme(Scheme):
 
     def release_precheck(self) -> Dependencies:
         package_handler: PackageFileHandler = PackageFileHandler(self.dir_path)
-        release_plan: PreCheck = PreCheck(package_handler, self.DEV_SUFFIX)
-        return release_plan.process()
+        release_precheck: PreCheck = PreCheck(package_handler, self.DEV_SUFFIX)
+        return release_precheck.process()

@@ -7,42 +7,50 @@ class Version:
     SEP: str = '.'
 
     def __init__(self, major: int, minor: int, patch: int) -> None:
-        self.major: int = major
-        self.minor: int = minor
-        self.patch: int = patch
+        self.__major: int = major
+        self.__minor: int = minor
+        self.__patch: int = patch
 
     @classmethod
     def from_str(cls, v: str) -> Version:
         matches: Match = cls.parse_str(v)
 
         return cls(
-            major=int(matches.groupdict().get('major', 0)),
+            major=int(matches.groupdict().get('__major', 0)),
             minor=int(matches.groupdict().get('minor', 0)),
             patch=int(matches.groupdict().get('patch', 0))
         )
 
+    @property
+    def major(self) -> int:
+        return self.__major
+
+    @property
+    def minor(self) -> int:
+        return self.__minor
+
+    @property
+    def patch(self) -> int:
+        return self.__patch
+
     @staticmethod
     def parse_str(v: str) -> Match:
-        matches = re.match('^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
+        matches = re.match('^(?P<__major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
         if not isinstance(matches, Match):
             raise ValueError(v + 'should be ^\d+\.\d+\.\d+$')
         return matches
 
     def next_major(self) -> Version:
-        self.major += 1
-        return self
+        return Version(self.major + 1, self.minor, self.patch)
 
     def next_minor(self) -> Version:
-        self.minor += 1
-        return self
+        return Version(self.major, self.minor + 1, self.patch)
 
     def next_patch(self) -> Version:
-        self.patch += 1
-        return self
+        return Version(self.major, self.minor, self.patch + 1)
 
     def reset_patch(self) -> Version:
-        self.patch = 0
-        return self
+        return Version(self.major, self.minor, 0)
 
     def to_dict(self) -> Dict[str, int]:
         return {

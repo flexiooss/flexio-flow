@@ -37,7 +37,7 @@ class StateHandler:
         data = yaml.load(self.file_path().open('r'))
 
         self.__state.version = Version.from_str(data['version'])
-        self.__state.scheme = Schemes.list_from_value(data['scheme'])
+        self.__state.schemes = Schemes.list_from_value(data['schemes'])
         self.__state.level = Level(data['level'])
 
         return self
@@ -49,3 +49,19 @@ class StateHandler:
 
     def file_path(self) -> Path:
         return self.dir_path / self.FILE_NAME
+
+    def next_major(self) -> Version:
+        self.__state.version = self.__state.version.next_major()
+        return self.__state.version
+
+    def next_minor(self) -> Version:
+        self.__state.version = self.__state.version.next_minor()
+        return self.__state.version
+
+    def next_patch(self) -> Version:
+        self.__state.version = self.__state.version.next_minor()
+        return self.__state.version
+
+    def reset_patch(self) -> Version:
+        self.__state.version = self.__state.version.reset_patch()
+        return self.__state.version

@@ -24,7 +24,7 @@ feature2        --------------------------------------
 ```yaml
 version: 0.0.0
 level: stable|dev
-scheme: maven|package|composer|docker
+schemes: maven|package|composer|docker
 ```
 
 ### Main orders

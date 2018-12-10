@@ -1,10 +1,12 @@
 import unittest
 from tests.Schemes.Package.TestPackageScheme import TestPackageScheme
+from tests.FlexioFlow.TestVersion import TestVersion
+
 
 def suite():
     suite = unittest.TestSuite()
-    # suite.addTest(TestFlexioFlowConfig('bibi'))
-    suite.addTest(TestPackageScheme('bubu'))
+    suite.addTest(TestVersion())
+    suite.addTest(TestPackageScheme())
     return suite
 
 

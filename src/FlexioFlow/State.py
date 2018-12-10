@@ -7,6 +7,8 @@ from FlexioFlow.Version import Version
 
 
 class State:
+    __version: Version
+    __schemes: List[Schemes]
 
     def __init__(self) -> None:
         pass
@@ -17,7 +19,7 @@ class State:
 
     @version.setter
     def version(self, v: Version):
-        self.__version = v
+        self.__version: Version = v
 
     @property
     def level(self) -> Level:
@@ -30,25 +32,41 @@ class State:
         self.__level = v
 
     @property
-    def scheme(self) -> List[Schemes]:
-        return self.__scheme
+    def schemes(self) -> List[Schemes]:
+        return self.__schemes
 
-    @scheme.setter
-    def scheme(self, v: List[Schemes]):
+    @schemes.setter
+    def schemes(self, v: List[Schemes]):
         if not (isinstance(item, Schemes) for item in v):
-            raise TypeError('scheme should be an instance of List[FlexioFlow.Scheme]')
-        self.__scheme = v
+            raise TypeError('schemes should be an instance of List[FlexioFlow.Scheme]')
+        self.__schemes = v
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             'version': str(self.version),
             'level': self.level.value,
-            'scheme': self.__schemeListValue()
+            'schemes': self.__schemeListValue()
         }
+
+    def next_major(self) -> Version:
+        self.__version = self.__version.next_major()
+        return self.__version
+
+    def next_minor(self) -> Version:
+        self.__version = self.__version.next_minor()
+        return self.__version
+
+    def next_patch(self) -> Version:
+        self.__version = self.__version.next_minor()
+        return self.__version
+
+    def reset_patch(self) -> Version:
+        self.__version = self.__version.reset_patch()
+        return self.__version
 
     def __schemeListValue(self) -> List[str]:
         ret = []
-        for scheme in self.scheme:
+        for scheme in self.schemes:
             ret.append(scheme.value)
         return ret
 

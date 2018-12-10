@@ -45,7 +45,7 @@ class Init(Action):
             if add is 'y':
                 schemes.append(scheme)
 
-        self.__state_handler.state.scheme = schemes
+        self.__state_handler.state.schemes = schemes
         return self
 
     def __write_file(self) -> Init:

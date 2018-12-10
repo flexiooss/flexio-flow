@@ -14,7 +14,6 @@ class PreCheck:
     def process(self) -> Dependencies:
         package_dependencies: Dict[str, str] = self.__package_handler.data.get(PackageFileHandler.DEPENDENCIES_KEY, {})
         dependencies: Dependencies = Dependencies()
-        print(package_dependencies)
 
         dep_id: str
         version: str
@@ -26,7 +25,7 @@ class PreCheck:
 
     def match_dev(self, v: str) -> Match:
         regexp: Pattern[str] = re.compile(
-            '^(?:https|git).*(?P<is_git>\.git)+(?:#(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<is_dev>-' + self.__dev_suffix + ')?)?$')
+            '^(?:https|git).*(?P<is_git>\.git)+(?:#(?P<__major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<is_dev>-' + self.__dev_suffix + ')?)?$')
         return re.match(regexp, v)
 
     def is_dev(self, version: str) -> bool:
