@@ -9,10 +9,10 @@ from Schemes.Package.PackageFileHandler import PackageFileHandler
 
 
 class TestPackageHelper:
-    DIR_PATH_TEST = '/tmp/test_package'
+    DIR_PATH_TEST: str = '/tmp/test_package'
 
-    PACKAGE_WITHOUT_DEV_DEPENDENCIES = 'package_without_dev_dependencies.json'
-    PACKAGE_WITH_DEV_DEPENDENCIES = 'package_with_dev_dependencies.json'
+    PACKAGE_WITHOUT_DEV_DEPENDENCIES: str = 'package_without_dev_dependencies.json'
+    PACKAGE_WITH_DEV_DEPENDENCIES: str = 'package_with_dev_dependencies.json'
 
     @classmethod
     def get_json_without_dev_dependencies(cls) -> dict:
@@ -29,9 +29,9 @@ class TestPackageHelper:
             return data
 
     @staticmethod
-    def fake_state() -> State:
+    def fake_state(version: str = '1.5.8') -> State:
         state: State = State()
-        state.version = Version.from_str('1.5.8')
+        state.version = Version.from_str(version)
         state.scheme = [Schemes.PACKAGE]
         state.level = Level.STABLE
         return state

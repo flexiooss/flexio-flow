@@ -4,7 +4,7 @@ import os
 from Exceptions.FileNotExistError import FileNotExistError
 from FlexioFlow.Version import Version
 from Schemes.Dependencies import Dependencies
-from Exceptions.ReleasePlanException import ReleasePlanException
+from Exceptions.HaveDevDependencyException import ReleasePlanException
 from typing import Dict
 import re
 

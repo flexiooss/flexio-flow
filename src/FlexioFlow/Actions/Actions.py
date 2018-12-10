@@ -6,7 +6,7 @@ class Actions(Enum):
     INIT: str = 'init'
     START: str = 'start'
     FINISH: str = 'finish'
-    PLAN: str = 'plan'
+    PRECHECK: str = 'precheck'
 
     @classmethod
     def has_value(cls, value) -> bool:

@@ -32,8 +32,8 @@ scheme: maven|package|composer|docker
 flexio-flow init
 flexio-flow hotfix start
 flexio-flow hotfix finish
+flexio-flow release precheck
 flexio-flow release start
-flexio-flow release plan
 flexio-flow release finish
 ```
 

@@ -3,7 +3,7 @@ from Schemes.Scheme import Scheme
 from FlexioFlow.Version import Version
 from Schemes.Package.PackageFileHandler import PackageFileHandler
 from Schemes.Dependencies import Dependencies
-from Schemes.Package.ReleasePlan import ReleasePlan
+from Schemes.Package.PreCheck import PreCheck
 
 
 class PackageScheme(Scheme):
@@ -17,7 +17,7 @@ class PackageScheme(Scheme):
         package_handler.set_version(self.state.version).write()
         return self
 
-    def release_plan(self) -> Dependencies:
+    def release_precheck(self) -> Dependencies:
         package_handler: PackageFileHandler = PackageFileHandler(self.dir_path)
-        release_plan: ReleasePlan = ReleasePlan(package_handler, self.DEV_SUFFIX)
+        release_plan: PreCheck = PreCheck(package_handler, self.DEV_SUFFIX)
         return release_plan.process()

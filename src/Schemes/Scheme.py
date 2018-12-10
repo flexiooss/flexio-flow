@@ -21,5 +21,5 @@ class Scheme:
         pass
 
     @abc.abstractmethod
-    def release_plan(self) -> Dependencies:
+    def release_precheck(self) -> Dependencies:
         pass

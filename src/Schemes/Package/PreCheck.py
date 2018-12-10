@@ -5,7 +5,7 @@ from Schemes.Package.PackageFileHandler import PackageFileHandler
 import re
 
 
-class ReleasePlan:
+class PreCheck:
 
     def __init__(self, package_handler: PackageFileHandler, dev_suffix: str) -> None:
         self.__package_handler: PackageFileHandler = package_handler
@@ -31,4 +31,4 @@ class ReleasePlan:
 
     def is_dev(self, version: str) -> bool:
         matches: Match = self.match_dev(version)
-        return True if matches and matches.groupdict().get('is_dev') else False
+        return True if matches and matches.groupdict().get('is_git') and matches.groupdict().get('is_dev') else False

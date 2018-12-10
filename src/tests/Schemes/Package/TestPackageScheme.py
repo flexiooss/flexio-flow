@@ -47,7 +47,7 @@ class TestPackageScheme(unittest.TestCase):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
         package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST + '/', state)
-        dependencies: Dependencies = package.release_plan()
+        dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)
         self.assertEqual(len(dependencies), 0)
@@ -56,7 +56,7 @@ class TestPackageScheme(unittest.TestCase):
         TestPackageHelper.mount_workdir_with_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
         package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST + '/', state)
-        dependencies: Dependencies = package.release_plan()
+        dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)
         self.assertNotEqual(len(dependencies), 0)

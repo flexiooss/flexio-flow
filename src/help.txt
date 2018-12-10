@@ -23,8 +23,8 @@ flexio-flow
                         finish
 
               release
+                        precheck
                         start
-                        plan
                         finish
 
 
