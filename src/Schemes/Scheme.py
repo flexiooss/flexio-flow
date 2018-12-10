@@ -3,12 +3,12 @@ import abc
 from typing import Type, List, NewType
 from FlexioFlow.State import State
 from Schemes.Dependencies import Dependencies
-
+from pathlib import Path
 
 class Scheme:
 
-    def __init__(self, dir_path: str, state: State):
-        self.dir_path: str = dir_path
+    def __init__(self, dir_path: Path, state: State):
+        self.dir_path: Path = dir_path
         self.state: State = state
 
     @property

@@ -6,10 +6,11 @@ from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from Schemes.Package.PackageFileHandler import PackageFileHandler
+from pathlib import Path
 
 
 class TestPackageHelper:
-    DIR_PATH_TEST: str = '/tmp/test_package'
+    DIR_PATH_TEST: Path = Path('/tmp/test_package')
 
     PACKAGE_WITHOUT_DEV_DEPENDENCIES: str = 'package_without_dev_dependencies.json'
     PACKAGE_WITH_DEV_DEPENDENCIES: str = 'package_with_dev_dependencies.json'
@@ -38,14 +39,16 @@ class TestPackageHelper:
 
     @classmethod
     def mount_workdir_without_dev_dependencies(cls):
-        os.mkdir(cls.DIR_PATH_TEST)
-        with open(cls.DIR_PATH_TEST + '/' + PackageFileHandler.FILE_NAME, 'w') as outfile:
+        # os.mkdir(cls.DIR_PATH_TEST)
+        cls.DIR_PATH_TEST.mkdir()
+        with (cls.DIR_PATH_TEST / PackageFileHandler.FILE_NAME).open('w') as outfile:
             json.dump(cls.get_json_without_dev_dependencies(), outfile, indent=2)
 
     @classmethod
     def mount_workdir_with_dev_dependencies(cls):
-        os.mkdir(cls.DIR_PATH_TEST)
-        with open(cls.DIR_PATH_TEST + '/' + PackageFileHandler.FILE_NAME, 'w') as outfile:
+        # os.mkdir(cls.DIR_PATH_TEST)
+        cls.DIR_PATH_TEST.mkdir()
+        with (cls.DIR_PATH_TEST / PackageFileHandler.FILE_NAME).open('w') as outfile:
             json.dump(cls.get_json_with_dev_dependencies(), outfile, indent=2)
 
     @classmethod

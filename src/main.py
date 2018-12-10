@@ -8,6 +8,8 @@ from FlexioFlow.FlexioFlow import FlexioFlow
 from FlexioFlow.Actions.Actions import Actions
 from VersionControl.Branches import Branches
 from VersionControl.VersionController import VersionController
+from pathlib import Path
+import pprint
 
 
 def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
@@ -49,7 +51,7 @@ def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], Actions
     return branch, action
 
 
-def command_orders(argv: List[str]) -> Tuple[Actions, Optional[Branches], Dict[str, str], str]:
+def command_orders(argv: List[str]) -> Tuple[Actions, Optional[Branches], Dict[str, str], Path]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
@@ -57,8 +59,7 @@ def command_orders(argv: List[str]) -> Tuple[Actions, Optional[Branches], Dict[s
     branch: Optional[Branches]
     action: Actions
     branch, action = extract_subject_action(argv_no_options)
-
-    dir_path: str = options.get('path', os.getcwd())
+    dir_path: Path = Path(options.get('path')) if options.get('path') else Path.cwd()
 
     return action, branch, options, dir_path
 
@@ -67,7 +68,7 @@ def main(argv) -> None:
     action: Actions
     branch: Optional[Branches]
     options: Dict[str, str]
-    dir_path: str
+    dir_path: Path
     action, branch, options, dir_path = command_orders(argv)
 
     FlexioFlow(

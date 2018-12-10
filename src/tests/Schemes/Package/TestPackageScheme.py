@@ -11,6 +11,7 @@ from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from Schemes.Dependencies import Dependencies
+from pathlib import Path
 
 
 class TestPackageScheme(unittest.TestCase):
@@ -21,23 +22,23 @@ class TestPackageScheme(unittest.TestCase):
     def test_should_find_file_or_raise(self):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
 
-        PackageFileHandler(TestPackageHelper.DIR_PATH_TEST + '/')
+        PackageFileHandler(TestPackageHelper.DIR_PATH_TEST)
         with self.assertRaises(FileNotExistError):
-            PackageFileHandler('nothing')
+            PackageFileHandler(Path('.'))
 
     def test_should_change_version(self):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
 
-        package_handler_before = PackageFileHandler(TestPackageHelper.DIR_PATH_TEST + '/')
+        package_handler_before = PackageFileHandler(TestPackageHelper.DIR_PATH_TEST)
         self.assertNotEqual(
             str(state.version),
             package_handler_before.get_version()
         )
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST + '/', state)
+        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
         package.set_version()
 
-        package_handler_after = PackageFileHandler(TestPackageHelper.DIR_PATH_TEST + '/')
+        package_handler_after = PackageFileHandler(TestPackageHelper.DIR_PATH_TEST)
         self.assertEqual(
             str(state.version),
             package_handler_after.get_version()
@@ -46,7 +47,7 @@ class TestPackageScheme(unittest.TestCase):
     def test_should_plan_release_empty(self):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST + '/', state)
+        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
         dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)
@@ -55,7 +56,7 @@ class TestPackageScheme(unittest.TestCase):
     def test_should_plan_release_not_empty(self):
         TestPackageHelper.mount_workdir_with_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST + '/', state)
+        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
         dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)

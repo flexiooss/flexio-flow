@@ -6,7 +6,7 @@ from Schemes.Package.PackageScheme import PackageScheme
 
 class SchemeFactory:
     @staticmethod
-    def create(scheme: Schemes) -> Type[Scheme]:
+    def create(scheme: Schemes) -> Scheme:
         if scheme is Schemes.PACKAGE:
             return PackageScheme()
 

@@ -7,6 +7,7 @@ from Schemes.Dependencies import Dependencies
 from Exceptions.HaveDevDependencyException import ReleasePlanException
 from typing import Dict
 import re
+from pathlib import Path
 
 
 class PackageFileHandler:
@@ -14,8 +15,8 @@ class PackageFileHandler:
     VERSION_KEY: str = 'version'
     DEPENDENCIES_KEY: str = 'dependencies'
 
-    def __init__(self, dir_path: str):
-        self.__file_path: str = dir_path + self.FILE_NAME
+    def __init__(self, dir_path: Path):
+        self.__file_path: Path = dir_path / self.FILE_NAME
         self.__data: dict = self.__load_file()
 
     @property
@@ -23,9 +24,9 @@ class PackageFileHandler:
         return self.__data
 
     def __load_file(self):
-        if not os.path.isfile(self.__file_path):
+        if not self.__file_path.is_file():
             raise FileNotExistError(self.__file_path)
-        with open(self.__file_path) as json_data:
+        with self.__file_path.open() as json_data:
             d = json.load(json_data)
             return d
 
@@ -37,7 +38,7 @@ class PackageFileHandler:
         return self
 
     def write(self) -> PackageFileHandler:
-        with open(self.__file_path, 'w') as outfile:
+        with self.__file_path.open('w') as outfile:
             json.dump(self.__data, outfile, indent=2)
         return self
 

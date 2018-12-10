@@ -1,5 +1,7 @@
+from pathlib import Path
+
 class FileExistError(Exception):
-    def __init__(self, file_path: str, message: str = ''):
+    def __init__(self, file_path: Path, message: str = ''):
         self.file_path: str = file_path
         self.message: str = message
 

@@ -9,6 +9,7 @@ from FlexioFlow.Actions.ActionFactory import ActionFactory
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
 from VersionControl.VersionControlFactory import VersionControlFactory
+from pathlib import Path
 
 
 class FlexioFlow:
@@ -19,16 +20,17 @@ class FlexioFlow:
                  action: Actions,
                  branch: Optional[Branches],
                  options: Dict[str, str],
-                 dir_path: str
+                 dir_path: Path
                  ) -> None:
 
         self.__version_controller: VersionController = version_controller
         self.__action: Actions = action
         self.__branch: Optional[Branches] = branch
         self.__options: Dict[str, str] = options
-        if not os.path.exists(dir_path):
+        if not dir_path.is_dir():
             raise ValueError(dir_path + ' : Path not exists')
-        self.__dir_path: str = dir_path.rstrip('/') + '/'
+        # self.__dir_path: Path = dir_path.rstrip('/') + '/'
+        self.__dir_path: Path = dir_path
 
     def __should_init_state_handler(self) -> bool:
         if self.__action not in [Actions.INIT]:

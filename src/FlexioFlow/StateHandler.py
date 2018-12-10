@@ -1,19 +1,19 @@
 from __future__ import annotations
 import yaml
-import os
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
 from Exceptions.FileNotExistError import FileNotExistError
+from pathlib import Path
 
 
 class StateHandler:
-    FILE_NAME = 'flexio-flow.yml'
+    FILE_NAME: str = 'flexio-flow.yml'
     __state: State
 
-    def __init__(self, dir_path: str):
-        self.dir_path: str = dir_path
+    def __init__(self, dir_path: Path):
+        self.dir_path: Path = dir_path
         self.__state = State()
 
     @property
@@ -25,16 +25,16 @@ class StateHandler:
         self.__state = v
 
     def file_exists(self) -> bool:
-        return os.path.isfile(self.file_path())
+        print(self.file_path())
+        return self.file_path().is_file()
 
     def load_file_config(self) -> StateHandler:
-
-        if not os.path.isfile(self.file_path()):
+        if not self.file_path().is_file():
             raise FileNotExistError(
                 self.file_path(),
                 'Flexio Flow not initialized try : flexio-flow init'
             )
-        data = yaml.load(open(self.file_path(), 'r'))
+        data = yaml.load(self.file_path().open('r'))
 
         self.__state.version = Version.from_str(data['version'])
         self.__state.scheme = Schemes.list_from_value(data['scheme'])
@@ -43,9 +43,9 @@ class StateHandler:
         return self
 
     def write_file(self) -> str:
-        stream = open(self.file_path(), 'w')
+        stream = self.file_path().open('w')
         yaml.dump(self.state.to_dict(), stream)
         return yaml.dump(self.state.to_dict())
 
-    def file_path(self) -> str:
-        return self.dir_path + self.FILE_NAME
+    def file_path(self) -> Path:
+        return self.dir_path / self.FILE_NAME

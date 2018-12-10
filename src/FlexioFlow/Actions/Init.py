@@ -6,11 +6,12 @@ from Schemes.Schemes import Schemes
 from typing import List
 from Exceptions.FileExistError import FileExistError
 from FlexioFlow.Actions.Action import Action
+from pathlib import Path
 
 
 class Init(Action):
 
-    def __init__(self, dir_path: str) -> None:
+    def __init__(self, dir_path: Path) -> None:
 
         self.__state_handler: StateHandler = StateHandler(dir_path)
 
