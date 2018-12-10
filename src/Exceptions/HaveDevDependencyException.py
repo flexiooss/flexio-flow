@@ -1,7 +1,7 @@
 from Schemes.Dependencies import Dependencies
 
 
-class ReleasePlanException(Exception):
+class HaveDevDependencyException(Exception):
     def __init__(self, dependencies: Dependencies, message: str = ''):
         self.dependencies: Dependencies = dependencies
         self.message: str = message
@@ -11,4 +11,4 @@ class ReleasePlanException(Exception):
 You should release before : 
 {0!s}
 {1!s}
-""".format(self.dependencies, self.message)
+""".format(self.dependencies.__dict__(), self.message)

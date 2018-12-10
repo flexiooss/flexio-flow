@@ -6,7 +6,7 @@ from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
 
 
-class Action:
+class Action(abc.ABC):
 
     def __init__(self,
                  version_control: Type[VersionControl],

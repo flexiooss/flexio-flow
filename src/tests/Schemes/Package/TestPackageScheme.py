@@ -12,6 +12,7 @@ from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from Schemes.Dependencies import Dependencies
 from pathlib import Path
+from FlexioFlow.StateHandler import StateHandler
 
 
 class TestPackageScheme(unittest.TestCase):
@@ -35,7 +36,9 @@ class TestPackageScheme(unittest.TestCase):
             str(state.version),
             package_handler_before.get_version()
         )
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
+        state_handler: StateHandler = StateHandler(TestPackageHelper.DIR_PATH_TEST)
+        state_handler.state = state
+        package: PackageScheme = PackageScheme(state_handler)
         package.set_version()
 
         package_handler_after = PackageFileHandler(TestPackageHelper.DIR_PATH_TEST)
@@ -47,7 +50,9 @@ class TestPackageScheme(unittest.TestCase):
     def test_should_plan_release_empty(self):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
+        state_handler: StateHandler = StateHandler(TestPackageHelper.DIR_PATH_TEST)
+        state_handler.state = state
+        package: PackageScheme = PackageScheme(state_handler)
         dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)
@@ -56,7 +61,9 @@ class TestPackageScheme(unittest.TestCase):
     def test_should_plan_release_not_empty(self):
         TestPackageHelper.mount_workdir_with_dev_dependencies()
         state: State = TestPackageHelper.fake_state()
-        package: PackageScheme = PackageScheme(TestPackageHelper.DIR_PATH_TEST, state)
+        state_handler: StateHandler = StateHandler(TestPackageHelper.DIR_PATH_TEST)
+        state_handler.state = state
+        package: PackageScheme = PackageScheme(state_handler)
         dependencies: Dependencies = package.release_precheck()
 
         self.assertIsInstance(dependencies, Dependencies)

@@ -4,7 +4,6 @@ from typing import Dict, Pattern, Match
 from Schemes.Package.PackageFileHandler import PackageFileHandler
 import re
 
-
 class PreCheck:
 
     def __init__(self, package_handler: PackageFileHandler, dev_suffix: str) -> None:

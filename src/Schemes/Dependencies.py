@@ -30,3 +30,6 @@ class Dependencies:
 
     def __len__(self):
         return len(self.__list)
+
+    def __dict__(self):
+        return dict(self.__list)

@@ -1,15 +1,15 @@
 from __future__ import annotations
 import abc
 from typing import Type, List, NewType
-from FlexioFlow.State import State
+from FlexioFlow.StateHandler import StateHandler
 from Schemes.Dependencies import Dependencies
 from pathlib import Path
 
-class Scheme:
 
-    def __init__(self, dir_path: Path, state: State):
-        self.dir_path: Path = dir_path
-        self.state: State = state
+class Scheme(abc.ABC):
+
+    def __init__(self,  state_handler: StateHandler):
+        self.state_handler: StateHandler = state_handler
 
     @property
     @abc.abstractmethod

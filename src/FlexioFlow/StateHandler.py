@@ -6,7 +6,7 @@ from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
 from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
-
+import fileinput
 
 class StateHandler:
     FILE_NAME: str = 'flexio-flow.yml'
@@ -33,7 +33,9 @@ class StateHandler:
                 self.file_path(),
                 'Flexio Flow not initialized try : flexio-flow init'
             )
-        data = yaml.load(self.file_path().open('r'))
+        f: fileinput = self.file_path().open('r')
+        data = yaml.load(f)
+        f.close()
 
         self.__state.version = Version.from_str(data['version'])
         self.__state.schemes = Schemes.list_from_value(data['schemes'])
@@ -44,6 +46,7 @@ class StateHandler:
     def write_file(self) -> str:
         stream = self.file_path().open('w')
         yaml.dump(self.state.to_dict(), stream)
+        stream.close()
         return yaml.dump(self.state.to_dict())
 
     def file_path(self) -> Path:
