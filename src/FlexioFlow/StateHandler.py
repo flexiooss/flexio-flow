@@ -25,7 +25,6 @@ class StateHandler:
         self.__state = v
 
     def file_exists(self) -> bool:
-        print(self.file_path())
         return self.file_path().is_file()
 
     def load_file_config(self) -> StateHandler:
@@ -59,7 +58,7 @@ class StateHandler:
         return self.__state.version
 
     def next_patch(self) -> Version:
-        self.__state.version = self.__state.version.next_minor()
+        self.__state.version = self.__state.version.next_patch()
         return self.__state.version
 
     def reset_patch(self) -> Version:
