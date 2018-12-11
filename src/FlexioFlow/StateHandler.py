@@ -2,11 +2,13 @@ from __future__ import annotations
 import yaml
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
+from Schemes.SchemeFactory import SchemeFactory
 from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
 from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
+
 
 class StateHandler:
     FILE_NAME: str = 'flexio-flow.yml'
@@ -67,3 +69,13 @@ class StateHandler:
     def reset_patch(self) -> Version:
         self.__state.version = self.__state.version.reset_patch()
         return self.__state.version
+
+    def update_schemes_version(self):
+        scheme: Schemes
+        for scheme in self.state.schemes:
+            SchemeFactory.create(scheme, self).set_version()
+
+            print("""
+New version : {0!s}
+for scheme : {1!s}
+""".format(str(self.state.version), scheme.value))
