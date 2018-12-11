@@ -7,17 +7,12 @@ from typing import List
 from Exceptions.FileExistError import FileExistError
 from FlexioFlow.Actions.Action import Action
 from pathlib import Path
+from VersionControl.VersionControl import VersionControl
+from typing import Type
+from FlexioFlow.Actions.Action import Action
 
 
 class Init(Action):
-
-    def __init__(self, dir_path: Path) -> None:
-
-        self.__state_handler: StateHandler = StateHandler(dir_path)
-
-        if self.__state_handler.file_exists():
-            raise FileExistError(self.__state_handler.file_path(), 'Flexio Flow already initialized')
-        # super().__init__()
 
     def __start_message(self) -> Init:
         print(
@@ -30,12 +25,12 @@ class Init(Action):
 
     def __input_version(self) -> Init:
         version: str = input('Version (0.0.0) : ')
-        self.__state_handler.state.version = Version.from_str(version if version else '0.0.0')
+        self.state_handler.state.version = Version.from_str(version if version else '0.0.0')
         return self
 
     def __input_level(self) -> Init:
         level: str = input('Level <(stable)|dev> : ')
-        self.__state_handler.state.level = Level[level.upper()] if level else Level.STABLE
+        self.state_handler.state.level = Level[level.upper()] if level else Level.STABLE
         return self
 
     def __input_schemes(self) -> Init:
@@ -45,14 +40,14 @@ class Init(Action):
             if add is 'y':
                 schemes.append(scheme)
 
-        self.__state_handler.state.schemes = schemes
+        self.state_handler.state.schemes = schemes
         return self
 
     def __write_file(self) -> Init:
-        yml: str = self.__state_handler.write_file()
+        yml: str = self.state_handler.write_file()
         print("""#################################################
 Write file : {0!s} 
-#################################################""".format(self.__state_handler.file_path()))
+#################################################""".format(self.state_handler.file_path()))
         print(yml)
         return self
 
@@ -65,6 +60,8 @@ Enjoy with Flexio FLow
         return self
 
     def process(self):
+        if self.state_handler.file_exists():
+            raise FileExistError(self.state_handler.file_path(), 'Flexio Flow already initialized')
 
         self.__start_message() \
             .__input_version() \

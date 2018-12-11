@@ -5,7 +5,7 @@ import shutil
 from FlexioFlow.StateHandler import StateHandler
 
 
-class Start:
+class Init:
     def __init__(self, state_handler:StateHandler):
         self.__state_handler: StateHandler
 

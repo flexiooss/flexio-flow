@@ -8,7 +8,7 @@ class Hotfix(Branch):
     def process(self):
         if self.action is Actions.START:
             print('Hotfix start')
-            Start.process(self.state_handler.dir_path)
+            Start(self.state_handler).process()
         if self.action is Actions.FINISH:
             print('Hotfix finish')
         print(self.__dict__)

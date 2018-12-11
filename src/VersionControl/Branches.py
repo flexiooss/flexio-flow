@@ -3,6 +3,8 @@ from enum import Enum, unique
 
 @unique
 class Branches(Enum):
+    MASTER: str = 'master'
+    DEVELOP: str = 'develop'
     HOTFIX: str = 'hotfix'
     RELEASE: str = 'release'
 

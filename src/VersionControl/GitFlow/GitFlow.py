@@ -7,6 +7,10 @@ from VersionControl.Branches import Branches
 
 
 class GitFlow(VersionControl):
+    def master(self) -> Branch:
+        branch: Branch = BranchFactory.create(Branches.MASTER, self.state_handler)
+        return branch
+
     def hotfix(self) -> Branch:
         branch: Branch = BranchFactory.create(Branches.HOTFIX, self.state_handler)
         return branch

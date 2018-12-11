@@ -32,27 +32,27 @@ class FlexioFlow:
         self.__dir_path: Path = dir_path
 
     def __should_init_state_handler(self) -> bool:
+        self.__state_handler = StateHandler(self.__dir_path)
         if self.__action not in [Actions.INIT]:
-            self.__state_handler = StateHandler(self.__dir_path).load_file_config()
+            self.__state_handler.load_file_config()
             print(str(self.__state_handler.state.version))
             return True
         return False
 
     def process(self):
         self.__should_init_state_handler()
+        version_control: Type[VersionControl] = VersionControlFactory.create(
+            self.__version_controller,
+            self.__state_handler
+        )
 
-        if self.__action is Actions.INIT:
-            Init(self.__dir_path).process()
 
-        else:
-            version_control: Type[VersionControl] = VersionControlFactory.create(self.__version_controller,
-                                                                                 self.__state_handler)
-            action: Type[Action] = ActionFactory.create(
-                self.__action,
-                version_control,
-                self.__branch,
-                self.__state_handler,
-                self.__options
-            )
+        action: Type[Action] = ActionFactory.create(
+            self.__action,
+            version_control,
+            self.__branch,
+            self.__state_handler,
+            self.__options
+        )
 
-            action.process()
+        action.process()
