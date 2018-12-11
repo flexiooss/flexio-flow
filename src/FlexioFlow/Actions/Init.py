@@ -83,6 +83,7 @@ Flexio Flow already initialized
 
     def process(self):
         self.__ensure_have_state()
+
         self.version_control.with_branch(Branches.MASTER).set_action(Actions.INIT).process()
 
         self.__final_message()

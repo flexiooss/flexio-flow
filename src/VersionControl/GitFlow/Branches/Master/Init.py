@@ -10,32 +10,30 @@ class Init:
         self.__state_handler: StateHandler = state_handler
 
     def process(self):
-        print(self.__state_handler.state.to_dict())
-        # workdir: Path = Path('/tmp/flexio_flow_tests')
+
         root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
-        # shutil.rmtree(workdir, True)
-        # workdir.mkdir()
-        # print(root_path.strip())
-        #
+
         os.chdir(self.__state_handler.dir_path.as_posix())
         Popen(["git", "flow", "init", "-f", "-d"]).communicate()
+
         Popen(["git", "checkout", "master"]).communicate()
         self.__state_handler.write_file()
-        Popen(["git", "commit", "-am", ''.join(["'Init master : ", str(self.__state_handler.state.version), "'"])]).communicate()
+        Popen(["git", "commit", "-am",
+               ''.join(["'Init master : ", str(self.__state_handler.state.version), "'"])]).communicate()
+
+        Popen(["git", "tag", "-a", str(self.__state_handler.state.version), "-m",
+               "'" + str(self.__state_handler.state.version) + "'"]).communicate()
         Popen(["git", "push", "--set-upstream", "origin", "master"]).communicate()
-        #
+        print('Init master at : ' + str(self.__state_handler.state.version))
+        Popen(["git", "push", "origin", str(self.__state_handler.state.version)]).communicate()
+        print('Tag master at : ' + str(self.__state_handler.state.version))
+
+        self.__state_handler.state.next_dev_release()
         Popen(["git", "checkout", "develop"]).communicate()
-        # Popen(["git", "pull", "origin", "develop"]).communicate()
-        # Popen(["git", "checkout", "-"]).communicate()
-        # Popen(["git", "pull", "origin", "master"]).communicate()
-        # # get current version
-        # Popen(["git", "checkout", "develop"]).communicate()
-        #
-        # patched_version = '1.2.3'
-        #
-        # Popen(["git", "flow", "hotfix", "start", patched_version]).communicate()
-        # # write file version
-        # Popen(["git", "push"]).communicate()
-        # Popen(["pwd"])
+        self.__state_handler.write_file()
+        Popen(["git", "commit", "-am",
+               ''.join(["'Init develop : ", str(self.__state_handler.state.version), "'"])]).communicate()
+        Popen(["git", "push", "--set-upstream", "origin", "develop"]).communicate()
+        print('Init develop at : ' + str(self.__state_handler.state.version))
+
         os.chdir(root_path.strip())
-        # Popen(["pwd"])
