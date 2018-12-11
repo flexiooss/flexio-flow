@@ -8,6 +8,7 @@ from FlexioFlow.Version import Version
 
 class State:
     __version: Version
+    __level: Level
     __schemes: List[Schemes]
 
     def __init__(self) -> None:
@@ -60,8 +61,14 @@ class State:
         self.__version = self.__version.next_minor()
         return self.__version
 
-    def reset_patch(self) -> Version:
+    def next_dev_release(self) -> Version:
+        self.__level = Level.DEV
         self.__version = self.__version.reset_patch()
+        self.__version = self.__version.next_minor()
+        return self.__version
+
+    def next_release(self) -> Version:
+        self.__level = Level.STABLE
         return self.__version
 
     def __schemeListValue(self) -> List[str]:
