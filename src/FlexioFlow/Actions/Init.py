@@ -10,6 +10,8 @@ from pathlib import Path
 from VersionControl.VersionControl import VersionControl
 from typing import Type
 from FlexioFlow.Actions.Action import Action
+from FlexioFlow.Actions.Actions import Actions
+from VersionControl.Branches import Branches
 
 
 class Init(Action):
@@ -59,13 +61,28 @@ Enjoy with Flexio FLow
 """)
         return self
 
-    def process(self):
+    def __ensure_have_state(self) -> Init:
         if self.state_handler.file_exists():
-            raise FileExistError(self.state_handler.file_path(), 'Flexio Flow already initialized')
+            self.state_handler.load_file_config()
+            print(
+                """###############################################
+Flexio Flow already initialized 
+###############################################
+""")
+            print('at : ' + self.state_handler.file_path().as_posix())
+            print('with : ' + str(self.state_handler.state.to_dict()))
+            use: str = input('Use this file (y)/n : ')
+            use = use if use else 'y'
+            if use is 'y':
+                return self
 
-        self.__start_message() \
+        return self.__start_message() \
             .__input_version() \
             .__input_level() \
-            .__input_schemes() \
-            .__write_file() \
-            .__final_message()
+            .__input_schemes()
+
+    def process(self):
+        self.__ensure_have_state()
+        self.version_control.with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+
+        self.__final_message()

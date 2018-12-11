@@ -7,16 +7,17 @@ from FlexioFlow.StateHandler import StateHandler
 
 class Init:
     def __init__(self, state_handler:StateHandler):
-        self.__state_handler: StateHandler
+        self.__state_handler: StateHandler = state_handler
 
     def process(self):
-        workdir: Path = Path('/tmp/flexio_flow_tests')
-        root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
-        shutil.rmtree(workdir, True)
-        workdir.mkdir()
-        print(root_path.strip())
-
-        os.chdir(workdir.as_posix())
+        print(self.__state_handler.state.to_dict())
+        # workdir: Path = Path('/tmp/flexio_flow_tests')
+        # root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
+        # shutil.rmtree(workdir, True)
+        # workdir.mkdir()
+        # print(root_path.strip())
+        #
+        # os.chdir(workdir.as_posix())
         # # subprocess.Popen(["cd", workdir.as_posix()])
         #
         # Popen(["git", "flow", "init", "-f", "-d"]).communicate()
@@ -35,6 +36,6 @@ class Init:
         # # write file version
         # Popen(["git", "commit", "-am", ''.join(["'Start hotfix : ", patched_version, "'"])]).communicate()
         # Popen(["git", "push"]).communicate()
-        Popen(["pwd"])
-        os.chdir(root_path.strip())
-        Popen(["pwd"])
+        # Popen(["pwd"])
+        # os.chdir(root_path.strip())
+        # Popen(["pwd"])
