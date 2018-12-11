@@ -2,6 +2,11 @@ import os
 import shutil
 from pathlib import Path
 from subprocess import Popen
+
+from FlexioFlow.Level import Level
+from FlexioFlow.State import State
+from FlexioFlow.Version import Version
+from Schemes.Schemes import Schemes
 from VersionControl.GitFlow.GitFlow import GitFlow
 from VersionControl.Branches import Branches
 
@@ -27,3 +32,11 @@ class TestGitFlowHelper:
         Popen(['git', 'reset', '--hard', cls.TAG_INIT])
         Popen(['git', 'push', '--force', GitFlow.REMOTE, Branches.MASTER.value])
         Popen(['git', 'push', GitFlow.REMOTE, '--delete', Branches.DEVELOP.value])
+
+    @staticmethod
+    def fake_state(version: str = '0.0.0') -> State:
+        state: State = State()
+        state.version = Version.from_str(version)
+        state.schemes = [Schemes.PACKAGE]
+        state.level = Level.STABLE
+        return state

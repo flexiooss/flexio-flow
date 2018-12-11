@@ -1,9 +1,8 @@
 from __future__ import annotations
 import abc
-from typing import Type, List, NewType
+from typing import Type
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.Dependencies import Dependencies
-from pathlib import Path
 
 
 class Scheme(abc.ABC):

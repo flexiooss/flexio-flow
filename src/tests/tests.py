@@ -9,14 +9,15 @@ from tests.VersionControl.GitFlow.TestGitFlowInit import TestGitFlowInit
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(TestVersion())
-    suite.addTest(TestState())
-    suite.addTest(TestPreCheck())
-    suite.addTest(TestPackageScheme())
-    suite.addTest(TestGitFlow())
-    suite.addTest(TestGitFlowInit())
+    # suite.addTest(TestVersion())
+    # suite.addTest(TestState())
+    # suite.addTest(TestPreCheck())
+    #
+    #
+    # suite.addTest(TestPackageScheme())
+    # suite.addTest(TestGitFlow())
+    # suite.addTest(TestGitFlowInit())
     return suite
-
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
