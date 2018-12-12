@@ -1,10 +1,4 @@
 from __future__ import annotations
-
-from pathlib import Path
-from subprocess import PIPE, Popen
-import os
-import shutil
-
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
@@ -59,10 +53,10 @@ class Init:
         return self
 
     def process(self):
-        root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
-
-        os.chdir(self.__state_handler.dir_path.as_posix())
+        # root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
+        #
+        # os.chdir(self.__state_handler.dir_path.as_posix())
 
         self.__init_gitflow().__init_master().__init_develop()
 
-        os.chdir(root_path.strip())
+        # os.chdir(root_path.strip())

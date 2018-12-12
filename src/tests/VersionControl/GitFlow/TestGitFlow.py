@@ -2,6 +2,8 @@ import unittest
 import os
 from pathlib import Path
 import shutil
+
+from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.State import State
 from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
