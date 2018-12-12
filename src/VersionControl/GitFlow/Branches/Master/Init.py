@@ -5,6 +5,7 @@ from subprocess import PIPE, Popen
 import os
 import shutil
 from FlexioFlow.StateHandler import StateHandler
+from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 
 
 class Init:
@@ -35,7 +36,7 @@ class Init:
         self.__state_handler.state.next_dev_release()
         Popen(["git", "checkout", "develop"]).communicate()
         self.__state_handler.write_file()
-        self.__state_handler.update_schemes_version()
+        UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         Popen(["git", "commit", "-am",
                ''.join(["'Init develop : ", str(self.__state_handler.state.version), "'"])]).communicate()
