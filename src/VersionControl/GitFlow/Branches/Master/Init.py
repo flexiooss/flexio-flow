@@ -8,8 +8,9 @@ import shutil
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
+from VersionControl.Branches import Branches
+from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.GitFlow.GitFlow import GitFlow
 
 
 class Init:
@@ -17,24 +18,21 @@ class Init:
         self.__state_handler: StateHandler = state_handler
 
     def __init_gitflow(self) -> Init:
-        GitFlow.init_config()
+        GitFlowCmd(self.__state_handler.dir_path).init_config()
         return self
 
     def __init_master(self) -> Init:
+        version: str = str(self.__state_handler.state.version)
+
         git: GitCmd = GitCmd(self.__state_handler.dir_path)
-        git.checkout('master')
+        git.checkout(Branches.MASTER.value)
 
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        version: str = str(self.__state_handler.state.version)
 
-        git.add_all_files()
-        Popen(["git", "commit", "-am",
-               ''.join(["'Init master : ", version, "'"])]).communicate()
+        git.add_all().commit(
+            ''.join(["'Init master : ", version, "'"])).add_tag(version).set_upstream()
 
-        Popen(["git", "tag", "-a", version, "-m",
-               "'" + version + "'"]).communicate()
-        Popen(["git", "push", "--set-upstream", "origin", "master"]).communicate()
         print('Init master at : ' + version)
         git.push_tag(version)
         print('Tag master at : ' + version)
@@ -42,20 +40,18 @@ class Init:
 
     def __init_develop(self) -> Init:
         self.__state_handler.state.next_dev_release()
+        version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
+
         git: GitCmd = GitCmd(self.__state_handler.dir_path)
-        git.checkout('develop')
+        git.checkout(Branches.DEVELOP.value)
+
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
-        version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
+        git.add_all().commit(
+            ''.join(["'Init develop : ", version, "'"])
+        ).add_tag(version).set_upstream()
 
-        git.add_all_files()
-
-        Popen(["git", "commit", "-am",
-               ''.join(["'Init develop : ", version, "'"])]).communicate()
-        Popen(["git", "tag", "-a", version, "-m",
-               "'" + version + "'"]).communicate()
-        Popen(["git", "push", "--set-upstream", "origin", "develop"]).communicate()
         print('Init develop at : ' + version)
         git.push_tag(version)
         print('Tag master at : ' + version)

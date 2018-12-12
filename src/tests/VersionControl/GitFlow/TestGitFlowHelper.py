@@ -1,13 +1,10 @@
-import os
 import shutil
 from pathlib import Path
-from subprocess import Popen
-
 from FlexioFlow.Level import Level
 from FlexioFlow.State import State
 from FlexioFlow.Version import Version
 from Schemes.Schemes import Schemes
-from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControl.GitFlow.GitCmd import GitCmd
 from VersionControl.Branches import Branches
 
 
@@ -19,7 +16,8 @@ class TestGitFlowHelper:
     @classmethod
     def mount_workdir_and_clone(cls):
         cls.DIR_PATH_TEST.mkdir()
-        Popen(['git', 'clone', cls.REPO_URL, '.'], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        git: GitCmd = GitCmd(cls.DIR_PATH_TEST)
+        git.clone(cls.REPO_URL)
 
     @classmethod
     def clean_workdir(cls):
@@ -27,16 +25,14 @@ class TestGitFlowHelper:
 
     @classmethod
     def clean_remote_repo(cls, version: Version = Version(0, 0, 0)):
-        os.chdir(cls.DIR_PATH_TEST.as_posix())
-        Popen(['git', 'checkout', Branches.MASTER.value], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'reset', '--hard', cls.TAG_INIT], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', '--force', GitFlow.REMOTE, Branches.MASTER.value],
-              cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', Branches.DEVELOP.value],
-              cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', str(version)], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', '-'.join([str(version.next_minor()), Level.DEV.value])
-               ], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        git: GitCmd = GitCmd(cls.DIR_PATH_TEST)
+        git.checkout(Branches.MASTER.value).reset_tot_tag(cls.TAG_INIT) \
+            .push_force() \
+            .delete_branch(
+            Branches.DEVELOP.value) \
+            .delete_tag(str(version)) \
+            .delete_tag(
+            '-'.join([str(version.next_minor()), Level.DEV.value]))
 
     @staticmethod
     def fake_state(version: str = '0.0.0') -> State:
