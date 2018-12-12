@@ -23,10 +23,10 @@ class TestGitFlowHelper:
 
     @classmethod
     def clean_workdir(cls):
-        shutil.rmtree(cls.DIR_PATH_TEST)
+        shutil.rmtree(cls.DIR_PATH_TEST, True)
 
     @classmethod
-    def clean_remote_repo(cls, version: str = '0.0.0'):
+    def clean_remote_repo(cls, version: Version = Version(0, 0, 0)):
         os.chdir(cls.DIR_PATH_TEST.as_posix())
         Popen(['git', 'checkout', Branches.MASTER.value], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
         Popen(['git', 'reset', '--hard', cls.TAG_INIT], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
@@ -34,8 +34,8 @@ class TestGitFlowHelper:
               cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
         Popen(['git', 'push', GitFlow.REMOTE, '--delete', Branches.DEVELOP.value],
               cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', version], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', '-'.join([version, Level.DEV.value])
+        Popen(['git', 'push', GitFlow.REMOTE, '--delete', str(version)], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'push', GitFlow.REMOTE, '--delete', '-'.join([str(version.next_minor()), Level.DEV.value])
                ], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
 
     @staticmethod

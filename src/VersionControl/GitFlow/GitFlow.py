@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from subprocess import Popen, PIPE
 
 from VersionControl.VersionControl import VersionControl
@@ -29,12 +30,12 @@ class GitFlow(VersionControl):
         return branch
 
     @classmethod
-    def remote_tag_exists(cls, tag: str) -> bool:
+    def remote_tag_exists(cls, tag: str, dir_path: Path) -> bool:
         stdout, stderr = Popen([
             'git',
             'ls-remote',
             cls.REMOTE,
-            'refs/tag/' + tag
-        ], stdout=PIPE).communicate()
+            'refs/tags/' + tag
+        ], stdout=PIPE, cwd=dir_path.as_posix()).communicate()
         print(stdout.strip())
         return len(stdout.strip()) > 0
