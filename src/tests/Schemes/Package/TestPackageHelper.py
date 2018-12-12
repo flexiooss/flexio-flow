@@ -38,18 +38,24 @@ class TestPackageHelper:
         return state
 
     @classmethod
-    def mount_workdir_without_dev_dependencies(cls):
-        # os.mkdir(cls.DIR_PATH_TEST)
-        cls.DIR_PATH_TEST.mkdir()
-        with (cls.DIR_PATH_TEST / PackageFileHandler.FILE_NAME).open('w') as outfile:
+    def write_package_without_dev_dependencies(cls, dir_path: Path):
+        with (dir_path / PackageFileHandler.FILE_NAME).open('w') as outfile:
             json.dump(cls.get_json_without_dev_dependencies(), outfile, indent=2)
 
     @classmethod
-    def mount_workdir_with_dev_dependencies(cls):
-        # os.mkdir(cls.DIR_PATH_TEST)
+    def mount_workdir_without_dev_dependencies(cls):
         cls.DIR_PATH_TEST.mkdir()
-        with (cls.DIR_PATH_TEST / PackageFileHandler.FILE_NAME).open('w') as outfile:
+        cls.write_package_without_dev_dependencies(cls.DIR_PATH_TEST)
+
+    @classmethod
+    def write_package_with_dev_dependencies(cls, dir_path: Path):
+        with (dir_path / PackageFileHandler.FILE_NAME).open('w') as outfile:
             json.dump(cls.get_json_with_dev_dependencies(), outfile, indent=2)
+
+    @classmethod
+    def mount_workdir_with_dev_dependencies(cls):
+        cls.DIR_PATH_TEST.mkdir()
+        cls.write_package_with_dev_dependencies(cls.DIR_PATH_TEST)
 
     @classmethod
     def clean_workdir(cls):

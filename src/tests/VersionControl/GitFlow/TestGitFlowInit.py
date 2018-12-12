@@ -27,3 +27,5 @@ class TestGitFlowInit(unittest.TestCase):
         state_handler.state = TestGitFlowHelper.fake_state(init_version)
 
         GitFlow(state_handler).with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+        # TestGitFlowHelper.clean_remote_repo()
+        # TestGitFlowHelper.clean_workdir()

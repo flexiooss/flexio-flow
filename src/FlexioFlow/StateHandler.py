@@ -48,6 +48,7 @@ class StateHandler:
         stream = self.file_path().open('w')
         yaml.dump(self.state.to_dict(), stream)
         stream.close()
+        print('write file : ' + self.file_path().as_posix())
         return yaml.dump(self.state.to_dict())
 
     def file_path(self) -> Path:

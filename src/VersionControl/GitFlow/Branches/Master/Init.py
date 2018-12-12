@@ -4,6 +4,8 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 import os
 import shutil
+
+from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 
@@ -19,17 +21,19 @@ class Init:
     def __init_master(self) -> Init:
         Popen(["git", "checkout", "master"]).communicate()
         self.__state_handler.write_file()
-        self.__state_handler.update_schemes_version()
+        UpdateSchemeVersion.from_state_handler(self.__state_handler)
+        version: str = str(self.__state_handler.state.version)
 
+        Popen(['git', 'add', '.']).communicate()
         Popen(["git", "commit", "-am",
-               ''.join(["'Init master : ", str(self.__state_handler.state.version), "'"])]).communicate()
+               ''.join(["'Init master : ", version, "'"])]).communicate()
 
-        Popen(["git", "tag", "-a", str(self.__state_handler.state.version), "-m",
-               "'" + str(self.__state_handler.state.version) + "'"]).communicate()
+        Popen(["git", "tag", "-a", version, "-m",
+               "'" + version + "'"]).communicate()
         Popen(["git", "push", "--set-upstream", "origin", "master"]).communicate()
-        print('Init master at : ' + str(self.__state_handler.state.version))
-        Popen(["git", "push", "origin", str(self.__state_handler.state.version)]).communicate()
-        print('Tag master at : ' + str(self.__state_handler.state.version))
+        print('Init master at : ' + version)
+        Popen(["git", "push", "origin", version]).communicate()
+        print('Tag master at : ' + version)
         return self
 
     def __init_develop(self) -> Init:
@@ -38,10 +42,18 @@ class Init:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
+        version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
+
+        Popen(['git', 'add', '.']).communicate()
+
         Popen(["git", "commit", "-am",
-               ''.join(["'Init develop : ", str(self.__state_handler.state.version), "'"])]).communicate()
+               ''.join(["'Init develop : ", version, "'"])]).communicate()
+        Popen(["git", "tag", "-a", version, "-m",
+               "'" + version + "'"]).communicate()
         Popen(["git", "push", "--set-upstream", "origin", "develop"]).communicate()
-        print('Init develop at : ' + str(self.__state_handler.state.version))
+        print('Init develop at : ' + version)
+        Popen(["git", "push", "origin", version]).communicate()
+        print('Tag master at : ' + version)
 
         return self
 

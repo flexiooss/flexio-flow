@@ -1,11 +1,7 @@
 from __future__ import annotations
 import json
-import os
 from Exceptions.FileNotExistError import FileNotExistError
-from FlexioFlow.Version import Version
-from Schemes.Dependencies import Dependencies
-from Exceptions.HaveDevDependencyException import HaveDevDependencyException
-from typing import Dict
+
 import re
 from pathlib import Path
 
@@ -24,6 +20,8 @@ class PackageFileHandler:
         return self.__data
 
     def __load_file(self):
+        print('__load_file : ' + self.__file_path.as_posix())
+        print(self.__file_path.is_file())
         if not self.__file_path.is_file():
             raise FileNotExistError(self.__file_path)
         with self.__file_path.open() as json_data:
@@ -33,8 +31,8 @@ class PackageFileHandler:
     def get_version(self) -> str:
         return self.__data[self.VERSION_KEY]
 
-    def set_version(self, version: Version) -> PackageFileHandler:
-        self.__data[self.VERSION_KEY] = str(version)
+    def set_version(self, version: str) -> PackageFileHandler:
+        self.__data[self.VERSION_KEY] = version
         return self
 
     def write(self) -> PackageFileHandler:

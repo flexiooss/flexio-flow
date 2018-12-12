@@ -19,19 +19,24 @@ class TestGitFlowHelper:
     @classmethod
     def mount_workdir_and_clone(cls):
         cls.DIR_PATH_TEST.mkdir()
-        os.chdir(cls.DIR_PATH_TEST.as_posix())
-        Popen(['git', 'clone', cls.REPO_URL, '.'])
+        Popen(['git', 'clone', cls.REPO_URL, '.'], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
 
     @classmethod
     def clean_workdir(cls):
         shutil.rmtree(cls.DIR_PATH_TEST)
 
     @classmethod
-    def clean_remote_repo(cls):
-        Popen(['git', 'checkout', Branches.MASTER.value])
-        Popen(['git', 'reset', '--hard', cls.TAG_INIT])
-        Popen(['git', 'push', '--force', GitFlow.REMOTE, Branches.MASTER.value])
-        Popen(['git', 'push', GitFlow.REMOTE, '--delete', Branches.DEVELOP.value])
+    def clean_remote_repo(cls, version: str = '0.0.0'):
+        os.chdir(cls.DIR_PATH_TEST.as_posix())
+        Popen(['git', 'checkout', Branches.MASTER.value], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'reset', '--hard', cls.TAG_INIT], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'push', '--force', GitFlow.REMOTE, Branches.MASTER.value],
+              cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'push', GitFlow.REMOTE, '--delete', Branches.DEVELOP.value],
+              cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'push', GitFlow.REMOTE, '--delete', version], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
+        Popen(['git', 'push', GitFlow.REMOTE, '--delete', '-'.join([version, Level.DEV.value])
+               ], cwd=cls.DIR_PATH_TEST.as_posix()).communicate()
 
     @staticmethod
     def fake_state(version: str = '0.0.0') -> State:
