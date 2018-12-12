@@ -8,6 +8,8 @@ import shutil
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
+from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.GitFlow.GitFlow import GitFlow
 
 
 class Init:
@@ -15,16 +17,18 @@ class Init:
         self.__state_handler: StateHandler = state_handler
 
     def __init_gitflow(self) -> Init:
-        Popen(["git", "flow", "init", "-f", "-d"]).communicate()
+        GitFlow.init_config()
         return self
 
     def __init_master(self) -> Init:
-        Popen(["git", "checkout", "master"]).communicate()
+        git: GitCmd = GitCmd(self.__state_handler.dir_path)
+        git.checkout('master')
+
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         version: str = str(self.__state_handler.state.version)
 
-        Popen(['git', 'add', '.']).communicate()
+        git.add_all_files()
         Popen(["git", "commit", "-am",
                ''.join(["'Init master : ", version, "'"])]).communicate()
 
@@ -32,19 +36,20 @@ class Init:
                "'" + version + "'"]).communicate()
         Popen(["git", "push", "--set-upstream", "origin", "master"]).communicate()
         print('Init master at : ' + version)
-        Popen(["git", "push", "origin", version]).communicate()
+        git.push_tag(version)
         print('Tag master at : ' + version)
         return self
 
     def __init_develop(self) -> Init:
         self.__state_handler.state.next_dev_release()
-        Popen(["git", "checkout", "develop"]).communicate()
+        git: GitCmd = GitCmd(self.__state_handler.dir_path)
+        git.checkout('develop')
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
 
-        Popen(['git', 'add', '.']).communicate()
+        git.add_all_files()
 
         Popen(["git", "commit", "-am",
                ''.join(["'Init develop : ", version, "'"])]).communicate()
@@ -52,7 +57,7 @@ class Init:
                "'" + version + "'"]).communicate()
         Popen(["git", "push", "--set-upstream", "origin", "develop"]).communicate()
         print('Init develop at : ' + version)
-        Popen(["git", "push", "origin", version]).communicate()
+        git.push_tag(version)
         print('Tag master at : ' + version)
 
         return self

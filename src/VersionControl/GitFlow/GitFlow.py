@@ -39,3 +39,7 @@ class GitFlow(VersionControl):
         ], stdout=PIPE, cwd=dir_path.as_posix()).communicate()
         print(stdout.strip())
         return len(stdout.strip()) > 0
+
+    @classmethod
+    def init_config(cls):
+        Popen(["git", "flow", "init", "-f", "-d"]).communicate()
