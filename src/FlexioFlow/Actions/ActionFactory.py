@@ -6,6 +6,8 @@ from FlexioFlow.Actions.Start import Start
 from FlexioFlow.Actions.Finish import Finish
 from FlexioFlow.Actions.PreCheck import PreCheck
 from typing import Type, Dict, Optional
+
+from FlexioFlow.Actions.Version import Version
 from VersionControl.Branches import Branches
 from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
@@ -33,5 +35,8 @@ class ActionFactory:
 
         if action is Actions.PRECHECK:
             return PreCheck(version_control, branch, state_handler, options)
+
+        if action is Actions.VERSION:
+            return Version(version_control, branch, state_handler, options)
 
         raise ValueError("Bad ActionFactory creation: " + action.value)

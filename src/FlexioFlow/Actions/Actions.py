@@ -4,9 +4,10 @@ from enum import Enum, unique
 @unique
 class Actions(Enum):
     INIT: str = 'init'
-    START: str = 'start'
     FINISH: str = 'finish'
     PRECHECK: str = 'precheck'
+    START: str = 'start'
+    VERSION: str = 'version'
 
     @classmethod
     def has_value(cls, value) -> bool:

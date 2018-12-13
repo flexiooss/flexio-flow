@@ -33,7 +33,7 @@ class FlexioFlow:
 
     def __should_init_state_handler(self) -> bool:
         self.__state_handler = StateHandler(self.__dir_path)
-        if self.__action not in [Actions.INIT]:
+        if self.__action not in [Actions.INIT, Actions.VERSION]:
             self.__state_handler.load_file_config()
             print(str(self.__state_handler.state.version))
             return True
