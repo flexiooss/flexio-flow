@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import re
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional
@@ -16,12 +18,6 @@ class GitCmd:
 
     def add_all(self) -> GitCmd:
         self.__exec(['git', 'add', '.'])
-        return self
-
-    def add_tag(self, tag: str, msg: Optional[str] = None) -> GitCmd:
-        msg = msg if msg else tag
-        self.__exec(["git", "tag", "-a", tag, "-m",
-                     "'" + msg + "'"])
         return self
 
     def checkout(self, branch_name: str) -> GitCmd:
@@ -83,15 +79,27 @@ class GitCmd:
         self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.__branch])
         return self
 
-    def remote_tag_exists(self, tag: str) -> bool:
-        stdout, stderr = Popen([
-            'git',
-            'ls-remote',
-            GitConfig.REMOTE.value,
-            'refs/tags/' + tag
-        ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
-        print(stdout.strip())
-        return len(stdout.strip()) > 0
+    def tag_exists(self, tag: str, remote: bool) -> bool:
+        if remote:
+            stdout, stderr = Popen([
+                'git',
+                'ls-remote',
+                GitConfig.REMOTE.value,
+                'refs/tags/' + tag
+            ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
+            resp: str = stdout.strip().decode('utf-8')
+            return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
+        else:
+            stdout, stderr = Popen([
+                'git',
+                'tag',
+                '-l',
+                '|',
+                'grep',
+                tag
+            ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
+            resp: str = stdout.strip().decode('utf-8')
+            return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
@@ -101,4 +109,10 @@ class GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.__branch])
+        return self
+
+    def tag(self, tag: str, msg: Optional[str] = None) -> GitCmd:
+        msg = msg if msg else tag
+        self.__exec(["git", "tag", "-a", tag, "-m",
+                     "'" + msg + "'"])
         return self

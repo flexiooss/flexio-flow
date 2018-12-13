@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from FlexioFlow.Level import Level
 from Schemes.Scheme import Scheme
-from FlexioFlow.Version import Version
 from Schemes.Package.PackageFileHandler import PackageFileHandler
 from Schemes.Dependencies import Dependencies
 from Schemes.Package.PreCheck import PreCheck

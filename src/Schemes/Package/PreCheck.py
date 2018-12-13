@@ -4,6 +4,7 @@ from typing import Dict, Pattern, Match
 from Schemes.Package.PackageFileHandler import PackageFileHandler
 import re
 
+
 class PreCheck:
 
     def __init__(self, package_handler: PackageFileHandler, dev_suffix: str) -> None:
@@ -24,9 +25,10 @@ class PreCheck:
 
     def match_dev(self, v: str) -> Match:
         regexp: Pattern[str] = re.compile(
-            '^(?:https|git).*(?P<is_git>\.git)+(?:#(?P<__major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<is_dev>-' + self.__dev_suffix + ')?)?$')
+            '^(?:https|git).*(?P<is_git>\.git)+(?:#(?:(?P<__major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<dev_suffix>-' + self.__dev_suffix + ')? | (?P<branch_develop>develop) )?)?$')
         return re.match(regexp, v)
 
     def is_dev(self, version: str) -> bool:
         matches: Match = self.match_dev(version)
-        return True if matches and matches.groupdict().get('is_git') and matches.groupdict().get('is_dev') else False
+        return True if matches and matches.groupdict().get('is_git') and (
+                    matches.groupdict().get('dev_suffix') or matches.groupdict().get('branch_develop')) else False

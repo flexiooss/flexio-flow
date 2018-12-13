@@ -25,7 +25,7 @@ class Init:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         git.add_all().commit(
-            ''.join(["'Init master : ", version, "'"])).add_tag(version).set_upstream()
+            ''.join(["'Init master : ", version, "'"])).tag(version).set_upstream()
 
         print('Init master at : ' + version)
         git.push_tag(version)
@@ -44,7 +44,7 @@ class Init:
 
         git.add_all().commit(
             ''.join(["'Init develop : ", version, "'"])
-        ).add_tag(version).set_upstream()
+        ).tag(version).set_upstream()
 
         print('Init develop at : ' + version)
         git.push_tag(version)

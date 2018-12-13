@@ -48,7 +48,7 @@ class TestGitFlowInit(unittest.TestCase):
             Level.STABLE,
             state_master.level
         )
-        self.assertIs(git.remote_tag_exists('0.0.0'), True)
+        self.assertIs(git.tag_exists('0.0.0', remote=True), True)
 
         state_develop: State = self.__get_develop_state()
         self.assertEqual(
@@ -59,7 +59,7 @@ class TestGitFlowInit(unittest.TestCase):
             Level.DEV,
             state_develop.level
         )
-        self.assertIs(git.remote_tag_exists('0.1.0-' + Level.DEV.value), True)
+        self.assertIs(git.tag_exists('0.1.0-' + Level.DEV.value, remote=True), True)
 
         TestGitFlowHelper.clean_remote_repo()
         TestGitFlowHelper.clean_workdir()
