@@ -26,13 +26,11 @@ class TestGitFlowHelper:
     @classmethod
     def clean_remote_repo(cls, version: Version = Version(0, 0, 0)):
         git: GitCmd = GitCmd(cls.DIR_PATH_TEST)
-        git.checkout(Branches.MASTER.value).reset_tot_tag(cls.TAG_INIT) \
+        git.checkout(Branches.MASTER.value).reset_to_tag(cls.TAG_INIT) \
             .push_force() \
-            .delete_branch(
-            Branches.DEVELOP.value) \
-            .delete_tag(str(version)) \
-            .delete_tag(
-            '-'.join([str(version.next_minor()), Level.DEV.value]))
+            .delete_branch(Branches.DEVELOP.value, remote=True) \
+            .delete_tag(str(version), remote=True) \
+            .delete_tag('-'.join([str(version.next_minor()), Level.DEV.value]), remote=True)
 
     @staticmethod
     def fake_state(version: str = '0.0.0') -> State:

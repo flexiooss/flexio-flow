@@ -41,14 +41,29 @@ class GitCmd:
         self.__exec(["git", "commit", "-am", msg])
         return self
 
-    def delete_tag(self, tag: str) -> GitCmd:
-        self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag
-                     ])
+    def delete_tag(self, tag: str, remote: bool) -> GitCmd:
+        if remote:
+            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
+        else:
+            self.__exec(['git', 'tag', '-d', tag])
         return self
 
-    def delete_branch(self, branch: str) -> GitCmd:
-        self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
+    def delete_branch(self, branch: str, remote: bool) -> GitCmd:
+        if remote:
+            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
+        else:
+            self.__exec(['git', 'branch', '-d', branch])
         return self
+
+    def last_tag(self) -> str:
+        stdout, stderr = Popen([
+            'git',
+            'describe',
+            '--abbrev=0',
+            '--tags'
+        ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
+        print(stdout.strip())
+        return stdout.strip()
 
     def push_tag(self, tag: str) -> GitCmd:
         self.__exec(["git", "push", GitConfig.REMOTE.value, tag])
@@ -79,7 +94,7 @@ class GitCmd:
         print(stdout.strip())
         return len(stdout.strip()) > 0
 
-    def reset_tot_tag(self, tag: str) -> GitCmd:
+    def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
         return self
 
