@@ -7,7 +7,7 @@ from Schemes.Dependencies import Dependencies
 
 class Scheme(abc.ABC):
 
-    def __init__(self,  state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler):
         self.state_handler: StateHandler = state_handler
 
     @property
@@ -21,4 +21,8 @@ class Scheme(abc.ABC):
 
     @abc.abstractmethod
     def release_precheck(self) -> Dependencies:
+        pass
+
+    @abc.abstractmethod
+    def get_version(self) -> str:
         pass

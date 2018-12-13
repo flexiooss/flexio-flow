@@ -26,3 +26,7 @@ class PackageScheme(Scheme):
         package_handler: PackageFileHandler = PackageFileHandler(self.state_handler.dir_path)
         release_precheck: PreCheck = PreCheck(package_handler, self.DEV_SUFFIX)
         return release_precheck.process()
+
+    def get_version(self) -> str:
+        return '-'.join([self.state_handler.version_as_str(),
+                           self.DEV_SUFFIX]) if self.state_handler.is_dev() else self.state_handler.version_as_str()

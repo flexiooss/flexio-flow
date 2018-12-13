@@ -6,6 +6,7 @@ import sys
 import os
 from FlexioFlow.FlexioFlow import FlexioFlow
 from FlexioFlow.Actions.Actions import Actions
+from Schemes.Schemes import Schemes
 from VersionControl.Branches import Branches
 from VersionControl.VersionController import VersionController
 from pathlib import Path
@@ -15,7 +16,7 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
     options: Dict[str, str] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hp:", ["help", "path"])
+        opts, args = getopt.gnu_getopt(argv, "hp:s:", ["help", "path", "scheme"])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
@@ -30,6 +31,8 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
             sys.exit()
         if opt in ("-p", "--path"):
             options.update({'path': arg})
+        if opt in ("-s", "--scheme"):
+            options.update({'scheme': Schemes[arg.upper()]})
 
     return args, options
 

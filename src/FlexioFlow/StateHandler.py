@@ -69,3 +69,9 @@ class StateHandler:
     def reset_patch(self) -> Version:
         self.__state.version = self.__state.version.reset_patch()
         return self.__state.version
+
+    def is_dev(self) -> bool:
+        return self.state.level is Level.DEV
+
+    def version_as_str(self) -> str:
+        return str(self.state.version)

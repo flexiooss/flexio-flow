@@ -62,7 +62,6 @@ class GitCmd:
             '--abbrev=0',
             '--tags'
         ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
-        print(stdout.strip())
         return stdout.strip()
 
     def push_tag(self, tag: str) -> GitCmd:

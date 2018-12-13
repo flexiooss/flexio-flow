@@ -1,23 +1,17 @@
 from __future__ import annotations
-from FlexioFlow.Version import Version
-from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.Level import Level
+from Schemes.Scheme import Scheme
+from Schemes.SchemeFactory import SchemeFactory
 from Schemes.Schemes import Schemes
-from typing import List
-from Exceptions.FileExistError import FileExistError
+from typing import Optional, Type
 from FlexioFlow.Actions.Action import Action
-from pathlib import Path
-from VersionControl.VersionControl import VersionControl
-from typing import Type
-from FlexioFlow.Actions.Action import Action
-from FlexioFlow.Actions.Actions import Actions
-from VersionControl.Branches import Branches
 
 
 class Version(Action):
 
-
-
     def process(self):
-        print('Version')
-        self.options
+        schemes: Optional[Schemes] = self.options.get('scheme')
+        if schemes:
+            scheme: Type[Scheme] = SchemeFactory.create(scheme=schemes, state_handler=self.state_handler)
+            return print(scheme.get_version())
+        else:
+            return print(self.state_handler.version_as_str())
