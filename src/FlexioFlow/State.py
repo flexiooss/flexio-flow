@@ -61,14 +61,15 @@ class State:
         self.__version = self.__version.next_minor()
         return self.__version
 
-    def next_dev_release(self) -> Version:
+    def next_dev_patch(self) -> Version:
+        self.__level = Level.DEV
+        self.__version = self.__version.next_patch()
+        return self.__version
+
+    def next_dev_minor(self) -> Version:
         self.__level = Level.DEV
         self.__version = self.__version.reset_patch()
         self.__version = self.__version.next_minor()
-        return self.__version
-
-    def next_release(self) -> Version:
-        self.__level = Level.STABLE
         return self.__version
 
     def __schemeListValue(self) -> List[str]:

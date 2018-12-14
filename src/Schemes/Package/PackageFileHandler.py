@@ -20,8 +20,6 @@ class PackageFileHandler:
         return self.__data
 
     def __load_file(self):
-        print('__load_file : ' + self.__file_path.as_posix())
-        print(self.__file_path.is_file())
         if not self.__file_path.is_file():
             raise FileNotExistError(self.__file_path)
         with self.__file_path.open() as json_data:

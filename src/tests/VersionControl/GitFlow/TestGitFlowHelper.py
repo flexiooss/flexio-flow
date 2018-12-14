@@ -20,7 +20,7 @@ class TestGitFlowHelper:
     @classmethod
     def mount_workdir_and_clone(cls):
         cls.DIR_PATH_TEST.mkdir()
-        git: GitCmd = GitCmd(cls.DIR_PATH_TEST)
+        git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
         git.clone(cls.REPO_URL)
 
     @classmethod
@@ -29,8 +29,8 @@ class TestGitFlowHelper:
 
     @classmethod
     def clean_remote_repo(cls, version: Version = Version(0, 0, 0)):
-        git: GitCmd = GitCmd(cls.DIR_PATH_TEST)
-        git.checkout(Branches.MASTER.value).reset_to_tag(cls.TAG_INIT) \
+        git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
+        git.checkout(Branches.MASTER).reset_to_tag(cls.TAG_INIT) \
             .push_force() \
             .delete_branch(Branches.DEVELOP.value, remote=True) \
             .delete_tag(str(version), remote=True) \

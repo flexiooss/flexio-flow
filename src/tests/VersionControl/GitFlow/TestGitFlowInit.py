@@ -7,24 +7,30 @@ from VersionControl.Branches import Branches
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'
-git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
+git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
 
 
 class TestGitFlowInit(unittest.TestCase):
 
+    def tearDown(self):
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir()
+
     def __get_master_state(self) -> State:
-        git.checkout(Branches.MASTER.value)
+        git.checkout(Branches.MASTER)
 
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def __get_develop_state(self) -> State:
-        git.checkout(Branches.DEVELOP.value)
+        git.checkout(Branches.DEVELOP)
 
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def test_should_init_master_and_develop(self):
+        # TestGitFlowHelper.clean_remote_repo()
+
         state_handler_before: StateHandler = TestGitFlowHelper.init_repo(INIT_VERSION)
         TestGitFlowHelper.clean_workdir()
 
@@ -50,6 +56,3 @@ class TestGitFlowInit(unittest.TestCase):
             state_develop.level
         )
         self.assertIs(git.tag_exists('0.1.0-' + Level.DEV.value, remote=True), True)
-
-        TestGitFlowHelper.clean_remote_repo()
-        TestGitFlowHelper.clean_workdir()

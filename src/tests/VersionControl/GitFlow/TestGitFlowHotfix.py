@@ -9,7 +9,7 @@ from VersionControl.Branches import Branches
 from VersionControl.GitFlow.GitFlow import GitFlow
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
-git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
+git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
 INIT_VERSION: str = '0.0.0'
 
 
@@ -23,24 +23,33 @@ class TestGitFlowHotfix(unittest.TestCase):
         GitFlow(self.state_handler).with_branch(Branches.HOTFIX).set_action(Actions.FINISH).process()
 
     def __get_master_state(self) -> State:
-        git.checkout(Branches.MASTER.value)
+        git.checkout(Branches.MASTER)
 
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def __get_hotfix_state(self) -> State:
-        git.checkout(Branches.HOTFIX.value)
-
+        git.checkout(Branches.HOTFIX)
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def tearDown(self):
+        git.delete_branch('hotfix/0.0.1-dev')
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir
+
+    def setUp(self):
+        TestGitFlowHelper.clean_workdir()
+        TestGitFlowHelper.init_repo(INIT_VERSION)
+        git.delete_branch('hotfix/0.0.1-dev', remote=True)
         TestGitFlowHelper.clean_remote_repo()
         TestGitFlowHelper.clean_workdir()
 
     def test_should_start_hotfix(self):
         self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
         self.__hotfix_start()
+
+        self.assertIs(git.branch_exists('hotfix/0.0.1-dev', remote=True), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -51,7 +60,6 @@ class TestGitFlowHotfix(unittest.TestCase):
             Level.STABLE,
             state_master.level
         )
-        self.assertIs(git.tag_exists('0.0.0', remote=True), True)
 
         state_hotfix: State = self.__get_hotfix_state()
         self.assertEqual(
@@ -77,4 +85,8 @@ class TestGitFlowHotfix(unittest.TestCase):
             Level.STABLE,
             state_master.level
         )
+        self.assertIs(git.branch_exists('hotfix/0.0.1-dev', remote=True), False)
+
         self.assertIs(git.tag_exists('0.0.1', remote=True), True)
+
+        git.delete_tag('0.0.1', remote=True)

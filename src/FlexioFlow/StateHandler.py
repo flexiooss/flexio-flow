@@ -73,5 +73,13 @@ class StateHandler:
     def is_dev(self) -> bool:
         return self.state.level is Level.DEV
 
+    def next_dev_patch(self) -> Version:
+        self.__state.version = self.__state.next_dev_patch()
+        return self.__state.version
+
+    def next_dev_minor(self) -> Version:
+        self.__state.version = self.__state.next_dev_minor()
+        return self.__version
+
     def version_as_str(self) -> str:
-        return str(self.state.version)
+        return str(self.__state.version)

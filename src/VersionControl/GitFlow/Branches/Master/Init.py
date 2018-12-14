@@ -12,14 +12,14 @@ class Init:
         self.__state_handler: StateHandler = state_handler
 
     def __init_gitflow(self) -> Init:
-        GitFlowCmd(self.__state_handler.dir_path).init_config()
+        GitFlowCmd(self.__state_handler).init_config()
         return self
 
     def __init_master(self) -> Init:
         version: str = str(self.__state_handler.state.version)
 
-        git: GitCmd = GitCmd(self.__state_handler.dir_path)
-        git.checkout(Branches.MASTER.value)
+        git: GitCmd = GitCmd(self.__state_handler)
+        git.checkout(Branches.MASTER)
 
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
@@ -33,11 +33,11 @@ class Init:
         return self
 
     def __init_develop(self) -> Init:
-        self.__state_handler.state.next_dev_release()
+        self.__state_handler.state.next_dev_minor()
         version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
 
-        git: GitCmd = GitCmd(self.__state_handler.dir_path)
-        git.checkout(Branches.DEVELOP.value)
+        git: GitCmd = GitCmd(self.__state_handler)
+        git.checkout(Branches.DEVELOP)
 
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
