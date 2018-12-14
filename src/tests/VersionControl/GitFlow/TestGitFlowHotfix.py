@@ -78,13 +78,3 @@ class TestGitFlowHotfix(unittest.TestCase):
             state_master.level
         )
         self.assertIs(git.tag_exists('0.0.1', remote=True), True)
-
-        state_hotfix: State = self.__get_hotfix_state()
-        self.assertEqual(
-            '0.0.1',
-            str(state_hotfix.version)
-        )
-        self.assertEqual(
-            Level.DEV,
-            state_hotfix.level
-        )
