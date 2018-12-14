@@ -105,8 +105,6 @@ class GitCmd:
     def push_force(self) -> GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
-        print('self.get_current_branch_name()')
-        print(self.get_current_branch_name())
         self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
         # self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.__branch])
         return self
@@ -126,8 +124,6 @@ class GitCmd:
     def set_upstream(self) -> GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
-        print('self.get_current_branch_name()')
-        print(self.get_current_branch_name())
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.get_current_branch_name()])
         # self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.__branch])
         return self

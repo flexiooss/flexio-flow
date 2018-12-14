@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from subprocess import Popen
 from typing import List
 
@@ -23,4 +22,10 @@ class GitFlowCmd:
     def hotfix_start(self) -> GitFlowCmd:
         next_version: Version = self.__state_handler.next_dev_patch()
         self.__exec(["git", "flow", "hotfix", "start", '-'.join([str(next_version), Level.DEV.value])])
+        return self
+
+    def hotfix_finish(self) -> GitFlowCmd:
+        self.__exec(
+            ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
+             '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
         return self

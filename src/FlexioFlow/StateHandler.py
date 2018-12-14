@@ -83,3 +83,11 @@ class StateHandler:
 
     def version_as_str(self) -> str:
         return str(self.__state.version)
+
+    def set_dev(self) -> StateHandler:
+        self.__state = self.__state.set_dev()
+        return self
+
+    def set_stable(self) -> StateHandler:
+        self.__state = self.__state.set_stable()
+        return self

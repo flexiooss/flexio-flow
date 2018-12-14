@@ -58,7 +58,7 @@ class State:
         return self.__version
 
     def next_patch(self) -> Version:
-        self.__version = self.__version.next_minor()
+        self.__version = self.__version.next_patch()
         return self.__version
 
     def next_dev_patch(self) -> Version:
@@ -71,6 +71,14 @@ class State:
         self.__version = self.__version.reset_patch()
         self.__version = self.__version.next_minor()
         return self.__version
+
+    def set_stable(self) -> State:
+        self.__level = Level.STABLE
+        return self
+
+    def set_dev(self) -> State:
+        self.__level = Level.DEV
+        return self
 
     def __schemeListValue(self) -> List[str]:
         ret = []
