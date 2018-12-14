@@ -16,9 +16,33 @@ class GitCmd:
     def __exec(self, args: List[str]):
         Popen(args, cwd=self.__dir_path.as_posix()).communicate()
 
+    def __exec_for_stdout(self, args: List[str]) -> str:
+        stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
+        return stdout.strip().decode('utf-8')
+
     def add_all(self) -> GitCmd:
         self.__exec(['git', 'add', '.'])
         return self
+
+    def branch_exists(self, branch: str, remote: bool) -> bool:
+        if remote:
+            resp: str = self.__exec_for_stdout([
+                'git',
+                'ls-remote',
+                GitConfig.REMOTE.value,
+                'refs/heads/' + branch
+            ])
+            return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
+        else:
+            resp: str = self.__exec_for_stdout([
+                'git',
+                'branch',
+                '-l',
+                '|',
+                'grep',
+                branch
+            ])
+            return len(resp) > 0 and re.match(re.compile(branch + '$'), resp) is not None
 
     def checkout(self, branch_name: str) -> GitCmd:
         self.__branch = branch_name
@@ -52,13 +76,12 @@ class GitCmd:
         return self
 
     def last_tag(self) -> str:
-        stdout, stderr = Popen([
+        return self.__exec_for_stdout([
             'git',
             'describe',
             '--abbrev=0',
             '--tags'
-        ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
-        return stdout.strip()
+        ])
 
     def push_tag(self, tag: str) -> GitCmd:
         self.__exec(["git", "push", GitConfig.REMOTE.value, tag])
@@ -81,24 +104,22 @@ class GitCmd:
 
     def tag_exists(self, tag: str, remote: bool) -> bool:
         if remote:
-            stdout, stderr = Popen([
+            resp: str = self.__exec_for_stdout([
                 'git',
                 'ls-remote',
                 GitConfig.REMOTE.value,
                 'refs/tags/' + tag
-            ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
-            resp: str = stdout.strip().decode('utf-8')
+            ])
             return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
         else:
-            stdout, stderr = Popen([
+            resp: str = self.__exec_for_stdout([
                 'git',
                 'tag',
                 '-l',
                 '|',
                 'grep',
                 tag
-            ], stdout=PIPE, cwd=self.__dir_path.as_posix()).communicate()
-            resp: str = stdout.strip().decode('utf-8')
+            ])
             return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
