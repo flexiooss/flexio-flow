@@ -1,41 +1,31 @@
 import unittest
-from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
-from subprocess import Popen
-
 from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.GitFlow.GitFlow import GitFlow
 from VersionControl.Branches import Branches
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
+
+INIT_VERSION: str = '0.0.0'
+git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
 
 
 class TestGitFlowInit(unittest.TestCase):
 
     def __get_master_state(self) -> State:
-        git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
         git.checkout(Branches.MASTER.value)
 
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def __get_develop_state(self) -> State:
-        git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
         git.checkout(Branches.DEVELOP.value)
 
         state_handler_after: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
         return state_handler_after.state
 
     def test_should_init_master_and_develop(self):
-        git: GitCmd = GitCmd(TestGitFlowHelper.DIR_PATH_TEST)
-        TestGitFlowHelper.clean_workdir()
-        init_version: str = '0.0.0'
-        TestGitFlowHelper.mount_workdir_and_clone()
-        state_handler_before: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST)
-        state_handler_before.state = TestGitFlowHelper.fake_state(init_version)
-
-        GitFlow(state_handler_before).with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+        state_handler_before: StateHandler = TestGitFlowHelper.init_repo(INIT_VERSION)
         TestGitFlowHelper.clean_workdir()
 
         TestGitFlowHelper.mount_workdir_and_clone()

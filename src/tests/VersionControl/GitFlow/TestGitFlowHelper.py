@@ -1,11 +1,15 @@
 import shutil
 from pathlib import Path
+
+from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.Level import Level
 from FlexioFlow.State import State
+from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Version import Version
 from Schemes.Schemes import Schemes
 from VersionControl.GitFlow.GitCmd import GitCmd
 from VersionControl.Branches import Branches
+from VersionControl.GitFlow.GitFlow import GitFlow
 
 
 class TestGitFlowHelper:
@@ -39,3 +43,12 @@ class TestGitFlowHelper:
         state.schemes = [Schemes.PACKAGE]
         state.level = Level.STABLE
         return state
+
+    @classmethod
+    def init_repo(cls, version: str) -> StateHandler:
+        cls.clean_workdir()
+        cls.mount_workdir_and_clone()
+        state_handler: StateHandler = StateHandler(cls.DIR_PATH_TEST)
+        state_handler.state = cls.fake_state(version)
+        GitFlow(state_handler).with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+        return state_handler
