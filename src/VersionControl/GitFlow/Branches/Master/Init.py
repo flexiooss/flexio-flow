@@ -44,7 +44,7 @@ class Init:
 
         git.add_all().commit(
             ''.join(["'Init develop : ", version, "'"])
-        ).tag(version).set_upstream()
+        ).set_upstream()
 
         print('Init develop at : ' + version)
         git.push_tag(version)

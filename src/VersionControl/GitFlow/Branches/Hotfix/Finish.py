@@ -1,6 +1,5 @@
 from __future__ import annotations
 from FlexioFlow.StateHandler import StateHandler
-from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from VersionControl.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
@@ -25,8 +24,6 @@ class Finish:
         return self
 
     def __finish_hotfix(self):
-        print('__finish_hotfix')
-
         self.__gitflow.hotfix_finish()
 
     def process(self):

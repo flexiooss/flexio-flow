@@ -55,4 +55,3 @@ class TestGitFlowInit(unittest.TestCase):
             Level.DEV,
             state_develop.level
         )
-        self.assertIs(git.tag_exists('0.1.0-' + Level.DEV.value, remote=True), True)

@@ -63,31 +63,27 @@ class GitFlowCmd:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(''.join(["'Finish hotfix for master: ", self.__state_handler.version_as_str()])).push()
 
-        self.__git.checkout(Branches.MASTER).merge(Branches.HOTFIX).tag(
+        self.__git.checkout(Branches.MASTER).merge(Branches.HOTFIX).push().tag(
             self.__state_handler.version_as_str(),
             ' '.join([
                 "'From Finished hotfix : ",
                 self.__git.get_branch_name_from_git(Branches.HOTFIX),
+                'tag : ',
+                self.__state_handler.version_as_str(),
                 "'"])
-        ).push_tag(self.__state_handler.version_as_str()).push()
+        ).push_tag(self.__state_handler.version_as_str())
 
-        self.__git.checkout(Branches.HOTFIX)
-        self.__state_handler.reset_patch()
+        # self.__git.checkout(Branches.HOTFIX)
+        #
+        self.__git.checkout(Branches.DEVELOP).merge_file_with_ours(Branches.MASTER)
+        self.__state_handler.next_dev_minor()
+        self.__state_handler.set_dev()
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(''.join(["'Finish hotfix for dev: ", self.__state_handler.version_as_str()])).push()
 
-        self.__git.checkout(Branches.DEVELOP).merge(Branches.HOTFIX).push()
-
         self.__git.delete_branch(Branches.HOTFIX, True)
         self.__git.delete_branch(Branches.HOTFIX, False)
-        # self.__exec(
-        #     ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
-        #      '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
-        # self.__exec(
-        #     ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
-        #      '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
-
         return self
 
     def has_hotfix(self, remote: bool) -> bool:
@@ -99,9 +95,11 @@ class GitFlowCmd:
     def __has_branch_from_parent(self, branch: Branches, remote: bool) -> bool:
         if remote:
             resp: str = self.__exec_for_stdout(
-                ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch.value + '/*'])
-            return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch.value + '/.*$'),
-                                              resp) is not None
+                ['git', 'ls-remote', GitConfig.REMOTE.value, '"refs/heads/' + branch.value + '/*"'])
+            return len(resp) > 0 and re.match(
+                re.compile('.*refs/heads/' + branch.value + '/.*$'),
+                resp
+            ) is not None
         else:
             resp: str = self.__git.get_branch_name_from_git(branch)
             return len(resp) > 0

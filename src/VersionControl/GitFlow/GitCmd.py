@@ -96,14 +96,12 @@ class GitCmd:
 
     def get_branch_name_from_git(self, branch: Branches) -> str:
         branch_name: str = self.__get_branch_name_from_git_list(branch.value)
-        # if not len(branch_name) > 0:
-        #     raise BranchNotExist(branch)
         return branch_name
 
     def __get_branch_name_from_git_list(self, branch: str) -> str:
-        branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep', branch])
+        branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep',  branch + '*'])
         return re.sub(
-            pattern=re.compile('\*?\s*'),
+            pattern=re.compile('^\*?\s*'),
             repl='',
             string=branch
         )
@@ -124,6 +122,22 @@ class GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
         self.__exec(['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"'])
         return self
+
+    def merge_file_with_theirs(self, branch: Branches) -> GitCmd:
+        target_branch_name: str = self.get_branch_name_from_git(branch)
+        self.__exec(['git', 'merge-file', target_branch_name, '--theirs', '"merge : ' + target_branch_name + '"'])
+        return self
+
+    def merge_file_with_ours(self, branch: Branches) -> GitCmd:
+        target_branch_name: str = self.get_branch_name_from_git(branch)
+        self.__exec(['git', 'merge-file', target_branch_name, '--ours', '"merge : ' + target_branch_name + '"'])
+        return self
+
+    def merge_with_theirs(self, branch: Branches) -> GitCmd:
+        target_branch_name: str = self.get_branch_name_from_git(branch)
+        self.__exec(['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"',   '--strategy-option', 'theirs'])
+        return self
+
 
     def push_tag(self, tag: str) -> GitCmd:
         self.__exec(["git", "push", GitConfig.REMOTE.value, tag])
