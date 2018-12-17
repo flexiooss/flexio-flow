@@ -25,7 +25,12 @@ class GitFlowCmd:
         return self
 
     def hotfix_finish(self) -> GitFlowCmd:
-        self.__exec(
-            ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
-             '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
+        # self.__exec(
+        #     ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
+        #      '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
+        # self.__exec(
+        #     ["git", "flow", "hotfix", "finish", '-'.join([self.__state_handler.version_as_str(), Level.DEV.value]),
+        #      '-pT', self.__state_handler.version_as_str(), '-m', "'" + self.__state_handler.version_as_str() + "'"])
+
         return self
+

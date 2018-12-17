@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 from VersionControl.Branch import Branch
 from FlexioFlow.Actions.Actions import Actions
 from VersionControl.GitFlow.Branches.Hotfix.Finish import Finish
 from VersionControl.GitFlow.Branches.Hotfix.Start import Start
+
 
 class Hotfix(Branch):
 
