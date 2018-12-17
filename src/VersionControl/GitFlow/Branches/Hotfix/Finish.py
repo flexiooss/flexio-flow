@@ -26,15 +26,8 @@ class Finish:
 
     def __finish_hotfix(self):
         print('__finish_hotfix')
-        self.__git.checkout(Branches.HOTFIX)
-        self.__state_handler.load_file_config()
-        self.__state_handler.set_stable()
-        self.__state_handler.write_file()
-        print(self.__state_handler.version_as_str())
-        print(self.__state_handler.state.to_dict())
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(''.join(["'Finish hotfix : ", self.__state_handler.version_as_str()])).push()
-        # self.__gitflow.hotfix_finish()
+
+        self.__gitflow.hotfix_finish()
 
     def process(self):
         self.__init_gitflow().__pull_develop().__pull_master().__finish_hotfix()

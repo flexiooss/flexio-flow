@@ -72,15 +72,33 @@ class GitCmd:
         self.__remote_branch_name = branch_name
         return self
 
-    def get_branch_name_from_git(self, branch: Branches) -> str:
-        branch_name: str
-        if branch in [Branches.HOTFIX, Branches.RELEASE]:
-            branch_name: str = self.__get_branch_name_from_git_list(branch.value)
-            if not len(branch_name) > 0:
-                raise BranchNotExist(branch)
-            return branch_name
+    def commit(self, msg: str) -> GitCmd:
+        self.__exec(["git", "commit", "-am", msg])
+        return self
+
+    def delete_tag(self, tag: str, remote: bool) -> GitCmd:
+        if remote:
+            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
         else:
-            return branch.value
+            self.__exec(['git', 'tag', '-d', tag])
+        return self
+
+    def delete_branch(self, branch: Branches, remote: bool) -> GitCmd:
+        branch_name: str = self.__get_branch_name_from_git_list(branch.value)
+        return self.delete_branch_from_name(branch_name, remote)
+
+    def delete_branch_from_name(self, branch: str, remote: bool) -> GitCmd:
+        if remote:
+            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
+        else:
+            self.__exec(['git', 'branch', '-d', branch])
+        return self
+
+    def get_branch_name_from_git(self, branch: Branches) -> str:
+        branch_name: str = self.__get_branch_name_from_git_list(branch.value)
+        # if not len(branch_name) > 0:
+        #     raise BranchNotExist(branch)
+        return branch_name
 
     def __get_branch_name_from_git_list(self, branch: str) -> str:
         branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep', branch])
@@ -98,24 +116,6 @@ class GitCmd:
         # return self.__exec_for_stdout(['git', 'branch', '|', 'grep', '\*', '|', 'cut', '-d', '" "', '-f2'])
         # return self.__exec_for_stdout(['git', 'symbolic-ref', '--short', 'HEAD'])
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
-
-    def commit(self, msg: str) -> GitCmd:
-        self.__exec(["git", "commit", "-am", msg])
-        return self
-
-    def delete_tag(self, tag: str, remote: bool) -> GitCmd:
-        if remote:
-            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
-        else:
-            self.__exec(['git', 'tag', '-d', tag])
-        return self
-
-    def delete_branch(self, branch: str, remote: bool) -> GitCmd:
-        if remote:
-            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
-        else:
-            self.__exec(['git', 'branch', '-d', branch])
-        return self
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])

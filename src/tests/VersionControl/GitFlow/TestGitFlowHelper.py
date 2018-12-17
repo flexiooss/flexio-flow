@@ -32,7 +32,7 @@ class TestGitFlowHelper:
         git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
         git.checkout(Branches.MASTER).reset_to_tag(cls.TAG_INIT) \
             .push_force() \
-            .delete_branch(Branches.DEVELOP.value, remote=True) \
+            .delete_branch_from_name(Branches.DEVELOP.value, remote=True) \
             .delete_tag(str(version), remote=True) \
             .delete_tag('-'.join([str(version.next_minor()), Level.DEV.value]), remote=True)
 
