@@ -63,7 +63,9 @@ class GitFlowCmd:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(''.join(["'Finish hotfix for master: ", self.__state_handler.version_as_str()])).push()
 
-        self.__git.checkout(Branches.MASTER).merge(Branches.HOTFIX).push().tag(
+        self.__git.checkout(Branches.MASTER).merge(Branches.HOTFIX)
+        self.__state_handler.load_file_config()
+        self.__git.tag(
             self.__state_handler.version_as_str(),
             ' '.join([
                 "'From Finished hotfix : ",
@@ -71,11 +73,12 @@ class GitFlowCmd:
                 'tag : ',
                 self.__state_handler.version_as_str(),
                 "'"])
-        ).push_tag(self.__state_handler.version_as_str())
+        ).push_tag(self.__state_handler.version_as_str()).push()
 
         # self.__git.checkout(Branches.HOTFIX)
         #
-        self.__git.checkout(Branches.DEVELOP).merge_file_with_ours(Branches.MASTER)
+        self.__git.checkout(Branches.DEVELOP).merge_with_theirs(Branches.MASTER)
+        self.__state_handler.load_file_config()
         self.__state_handler.next_dev_minor()
         self.__state_handler.set_dev()
         self.__state_handler.write_file()

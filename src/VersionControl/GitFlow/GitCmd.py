@@ -121,11 +121,13 @@ class GitCmd:
     def merge(self, branch: Branches) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
         self.__exec(['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"'])
+        self.__state_handler.load_file_config()
         return self
 
     def merge_file_with_theirs(self, branch: Branches) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
         self.__exec(['git', 'merge-file', target_branch_name, '--theirs', '"merge : ' + target_branch_name + '"'])
+        self.__state_handler.load_file_config()
         return self
 
     def merge_file_with_ours(self, branch: Branches) -> GitCmd:
