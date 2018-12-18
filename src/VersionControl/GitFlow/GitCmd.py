@@ -1,14 +1,9 @@
 from __future__ import annotations
-
 import re
-from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional
-
-from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.FileNotExistError import FileNotExistError
 from Exceptions.NoBranchSelected import NoBranchSelected
-from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.BranchHandler import BranchHandler
 from VersionControl.Branches import Branches
