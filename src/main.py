@@ -8,7 +8,7 @@ import os
 from Core.Core import Core
 from FlexioFlow.FlexioFlow import FlexioFlow
 from FlexioFlow.Actions.Actions import Actions
-from Core.Actions import Actions as ActionsCore
+from Core.Actions.Actions import Actions as ActionsCore
 from Schemes.Schemes import Schemes
 from VersionControl.Branches import Branches
 from VersionControl.VersionController import VersionController
@@ -40,36 +40,43 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
     return args, options
 
 
-def extract_subject_action(argv: List[str]) -> Tuple[Optional[Branches], Actions, bool, Optional[ActionsCore]]:
+def extract_subject_action(argv: List[str]) -> Tuple[
+    Optional[Branches], Optional[Actions], bool, Optional[ActionsCore]]:
     branch: Optional[Branches] = None
-    action: Actions
-    core: bool = False,
+    action: Optional[Actions] = None
+    core: bool = False
     actions_core: Optional[ActionsCore] = None
 
     arg: str
     for arg in argv:
         arg = re.sub('[\s+]', '', arg).lower()
+        print('arg')
+        print(arg)
 
         if Actions.has_value(arg):
+            print(1)
             action = Actions[arg.upper()]
         elif Branches.has_value(arg):
+            print(2)
             branch = Branches[arg.upper()]
-        elif arg is 'core':
+        elif arg == 'core':
+            print(3)
             core = True
         elif ActionsCore.has_value(arg):
+            print(4)
             actions_core = ActionsCore[arg.upper()]
 
     return branch, action, core, actions_core
 
 
 def command_orders(argv: List[str]) -> Tuple[
-    Actions, Optional[Branches], bool, Optional[ActionsCore], Dict[str, str], Path]:
+    Optional[Actions], Optional[Branches], bool, Optional[ActionsCore], Dict[str, str], Path]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
 
     branch: Optional[Branches]
-    action: Actions
+    action: Optional[Actions]
     core: bool
     actions_core: Optional[ActionsCore]
 
@@ -80,7 +87,7 @@ def command_orders(argv: List[str]) -> Tuple[
 
 
 def main(argv) -> None:
-    action: Actions
+    action: Optional[Actions]
     branch: Optional[Branches]
     core: bool
     actions_core: Optional[ActionsCore]
@@ -88,8 +95,10 @@ def main(argv) -> None:
     dir_path: Path
     action, branch, core, actions_core, options, dir_path = command_orders(argv)
 
+    print('core')
+    print(core)
     if core:
-        Core(actions_core).process()
+        Core(actions_core, options=options).process()
     else:
         FlexioFlow(
             version_controller=VersionController.GITFLOW,

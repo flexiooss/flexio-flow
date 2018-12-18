@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from typing import Optional
+
 import yaml
 from Core.Config import Config
 from Exceptions.FileNotExistError import FileNotExistError
@@ -8,11 +11,11 @@ import fileinput
 
 class ConfigHandler:
     FILE_NAME: str = 'config.yml'
-    __config: Config
+    __config: Optional[Config]
 
     def __init__(self, dir_path: Path):
         self.dir_path: Path = dir_path
-        self.__config: Config = Config()
+        self.__config: Optional[Config] = None
 
     @property
     def config(self) -> Config:
@@ -35,16 +38,18 @@ class ConfigHandler:
         data = yaml.load(f)
         f.close()
 
+
         self.__config = Config(user=data['user'], token=data['token'])
 
         return self
 
     def write_file(self) -> str:
         stream = self.file_path().open('w')
-        yaml.dump(self.state.to_dict(), stream)
+        print(self.__config.to_dict())
+        yaml.dump(self.__config.to_dict(), stream, default_flow_style=False)
         stream.close()
         print('write file : ' + self.file_path().as_posix())
-        return yaml.dump(self.state.to_dict())
+        return yaml.dump(self.__config.to_dict(), default_flow_style=False)
 
     def file_path(self) -> Path:
         return self.dir_path / self.FILE_NAME

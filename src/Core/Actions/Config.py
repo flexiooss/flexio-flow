@@ -3,24 +3,25 @@ from __future__ import annotations
 from subprocess import Popen, PIPE
 from typing import List
 
+from requests import Response
+
 from Core.ConfigHandler import ConfigHandler
-from Core.Core import Core
-from VersionControl.GitFlow.GitCmd import GitCmd
 from Core.Config import Config as ConfigObjectValue
+from VersionControlProvider.Github.Github import Github
 
 
 class Config:
-    def __init__(self, core: Core):
-        self.__core: Core = core
+    def __init__(self, config_handler: ConfigHandler):
+        self.config_handler: ConfigHandler = config_handler
 
     def __config_handler(self) -> ConfigHandler:
-        return self.__core.config_handler
+        return self.config_handler
 
     def __exec(self, args: List[str]):
-        Popen(args, cwd=self.__core.CONFIG_DIR.as_posix()).communicate()
+        Popen(args, cwd=self.config_handler.dir_path.as_posix()).communicate()
 
     def __exec_for_stdout(self, args: List[str]) -> str:
-        stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__core.CONFIG_DIR.as_posix()).communicate()
+        stdout, stderr = Popen(args, stdout=PIPE, cwd=self.config_handler.dir_path.as_posix()).communicate()
         return stdout.strip().decode('utf-8')
 
     def __start_message(self) -> Config:
@@ -60,6 +61,11 @@ Enjoy with Flexio FLow
 """)
         return self
 
+    def __check_user(self, token: str):
+        r: Response = Github(self.__config_handler().dir_path).with_token(token).get_user()
+        if r.status_code is not 200:
+            raise ConnectionAbortedError('Bad api github token : retry')
+
     def __ensure_have_config(self) -> Config:
         if self.__config_handler().file_exists():
             self.__config_handler().load_file_config()
@@ -75,13 +81,15 @@ Flexio Flow  Core already initialized
             if use is 'y':
                 return self
 
-        self.__core.CONFIG_DIR.mkdir()
+        if not self.config_handler.dir_path.exists():
+            self.config_handler.dir_path.mkdir()
 
         self.__start_message()
 
         user: str = self.__input_user()
         token: str = self.__input_token()
 
+        self.__check_user(token)
         self.__config_handler().config = ConfigObjectValue(user=user, token=token)
         self.__write_file()
 
