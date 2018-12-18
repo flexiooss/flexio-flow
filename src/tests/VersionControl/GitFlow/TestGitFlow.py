@@ -15,7 +15,8 @@ class TestGitFlow(unittest.TestCase):
 
     def setUp(self):
         # self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
-        self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
+        # self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
+        self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST)
 
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
@@ -42,3 +43,11 @@ class TestGitFlow(unittest.TestCase):
     def test_has_hotfix(self):
         has_hotfix:bool = self.git_flow.has_hotfix(False)
         self.assertIs(has_hotfix, True)
+
+    def test_has_conflict(self):
+        self.assertIs(self.git.has_conflict(), False)
+        if (self.git.has_conflict()):
+            print('##################################################')
+            print('conflits sur dev')
+            print(self.git.get_conflict())
+            print('##################################################')

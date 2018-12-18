@@ -47,7 +47,11 @@ class GitCmd:
     def checkout(self, branch: Branches) -> GitCmd:
         self.__branch = branch
         self.__ensure_remote_branch_name()
-        self.__exec(['git', 'checkout', self.__remote_branch_name])
+        self.checkout_with_branch_name(self.__remote_branch_name)
+        return self
+
+    def checkout_with_branch_name(self, branch: str):
+        self.__exec(['git', 'checkout', branch])
         try:
             self.__state_handler.load_file_config()
         except FileNotExistError as e:
@@ -76,6 +80,10 @@ class GitCmd:
         self.__exec(["git", "commit", "-am", msg])
         return self
 
+    def clone(self, url: str) -> GitCmd:
+        self.__exec(['git', 'clone', url, '.'])
+        return self
+
     def delete_tag(self, tag: str, remote: bool) -> GitCmd:
         if remote:
             self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
@@ -99,47 +107,41 @@ class GitCmd:
         return branch_name
 
     def __get_branch_name_from_git_list(self, branch: str) -> str:
-        branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep',  branch + '*'])
+        branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep', branch + '*'])
         return re.sub(
             pattern=re.compile('^\*?\s*'),
             repl='',
             string=branch
         )
 
-    def clone(self, url: str) -> GitCmd:
-        self.__exec(['git', 'clone', url, '.'])
-        return self
+    def get_conflict(self) -> str:
+        return self.__exec_for_stdout(['git', 'ls-files', '-u'])
 
     def get_current_branch_name(self) -> str:
-        # return self.__exec_for_stdout(['git', 'branch', '|', 'grep', '\*', '|', 'cut', '-d', '" "', '-f2'])
-        # return self.__exec_for_stdout(['git', 'symbolic-ref', '--short', 'HEAD'])
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+
+    def has_conflict(self) -> bool:
+        return len(self.get_conflict()) > 0
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
 
-    def merge(self, branch: Branches) -> GitCmd:
+    def merge(self, branch: Branches, options: List[str] = []) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"'])
+        self.__exec(['git', 'merge', target_branch_name, *options])
         self.__state_handler.load_file_config()
         return self
 
-    def merge_file_with_theirs(self, branch: Branches) -> GitCmd:
-        target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge-file', target_branch_name, '--theirs', '"merge : ' + target_branch_name + '"'])
-        self.__state_handler.load_file_config()
-        return self
-
-    def merge_file_with_ours(self, branch: Branches) -> GitCmd:
-        target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge-file', target_branch_name, '--ours', '"merge : ' + target_branch_name + '"'])
-        return self
+    def merge_with_version_message(self, branch: Branches, options: List[str] = []) -> GitCmd:
+        return self.merge(branch, options=['--commit', '-m', '"merge : ' + self.get_branch_name_from_git(branch) + '"',
+                                           *options])
 
     def merge_with_theirs(self, branch: Branches) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"',   '--strategy-option', 'theirs'])
+        self.__exec(
+            ['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"', '--strategy-option',
+             'theirs'])
         return self
-
 
     def push_tag(self, tag: str) -> GitCmd:
         self.__exec(["git", "push", GitConfig.REMOTE.value, tag])
@@ -157,7 +159,6 @@ class GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
-        # self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.__branch])
         return self
 
     def tag_exists(self, tag: str, remote: bool) -> bool:
@@ -176,7 +177,6 @@ class GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.get_current_branch_name()])
-        # self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.__branch])
         return self
 
     def tag(self, tag: str, msg: Optional[str] = None) -> GitCmd:

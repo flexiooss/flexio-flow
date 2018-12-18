@@ -3,14 +3,7 @@ from __future__ import annotations
 import re
 from subprocess import Popen, PIPE
 from typing import List
-
-from Exceptions.BranchAlreadyExist import BranchAlreadyExist
-from Exceptions.BranchNotExist import BranchNotExist
-from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.Version import Version
-from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
-from VersionControl.BranchHandler import BranchHandler
 from VersionControl.Branches import Branches
 from VersionControl.GitFlow.GitCmd import GitCmd
 from VersionControl.GitFlow.GitConfig import GitConfig
@@ -30,63 +23,15 @@ class GitFlowCmd:
         return stdout.strip().decode('utf-8')
 
     def init_config(self) -> GitFlowCmd:
-        self.__exec(["git", "flow", "init", "-f", "-d"])
-        return self
+        # self.__exec(["git", "flow", "init", "-f", "-d"])
+        return self.ensure_develop_branch()
 
-    def hotfix_start(self) -> GitFlowCmd:
-        if self.has_hotfix(True) or self.has_hotfix(False):
-            raise BranchAlreadyExist(Branches.HOTFIX)
-
-        self.__git.checkout(Branches.MASTER)
-        next_version: Version = self.__state_handler.next_dev_patch()
-        branch_name: str = BranchHandler.branch_name_from_version(Branches.HOTFIX, next_version)
-
-        self.__git.create_branch_from(branch_name, Branches.MASTER)
-
-        self.__state_handler.write_file()
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(
-            ''.join([
-                "'Start hotfix : ",
-                branch_name,
-                "'"])
-        ).set_upstream().push()
-        return self
-
-    def hotfix_finish(self) -> GitFlowCmd:
-        if not self.has_hotfix(False):
-            raise BranchNotExist(Branches.HOTFIX)
-
-        self.__git.checkout(Branches.HOTFIX)
-        self.__state_handler.set_stable()
-        self.__state_handler.write_file()
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(''.join(["'Finish hotfix for master: ", self.__state_handler.version_as_str()])).push()
-
-        self.__git.checkout(Branches.MASTER).merge(Branches.HOTFIX)
-        self.__state_handler.load_file_config()
-        self.__git.tag(
-            self.__state_handler.version_as_str(),
-            ' '.join([
-                "'From Finished hotfix : ",
-                self.__git.get_branch_name_from_git(Branches.HOTFIX),
-                'tag : ',
-                self.__state_handler.version_as_str(),
-                "'"])
-        ).push_tag(self.__state_handler.version_as_str()).push()
-
-        # self.__git.checkout(Branches.HOTFIX)
-        #
-        self.__git.checkout(Branches.DEVELOP).merge_with_theirs(Branches.MASTER)
-        self.__state_handler.load_file_config()
-        self.__state_handler.next_dev_minor()
-        self.__state_handler.set_dev()
-        self.__state_handler.write_file()
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(''.join(["'Finish hotfix for dev: ", self.__state_handler.version_as_str()])).push()
-
-        self.__git.delete_branch(Branches.HOTFIX, True)
-        self.__git.delete_branch(Branches.HOTFIX, False)
+    def ensure_develop_branch(self) -> GitFlowCmd:
+        if not self.__git.branch_exists_from_name(Branches.DEVELOP.value, remote=False):
+            self.__git.checkout(Branches.MASTER).create_branch_from(
+                Branches.DEVELOP.value,
+                Branches.MASTER
+            ).set_upstream().push()
         return self
 
     def has_hotfix(self, remote: bool) -> bool:

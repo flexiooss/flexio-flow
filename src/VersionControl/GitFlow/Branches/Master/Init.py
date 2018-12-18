@@ -25,7 +25,8 @@ class Init:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         git.add_all().commit(
-            ''.join(["'Init master : ", version, "'"])).tag(version).set_upstream()
+            ''.join(["'Init master : ", version, "'"])
+        ).tag(version).set_upstream()
 
         print('Init master at : ' + version)
         git.push_tag(version)
@@ -47,16 +48,7 @@ class Init:
         ).set_upstream()
 
         print('Init develop at : ' + version)
-        git.push_tag(version)
-        print('Tag master at : ' + version)
-
         return self
 
     def process(self):
-        # root_path, stderr = Popen(["pwd"], stdout=PIPE).communicate()
-        #
-        # os.chdir(self.__state_handler.dir_path.as_posix())
-
         self.__init_gitflow().__init_master().__init_develop()
-
-        # os.chdir(root_path.strip())
