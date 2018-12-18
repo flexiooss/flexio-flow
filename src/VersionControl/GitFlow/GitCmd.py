@@ -10,6 +10,7 @@ from Exceptions.FileNotExistError import FileNotExistError
 from Exceptions.NoBranchSelected import NoBranchSelected
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
+from VersionControl.BranchHandler import BranchHandler
 from VersionControl.Branches import Branches
 from VersionControl.GitFlow.GitConfig import GitConfig
 
@@ -61,18 +62,30 @@ class GitCmd:
     def create_branch_from(self, target_branch_name: str, source: Branches) -> GitCmd:
         source_branch_name: str = self.get_branch_name_from_git(source)
         self.__exec(['git', 'checkout', '-b', target_branch_name, source_branch_name])
+        try:
+            self.__state_handler.load_file_config()
+        except FileNotExistError as e:
+            print(e)
         return self
 
     def __ensure_remote_branch_name(self) -> GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         branch_name: str = self.__branch.value
-        if self.__branch in [Branches.HOTFIX, Branches.RELEASE]:
+        if self.__branch in [Branches.HOTFIX]:
             self.__exec(['git', 'checkout', Branches.MASTER.value])
             self.__state_handler.load_file_config()
-            name: str = str(self.__state_handler.next_dev_patch())
-            name = (name + '-' + Level.DEV.value) if self.__branch is Branches.HOTFIX else name
-            branch_name = '/'.join([self.__branch.value, name])
+            branch_name: str = BranchHandler.branch_name_from_version(
+                Branches.HOTFIX,
+                self.__state_handler.state.version
+            )
+        if self.__branch in [Branches.RELEASE]:
+            self.__exec(['git', 'checkout', Branches.DEVELOP.value])
+            self.__state_handler.load_file_config()
+            branch_name: str = BranchHandler.branch_name_from_version(
+                Branches.RELEASE,
+                self.__state_handler.state.version
+            )
         self.__remote_branch_name = branch_name
         return self
 

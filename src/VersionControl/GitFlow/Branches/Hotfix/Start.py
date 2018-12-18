@@ -29,6 +29,8 @@ class Start:
         return self
 
     def __start_hotfix(self):
+        if self.__gitflow.has_release(True) or self.__gitflow.has_release(False):
+            raise BranchAlreadyExist(Branches.RELEASE)
         if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
             raise BranchAlreadyExist(Branches.HOTFIX)
 
@@ -45,7 +47,7 @@ class Start:
                 "'Start hotfix : ",
                 branch_name,
                 "'"])
-        ).set_upstream().push()
+        ).set_upstream()
 
     def process(self):
         self.__init_gitflow().__pull_develop().__pull_master().__start_hotfix()
