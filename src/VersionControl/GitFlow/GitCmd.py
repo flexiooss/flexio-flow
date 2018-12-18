@@ -146,8 +146,10 @@ class GitCmd:
         return self
 
     def merge_with_version_message(self, branch: Branches, options: List[str] = []) -> GitCmd:
-        return self.merge(branch, options=['--commit', '-m', '"merge : ' + self.get_branch_name_from_git(branch) + '"',
-                                           *options])
+        return self.merge(
+            branch,
+            options=['--commit', '-m', '"merge : ' + self.get_branch_name_from_git(branch) + '"',
+                     *options])
 
     def merge_with_theirs(self, branch: Branches) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)

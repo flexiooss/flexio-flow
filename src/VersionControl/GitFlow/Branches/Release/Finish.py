@@ -27,13 +27,10 @@ class Finish:
         return self
 
     def __merge_master(self) -> Finish:
-        # self.__git.checkout(Branches.RELEASE)
-        # self.__state_handler.set_stable()
-        # self.__state_handler.write_file()
-        # UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        # self.__git.commit(''.join(["'Finish hotfix for master: ", self.__state_handler.version_as_str()])).push()
-
-        self.__git.checkout(Branches.MASTER).merge_with_version_message(Branches.RELEASE, ['--no-ff']).tag(
+        self.__git.checkout(Branches.MASTER).merge_with_version_message(
+            Branches.RELEASE,
+            ['--no-ff', '--strategy-option', 'theirs']
+        ).tag(
             self.__state_handler.version_as_str(),
             ' '.join([
                 "'From Finished release : ",
