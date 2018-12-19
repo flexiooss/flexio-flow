@@ -34,10 +34,7 @@ class Github:
     def get_user(self) -> Response:
         url: str = '/'.join([self.BASE_URL, 'user'])
         headers: Dict[str, str] = {}
-        r: Response = requests.get(url, headers=self.__auth(headers))
-        print(r.status_code)
-        print(r.json())
-        return r
+        return requests.get(url, headers=self.__auth(headers))
 
     def create_issue(self, issue: Issue) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'issues'])
@@ -48,5 +45,5 @@ class Github:
         return requests.get(url, headers=self.__auth({}))
 
     def create_comment(self, issue: Issue, body: str) -> Response:
-        url: str = '/'.join([self.__repo_base_url(), 'issues', issue.number, 'comments'])
+        url: str = '/'.join([self.__repo_base_url(), 'issues', str(issue.number), 'comments'])
         return requests.post(url, json={'body': body}, headers=self.__auth({}))

@@ -12,7 +12,8 @@ class Issue:
     assignees: List[str]
 
     def __init__(self):
-        pass
+        self.assignees= []
+        self.labels= []
 
     def get_ref(self) -> str:
         return '{prefix!s}{number!s}'.format(prefix=self.PREFIX, number=self.number)
@@ -33,8 +34,8 @@ class Issue:
         }
         if self.body:
             issue['body'] = self.body
-        if self.labels:
+        if len(self.labels):
             issue['labels'] = self.labels
-        if self.assignees:
+        if len(self.assignees):
             issue['assignees'] = self.assignees
         return issue
