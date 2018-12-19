@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from typing import List, Dict, Union, Optional
+
 import yaml
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
@@ -7,6 +10,9 @@ from FlexioFlow.Version import Version
 from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
+
+from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Issuers import Issuers
 
 
 class StateHandler:
@@ -28,6 +34,15 @@ class StateHandler:
     def file_exists(self) -> bool:
         return self.file_path().is_file()
 
+    def __issues_from_list_dict(self, issues: List[Dict[str, Union[str, int]]]) -> List[Dict[Issuers, Issue]]:
+        ret: List[Dict[Issuers, Issue]] = []
+        for issue in issues:
+            item: Dict[Issuers, Issue] = dict()
+            for k, v in issue.items():
+                item[Issuers[k.upper()]] = Issue().with_number(v)
+
+        return ret
+
     def load_file_config(self) -> StateHandler:
         if not self.file_path().is_file():
             raise FileNotExistError(
@@ -41,6 +56,7 @@ class StateHandler:
         self.__state.version = Version.from_str(data['version'])
         self.__state.schemes = Schemes.list_from_value(data['schemes'])
         self.__state.level = Level(data['level'])
+        self.__state.issues = self.__issues_from_list_dict(data['issues'])
 
         return self
 
@@ -90,4 +106,31 @@ class StateHandler:
 
     def set_stable(self) -> StateHandler:
         self.__state = self.__state.set_stable()
+        return self
+
+    def get_issue(self, issuer: Issuers) -> Optional[Issue]:
+        for issue_conf in self.__state.issues:
+            if issuer in issue_conf:
+                return issue_conf[issuer]
+        return None
+
+    def has_issue(self, issuer: Issuers) -> bool:
+        for issue_conf in self.__state.issues:
+            if issuer in issue_conf:
+                return True
+        return False
+
+    def replace_issue(self, issuer: Issuers, issue: Issue) -> StateHandler:
+        for issue_conf in self.__state.issues:
+            if issuer in issue_conf:
+                self.__state.issues.remove(issue_conf)
+        return self.set_issue(issuer, issue)
+
+    def set_issue(self, issuer: Issuers, issue: Issue) -> StateHandler:
+        item: Dict[Issuers, Issue] = dict()
+        item[issuer] = issue
+        if not self.has_issue(issuer):
+            self.__state.issues.append(item)
+        else:
+            self.replace_issue(issuer, issue)
         return self
