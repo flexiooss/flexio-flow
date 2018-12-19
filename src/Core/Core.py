@@ -9,10 +9,10 @@ from Core.ConfigHandler import ConfigHandler
 class Core:
     CONFIG_DIR: Path = Path.home().joinpath('.flexio-flow')
 
-    def __init__(self, action: Actions, options: Dict[str, str]):
+    def __init__(self, action: Actions, options: Dict[str, str], config_handler: ConfigHandler):
         self.action: Actions = action
         self.options: Dict[str, str] = options
-        self.config_handler = ConfigHandler(self.CONFIG_DIR)
+        self.config_handler = config_handler
 
     def process(self):
         if self.action is Actions.CONFIG:

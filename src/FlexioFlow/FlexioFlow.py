@@ -1,9 +1,10 @@
 from typing import Optional, Type, Dict
+
+from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.Actions.Action import Action
 from VersionControl.Branches import Branches
-from FlexioFlow.Actions.Init import Init
 from FlexioFlow.Actions.ActionFactory import ActionFactory
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
@@ -19,7 +20,8 @@ class FlexioFlow:
                  action: Actions,
                  branch: Optional[Branches],
                  options: Dict[str, str],
-                 dir_path: Path
+                 dir_path: Path,
+                 config_handler: ConfigHandler
                  ) -> None:
 
         self.__version_controller: VersionController = version_controller
@@ -30,6 +32,7 @@ class FlexioFlow:
             raise ValueError(dir_path + ' : Path not exists')
         # self.__dir_path: Path = dir_path.rstrip('/') + '/'
         self.__dir_path: Path = dir_path
+        self.__config_handler: ConfigHandler = config_handler
 
     def __should_init_state_handler(self) -> bool:
         self.__state_handler = StateHandler(self.__dir_path)
@@ -45,13 +48,13 @@ class FlexioFlow:
             self.__state_handler
         )
 
-
         action: Type[Action] = ActionFactory.create(
             self.__action,
             version_control,
             self.__branch,
             self.__state_handler,
-            self.__options
+            self.__options,
+            self.__config_handler
         )
 
         action.process()

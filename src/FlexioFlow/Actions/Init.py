@@ -1,14 +1,8 @@
 from __future__ import annotations
 from FlexioFlow.Version import Version
-from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from typing import List
-from Exceptions.FileExistError import FileExistError
-from FlexioFlow.Actions.Action import Action
-from pathlib import Path
-from VersionControl.VersionControl import VersionControl
-from typing import Type
 from FlexioFlow.Actions.Action import Action
 from FlexioFlow.Actions.Actions import Actions
 from VersionControl.Branches import Branches
@@ -81,9 +75,11 @@ Flexio Flow already initialized
             .__input_level() \
             .__input_schemes()
 
+    def __ensure_version_control_initialized(self):
+        self.version_control.with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+
     def process(self):
         self.__ensure_have_state()
-
-        self.version_control.with_branch(Branches.MASTER).set_action(Actions.INIT).process()
+        self.__ensure_version_control_initialized()
 
         self.__final_message()

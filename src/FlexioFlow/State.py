@@ -15,6 +15,7 @@ class State:
     __issues: List[Dict[Issuers, Issue]]
 
     def __init__(self) -> None:
+        self.__issues = []
         pass
 
     @property

@@ -56,7 +56,8 @@ class StateHandler:
         self.__state.version = Version.from_str(data['version'])
         self.__state.schemes = Schemes.list_from_value(data['schemes'])
         self.__state.level = Level(data['level'])
-        self.__state.issues = self.__issues_from_list_dict(data['issues'])
+        if 'issues' in data:
+            self.__state.issues = self.__issues_from_list_dict(data['issues'])
 
         return self
 

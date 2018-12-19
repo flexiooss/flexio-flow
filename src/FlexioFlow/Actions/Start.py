@@ -5,4 +5,5 @@ from FlexioFlow.Actions.Actions import Actions
 
 class Start(Action):
     def process(self):
+        config
         self.version_control.with_branch(self.branch).set_action(Actions.START).process()

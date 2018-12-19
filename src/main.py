@@ -5,6 +5,7 @@ import re
 import sys
 import os
 
+from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
 from FlexioFlow.FlexioFlow import FlexioFlow
 from FlexioFlow.Actions.Actions import Actions
@@ -89,15 +90,18 @@ def main(argv) -> None:
     dir_path: Path
     action, branch, core, actions_core, options, dir_path = command_orders(argv)
 
+    config_handler:ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
+
     if core:
-        Core(actions_core, options=options).process()
+        Core(actions_core, options=options, config_handler=config_handler).process()
     else:
         FlexioFlow(
             version_controller=VersionController.GITFLOW,
             action=action,
             branch=branch,
             options=options,
-            dir_path=dir_path
+            dir_path=dir_path,
+            config_handler=config_handler
         ).process()
     sys.exit()
 

@@ -1,3 +1,4 @@
+issues: []
 level: dev
 schemes: [package, composer]
 version: 1.2.3
