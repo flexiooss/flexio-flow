@@ -43,10 +43,7 @@ class Start:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            ''.join([
-                "'Start hotfix : ",
-                branch_name,
-                "'"])
+            "'Start hotfix : {branch_name!s}'".format(branch_name=branch_name)
         ).set_upstream()
 
     def process(self):
