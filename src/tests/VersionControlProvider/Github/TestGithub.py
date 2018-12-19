@@ -2,8 +2,8 @@ import unittest
 from pathlib import Path
 from VersionControlProvider.Github.Github import Github
 
-TOKEN_TEST: str = 'caca12daca8bdd8c905bbae9637b6d2e98b1a3ea23874712prout'
-USER: str = 'thomas@flexio.io'
+TOKEN_TEST: str = 'daca8bdd8c905bbae9637b6d2e98b1a3ea238747'
+USER: str = 'thomas@flexio.fr'
 CONFIG_DIR: Path = Path('/tmp')
 
 

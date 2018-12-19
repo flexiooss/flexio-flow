@@ -1,24 +1,22 @@
 from __future__ import annotations
-import re
-from typing import Dict, Match
+from typing import Dict
+
+from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 
 
 class Config:
 
-    def __init__(self, user: str, token: str) -> None:
-        self.__user: str = user
-        self.__token: str = token
+    def __init__(self, github: ConfigGithub) -> None:
+        self.__github: ConfigGithub = github
+
+    def with_github(self, github: ConfigGithub) -> Config:
+        return Config(github)
 
     @property
-    def user(self) -> str:
-        return self.__user
+    def github(self) -> ConfigGithub:
+        return self.__github
 
-    @property
-    def token(self) -> str:
-        return self.__token
-
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, dict]:
         return {
-            'user': self.user,
-            'token': self.token
+            'github': self.github.to_dict()
         }

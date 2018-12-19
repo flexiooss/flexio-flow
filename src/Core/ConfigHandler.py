@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List, Type
 
 import yaml
 from Core.Config import Config
 from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
+from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 
 
 class ConfigHandler:
@@ -38,9 +39,13 @@ class ConfigHandler:
         data = yaml.load(f)
         f.close()
 
-
-        self.__config = Config(user=data['user'], token=data['token'])
-
+        self.__config = Config(
+            github=ConfigGithub(
+                activate=data['github']['activate'],
+                user=data['github']['user'],
+                token=data['github']['token']
+            )
+        )
         return self
 
     def write_file(self) -> str:
@@ -53,3 +58,6 @@ class ConfigHandler:
 
     def file_path(self) -> Path:
         return self.dir_path / self.FILE_NAME
+
+    def has_issuer(self) -> bool:
+        return self.__config.github.activate is True

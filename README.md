@@ -57,3 +57,9 @@ deactivate
 ```bash
 pip freeze > requirements.txt
 ````
+
+#### Update pip dependencies
+`with virtual environement activated`
+```bash
+pip install -r requirements.txt
+````

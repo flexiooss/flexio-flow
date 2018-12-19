@@ -50,20 +50,14 @@ def extract_subject_action(argv: List[str]) -> Tuple[
     arg: str
     for arg in argv:
         arg = re.sub('[\s+]', '', arg).lower()
-        print('arg')
-        print(arg)
 
         if Actions.has_value(arg):
-            print(1)
             action = Actions[arg.upper()]
         elif Branches.has_value(arg):
-            print(2)
             branch = Branches[arg.upper()]
         elif arg == 'core':
-            print(3)
             core = True
         elif ActionsCore.has_value(arg):
-            print(4)
             actions_core = ActionsCore[arg.upper()]
 
     return branch, action, core, actions_core
@@ -95,8 +89,6 @@ def main(argv) -> None:
     dir_path: Path
     action, branch, core, actions_core, options, dir_path = command_orders(argv)
 
-    print('core')
-    print(core)
     if core:
         Core(actions_core, options=options).process()
     else:
