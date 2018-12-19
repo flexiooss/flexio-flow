@@ -8,6 +8,8 @@ class Issue:
     number: int
     title: str
     body: str
+    milestone: int
+    state
     labels: List[str]
     assignees: List[str]
 
