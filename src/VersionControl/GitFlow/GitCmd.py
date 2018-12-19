@@ -1,13 +1,15 @@
 from __future__ import annotations
 import re
+from re import Match
 from subprocess import Popen, PIPE
-from typing import List, Optional
+from typing import List, Optional, Pattern
 from Exceptions.FileNotExistError import FileNotExistError
 from Exceptions.NoBranchSelected import NoBranchSelected
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.BranchHandler import BranchHandler
 from VersionControl.Branches import Branches
 from VersionControl.GitFlow.GitConfig import GitConfig
+from VersionControlProvider.Github.Repo import Repo
 
 
 class GitCmd:
@@ -124,6 +126,17 @@ class GitCmd:
 
     def get_conflict(self) -> str:
         return self.__exec_for_stdout(['git', 'ls-files', '-u'])
+
+    def get_repo(self) -> Repo:
+        url: str = self.__exec_for_stdout(['git', 'config', '--get', 'remote.origin.url'])
+        regexp: Pattern[str] = re.compile(
+            '^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$',
+            re.IGNORECASE)
+        matches: Match = re.match(regexp, url)
+        if matches is None:
+            raise ValueError(
+                'remote.origin.url not match with : ^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$')
+        return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
 
     def get_current_branch_name(self) -> str:
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])

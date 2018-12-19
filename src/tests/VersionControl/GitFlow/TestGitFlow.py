@@ -5,18 +5,21 @@ from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
 
 from VersionControl.Branches import Branches
+from VersionControlProvider.Github.Repo import Repo
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 tag_test: str = 'tag_test'
 git: GitCmd = GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST))
 
+INIT_VERSION: str = '0.0.0'
+
 
 class TestGitFlow(unittest.TestCase):
 
     def setUp(self):
-        # self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
+        self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
         # self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
-        self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST)
+        # self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST)
 
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
@@ -33,15 +36,12 @@ class TestGitFlow(unittest.TestCase):
         self.assertIs(git.tag_exists(tag_test, remote=True), True)
         self.assertIs(git.tag_exists(tag_test, remote=False), True)
 
-    # def tearDown(self):
-    #     git.checkout(Branches.MASTER).reset_to_tag(TestGitFlowHelper.TAG_INIT) \
-    #         .push_force() \
-    #         .delete_tag(tag_test, remote=True)
-    #
-    #     TestGitFlowHelper.clean_workdir()
+    def tearDown(self):
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir()
 
     def test_has_hotfix(self):
-        has_hotfix:bool = self.git_flow.has_hotfix(False)
+        has_hotfix: bool = self.git_flow.has_hotfix(False)
         self.assertIs(has_hotfix, True)
 
     def test_has_conflict(self):
@@ -51,3 +51,9 @@ class TestGitFlow(unittest.TestCase):
             print('conflits sur dev')
             print(self.git.get_conflict())
             print('##################################################')
+
+    def test_get_repo(self):
+        repo: Repo = self.git.get_repo()
+        self.assertIsInstance(repo, Repo)
+        self.assertEqual(repo.owner, 'flexiooss')
+        self.assertEqual(repo.repo, 'flexio-flow-punching-ball')
