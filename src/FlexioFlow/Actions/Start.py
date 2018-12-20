@@ -13,7 +13,7 @@ class Start(Action):
     def process(self):
         if self.config_handler.has_issuer():
             issuer: Issuers = Issuers.GITHUB
-            issuer: Type[Issuer] = IssuerFactory.build(self.config_handler, issuer)
+            issuer: Type[Issuer] = IssuerFactory.build(self.state_handler, self.config_handler, issuer)
             issuer.create()
 
         # self.version_control.with_branch(self.branch).set_action(Actions.START).process()

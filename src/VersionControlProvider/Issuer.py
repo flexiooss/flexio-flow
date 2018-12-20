@@ -3,12 +3,14 @@ import abc
 from typing import Type, Optional
 
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Github.Repo import Repo
 
 
 class Issuer(abc.ABC):
 
-    def __init__(self, config_handler: ConfigHandler):
+    def __init__(self,  state_handler : StateHandler, config_handler: ConfigHandler):
+        self.state_handler: StateHandler = state_handler
         self.config_handler: ConfigHandler = config_handler
         self.__repo = None
 
