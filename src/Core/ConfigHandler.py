@@ -36,14 +36,14 @@ class ConfigHandler:
                 'Flexio Flow Core not initialized try : flexio-flow core config'
             )
         f: fileinput = self.file_path().open('r')
-        data = yaml.load(f)
+        data: dict = yaml.load(f)
         f.close()
 
         self.__config = Config(
             github=ConfigGithub(
-                activate=data['github']['activate'],
-                user=data['github']['user'],
-                token=data['github']['token']
+                activate=data.get('github', {}).get('activate', False),
+                user=data.get('github', {}).get('user', ''),
+                token=data.get('github', {}).get('token', '')
             )
         )
         return self
