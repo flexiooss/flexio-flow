@@ -32,6 +32,16 @@ class Github:
             raise ValueError('repo should be set')
         return '/'.join([self.BASE_URL, 'repos', *self.repo.to_list()])
 
+    def __orgs_base_url(self) -> str:
+        if self.repo is None:
+            raise ValueError('repo should be set')
+        return '/'.join([self.BASE_URL, 'orgs', self.repo.owner])
+
+    def get_users(self) -> Response:
+        url: str = '/'.join([self.__orgs_base_url(), 'members'])
+        headers: Dict[str, str] = {}
+        return requests.get(url, headers=self.__auth(headers))
+
     def get_user(self) -> Response:
         url: str = '/'.join([self.BASE_URL, 'user'])
         headers: Dict[str, str] = {}

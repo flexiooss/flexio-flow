@@ -48,10 +48,29 @@ class Create:
     def __input_assignees(self, issue: IssueGithub) -> Create:
         message: str = '[separator `;`] Assignees'
         message += ' (' + self.__config_handler.config.github.user + ') :' if len(
-            self.__config_handler.config.github.user) else ' : '
+            self.__config_handler.config.github.user) else ''
+        message += ' < pseudo | `list` for list all users > : '
 
         assignees: str = input(message)
         assignees = assignees if assignees else self.__config_handler.config.github.user
+        if assignees == 'list':
+            r: Response = self.__github.get_users()
+            members: List[str] = []
+            if r.status_code is 200:
+                members_response: List[Dict[str, str]] = r.json()
+                l: Dict[str, str]
+                for l in members_response:
+                    members.append('{login!s}'.format(
+                        login=l.get('login')
+                    ))
+            if len(members):
+                message: str = """ 
+Choose between : {0!s}
+""".format(' | '.join(members))
+            else:
+                message: str = 'No member, type `abort`'
+            assignees: str = input(message)
+
         assignees: List[str] = assignees.split(';')
         assignees = self.__sanitize_list_input(assignees)
 
@@ -92,7 +111,7 @@ url : {url!s}
 
     def __input_milestone(self, issue: IssueGithub) -> Create:
         milestone: str = input(
-            'Milestone number < number | `list` for list all milestone | `create` for create milestone > : ')
+            'Milestone number < number | `list` for list all milestone | `create` for create milestone > ')
         if milestone == 'list':
             r: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []

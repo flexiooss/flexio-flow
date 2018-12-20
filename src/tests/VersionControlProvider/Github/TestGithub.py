@@ -31,6 +31,21 @@ class TestGithub(unittest.TestCase):
     def test_get_user(self):
         r: Response = Github(self.config_handler).get_user()
         self.assertIs(r.status_code, 200)
+        print(r.json())
+
+        falsy_config_handler = ConfigHandler(CONFIG_DIR)
+        falsy_config_handler.config = Config(ConfigGithub(
+            activate=True,
+            user='dudu',
+            token='dudu'
+        ))
+        r: Response = Github(falsy_config_handler).get_user()
+        self.assertIsNot(r.status_code, 200)
+
+    def test_get_users(self):
+        r: Response = self.github_repo.get_users()
+        self.assertIs(r.status_code, 200)
+        print(r.json())
 
         falsy_config_handler = ConfigHandler(CONFIG_DIR)
         falsy_config_handler.config = Config(ConfigGithub(
