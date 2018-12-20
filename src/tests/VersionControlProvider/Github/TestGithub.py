@@ -10,9 +10,8 @@ from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Issue import Issue
+from tests.VersionControlProvider.Github.api___secret import TOKEN_TEST, USER
 
-TOKEN_TEST: str = 'daca8bdd8c905bbae9637b6d2e98b1a3ea238747'
-USER: str = 'TomAchT'
 CONFIG_DIR: Path = Path('/tmp/')
 
 
