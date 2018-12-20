@@ -5,6 +5,7 @@ from typing import Type, Optional
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Github.Repo import Repo
+from VersionControlProvider.Issue import Issue
 
 
 class Issuer(abc.ABC):
@@ -23,5 +24,5 @@ class Issuer(abc.ABC):
         return self
 
     @abc.abstractmethod
-    def create(self) -> str:
+    def create(self) -> Issue:
         pass

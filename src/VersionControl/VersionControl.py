@@ -3,9 +3,10 @@ import abc
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.Branch import Branch
 from Branches.Branches import Branches
-from typing import Optional
+from typing import Optional, Type
 
 from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Issue import Issue
 
 
 class VersionControl:
@@ -14,7 +15,7 @@ class VersionControl:
         self.state_handler: StateHandler = state_handler
         self.issue: Optional[IssueGithub] = None
 
-    def with_issue(self, issue: IssueGithub) -> VersionControl:
+    def with_issue(self, issue: Type[Issue]) -> VersionControl:
         self.issue = issue
         return self
 
@@ -31,5 +32,5 @@ class VersionControl:
         pass
 
     @abc.abstractmethod
-    def with_branch(self, branch: Branches) -> Branch:
+    def build_branch(self, branch: Branches) -> Branch:
         pass

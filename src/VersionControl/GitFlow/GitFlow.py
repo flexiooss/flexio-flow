@@ -19,6 +19,6 @@ class GitFlow(VersionControl):
         branch: Branch = BranchFactory.create(Branches.RELEASE, self.state_handler)
         return branch
 
-    def with_branch(self, branch: Branches) -> Branch:
+    def build_branch(self, branch: Branches) -> Branch:
         branch: Branch = BranchFactory.create(branch, self.state_handler)
         return branch

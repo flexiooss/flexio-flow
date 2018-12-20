@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from subprocess import Popen, PIPE
-from typing import List, Dict
+from typing import List, Dict, Type
 
 from requests import Response
 
@@ -10,6 +9,7 @@ from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
 from VersionControlProvider.Github.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
+from VersionControlProvider.Issue import Issue
 
 
 class Create:
@@ -91,10 +91,28 @@ Choose between : {0!s}
     def __post_issue(self, issue: IssueGithub) -> Response:
         return self.__github.create_issue(issue)
 
-    def process(self):
+    def __resume_issue(self, issue: Dict[str, str]) -> Create:
+        print(
+            """###############################################
+################ Issue created ################
+###############################################
+title : {title!s}
+number : {number!s}
+url : {url!s}
+###############################################
+""".format(
+                title=issue.get('title'),
+                number=issue.get('number'),
+                url=issue.get('url')
+            )
+        )
+        return self
+
+    def process(self) -> IssueGithub:
         issue_number: int
         if self.__would_attach_issue():
             issue_number = self.__number_issue()
+            issue: IssueGithub = IssueGithub()
 
         else:
             self.__start_message()
@@ -104,8 +122,11 @@ Choose between : {0!s}
             r: Response = self.__post_issue(issue)
 
             if r.status_code is 201:
-                issue_number = r.json().get('number')
+                issue_created: Dict[str, str] = r.json()
+                issue_number = issue_created.get('number')
+                self.__resume_issue(issue_created)
             else:
                 raise GithubRequestApiError(r)
 
         print(issue_number)
+        return issue.with_number(issue_number)

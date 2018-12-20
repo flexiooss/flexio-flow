@@ -4,5 +4,5 @@ from FlexioFlow.Actions.Actions import Actions
 
 class Finish(Action):
     def process(self):
-        self.version_control.with_branch(self.branch).set_action(Actions.FINISH).process()
+        self.version_control.build_branch(self.branch).set_action(Actions.FINISH).process()
 
