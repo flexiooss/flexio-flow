@@ -10,6 +10,7 @@ from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from tests.VersionControlProvider.Github.api___secret import TOKEN_TEST, USER
 
 CONFIG_DIR: Path = Path('/tmp/')
@@ -24,6 +25,8 @@ class TestGithub(unittest.TestCase):
             user=USER,
             token=TOKEN_TEST
         ))
+        self.github_repo: Github = Github(self.config_handler).with_repo(
+            Repo(owner='flexiooss', repo='flexio-flow-punching-ball'))
 
     def test_get_user(self):
         r: Response = Github(self.config_handler).get_user()
@@ -39,16 +42,25 @@ class TestGithub(unittest.TestCase):
         self.assertIsNot(r.status_code, 200)
 
     def test_list_labels(self):
-        r: Response = Github(self.config_handler).with_repo(
-            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).get_labels()
+        r: Response = self.github_repo.get_labels()
         self.assertIs(r.status_code, 200)
         print(r.json())
 
     def test_list_milestones(self):
-        r: Response = Github(self.config_handler).with_repo(
-            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).get_open_milestones()
+        r: Response = self.github_repo.get_open_milestones()
         self.assertIs(r.status_code, 200)
         print(r.json())
+
+    def test_create_milestone(self):
+        milestone: Milestone = Milestone()
+        milestone.title = 'milestone test ' + str(int(time.time()))
+        milestone.description = 'test description'
+
+        r: Response = self.github_repo.create_milestone(milestone)
+        print(r.status_code)
+        print(r.content)
+        print(r.json())
+        self.assertIs(r.status_code, 201)
 
     def test_create_issue(self):
         issue: IssueGithub = IssueGithub()
@@ -57,8 +69,7 @@ class TestGithub(unittest.TestCase):
         issue.assign(USER)
         issue.label('bug')
 
-        r: Response = Github(self.config_handler).with_repo(
-            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).create_issue(issue)
+        r: Response = self.github_repo.create_issue(issue)
         print(r.status_code)
         print(r.content)
         print(r.json())
@@ -71,15 +82,14 @@ class TestGithub(unittest.TestCase):
         issue.assign(USER)
         issue.label('bug')
 
-        r: Response = Github(self.config_handler).with_repo(
-            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).create_issue(issue)
+        r: Response = self.github_repo.create_issue(issue)
 
         issue_created: IssueGithub = IssueGithub()
         issue_created.number = r.json().get('number')
 
-        r: Response = Github(self.config_handler).with_repo(
-            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).create_comment(issue_created,
-                                                                                      body='super commentaire')
+        r: Response = self.github_repo.create_comment(
+            issue_created,
+            body='super commentaire')
         print(r.status_code)
         print(r.content)
         print(r.json())

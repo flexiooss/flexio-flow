@@ -5,6 +5,7 @@ from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.Milestone import Milestone
 
 
 class Github:
@@ -39,6 +40,10 @@ class Github:
     def create_issue(self, issue: IssueGithub) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'issues'])
         return requests.post(url, json=issue.__dict__(), headers=self.__auth({}))
+
+    def create_milestone(self, milestone: Milestone) -> Response:
+        url: str = '/'.join([self.__repo_base_url(), 'milestones'])
+        return requests.post(url, json=milestone.__dict__(), headers=self.__auth({}))
 
     def get_labels(self) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'labels'])

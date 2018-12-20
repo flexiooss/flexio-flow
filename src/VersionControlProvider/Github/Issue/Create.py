@@ -9,6 +9,7 @@ from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
+from VersionControlProvider.Github.Ressources.Milestone import Milestone
 
 
 class Create:
@@ -31,11 +32,20 @@ class Create:
             """###############################################
 ################# Flexio FLow #################
 ###############################################
+""")
+        return self
+
+    def __start_message_issue(self) -> Create:
+        print(
+            """###############################################
 #############    Create Issue     #############
 """)
         return self
 
-    def __input_assignees(self, issue: IssueGithub):
+    def __sanitize_list_input(self, v: List[str]) -> List[str]:
+        return list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), v)))
+
+    def __input_assignees(self, issue: IssueGithub) -> Create:
         message: str = '[separator `;`] Assignees'
         message += ' (' + self.__config_handler.config.github.user + ') :' if len(
             self.__config_handler.config.github.user) else ' : '
@@ -43,12 +53,44 @@ class Create:
         assignees: str = input(message)
         assignees = assignees if assignees else self.__config_handler.config.github.user
         assignees: List[str] = assignees.split(';')
-        assignees = list(map(lambda x: x.strip(), assignees))
+        assignees = self.__sanitize_list_input(assignees)
 
         if len(assignees):
             issue.assignees = assignees
+        return self
 
-    def __input_milestone(self, issue: IssueGithub):
+    def __create_milestone(self) -> Milestone:
+        milestone: Milestone = Milestone()
+        title: str = ''
+
+        while not len(title) > 0:
+            title = input('[required] Title : ')
+            milestone.title = title
+
+        description: str = input('Description : ')
+        if description:
+            milestone.description = description
+
+        return milestone
+
+    def __resume_milestone(self, milestone: Dict[str, str]) -> Create:
+        print(
+            """###############################################
+################ Milestone created ################
+###############################################
+title : {title!s}
+number : {number!s}
+url : {url!s}
+###############################################
+""".format(
+                title=milestone.get('title'),
+                number=milestone.get('number'),
+                url=milestone.get('html_url')
+            )
+        )
+        return self
+
+    def __input_milestone(self, issue: IssueGithub) -> Create:
         milestone: str = input(
             'Milestone number < number | `list` for list all milestone | `create` for create milestone > : ')
         if milestone == 'list':
@@ -73,13 +115,20 @@ class Create:
             milestone: str = input(message)
 
         if milestone == 'create':
+            milestone: Milestone = self.__create_milestone()
+            r: Response = self.__github.create_milestone(milestone)
+            if r.status_code is 201:
+                milestone_created: Dict[str, str] = r.json()
+                milestone = milestone_created.get('number')
+                self.__resume_milestone(milestone_created)
 
         milestone = milestone if not milestone == 'abort' else ''
 
         if milestone:
             issue.milestone = int(milestone)
+        return self
 
-    def __input_labels(self, issue: IssueGithub):
+    def __input_labels(self, issue: IssueGithub) -> Create:
         message: str = '[separator `;`] Labels : '
         r: Response = self.__github.get_labels()
 
@@ -92,15 +141,20 @@ class Create:
 
         if len(labels_repo):
             message += """ 
-        Choose between : {0!s}
-        """.format(' | '.join(labels_repo))
+Choose between : {0!s}
+""".format(' | '.join(labels_repo))
 
         labels: str = input(message)
         labels: List[str] = labels.split(';')
-        labels = list(map(lambda x: x.strip(), labels))
+        labels = self.__sanitize_list_input(labels)
+
+        print('labels')
+        print(labels)
 
         if len(labels):
+            print('ici')
             issue.labels = labels
+        return self
 
     def __input_issue(self):
         issue: IssueGithub = IssueGithub()
@@ -114,10 +168,7 @@ class Create:
         if body:
             issue.body = body
 
-        self.__input_assignees()
-        self.__input_milestone()
-
-        self.__input_labels()
+        self.__input_assignees(issue).__input_milestone(issue).__input_labels(issue)
 
         return issue
 
@@ -136,19 +187,20 @@ url : {url!s}
 """.format(
                 title=issue.get('title'),
                 number=issue.get('number'),
-                url=issue.get('url')
+                url=issue.get('html_url')
             )
         )
         return self
 
     def process(self) -> IssueGithub:
+        self.__start_message()
         issue_number: int
         if self.__would_attach_issue():
             issue_number = self.__number_issue()
             issue: IssueGithub = IssueGithub()
 
         else:
-            self.__start_message()
+            self.__start_message_issue()
 
             issue: IssueGithub = self.__input_issue()
 

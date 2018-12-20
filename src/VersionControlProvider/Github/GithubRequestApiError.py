@@ -8,7 +8,9 @@ class GithubRequestApiError(Exception):
 
     def __str__(self):
         return """
+----------------------------------------------------
 The request to Github Api Failed
+----------------------------------------------------
 url : {4!s}
 request :
 {5!s}
