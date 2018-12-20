@@ -10,6 +10,7 @@ from Core.Core import Core
 from FlexioFlow.FlexioFlow import FlexioFlow
 from FlexioFlow.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
+from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
 from VersionControl.Branches import Branches
 from VersionControl.VersionController import VersionController
@@ -46,65 +47,62 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
 
 
 def extract_subject_action(argv: List[str]) -> Tuple[
-    Optional[Branches], Optional[Actions], bool, Optional[ActionsCore]]:
+    Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore]]:
     branch: Optional[Branches] = None
-    action: Optional[Actions] = None
-    core: bool = False
-    actions_core: Optional[ActionsCore] = None
+    branch_action: Optional[Actions] = None
+    subject: Optional[Subject] = None
+    core_actions: Optional[ActionsCore] = None
 
     arg: str
     for arg in argv:
         arg = re.sub('[\s+]', '', arg).lower()
 
         if Actions.has_value(arg):
-            action = Actions[arg.upper()]
+            branch_action = Actions[arg.upper()]
         elif Branches.has_value(arg):
             branch = Branches[arg.upper()]
-        elif arg == 'core':
-            core = True
+        elif Subject.has_value(arg):
+            subject = Subject[arg.upper()]
         elif ActionsCore.has_value(arg):
-            actions_core = ActionsCore[arg.upper()]
+            core_actions = ActionsCore[arg.upper()]
 
-    return branch, action, core, actions_core
+    return branch, branch_action, subject, core_actions
 
 
 def command_orders(argv: List[str]) -> Tuple[
-    Optional[Actions], Optional[Branches], bool, Optional[ActionsCore], Dict[str, str], Path]:
+    Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[str, str], Path]:
     argv_no_options: List[str]
     options: Dict[str, str]
     argv_no_options, options = parse_options(argv)
 
     branch: Optional[Branches]
-    action: Optional[Actions]
-    core: bool
-    actions_core: Optional[ActionsCore]
+    branch_action: Optional[Actions]
+    subject: Optional[Subject]
+    core_actions: Optional[ActionsCore]
 
-    branch, action, core, actions_core = extract_subject_action(argv_no_options)
+    branch, branch_action, subject, core_actions = extract_subject_action(argv_no_options)
     version_dir: Path = Path(options.get('version-dir')) if options.get('version-dir') else Path.cwd()
-    print(options)
 
-    print(version_dir)
-
-    return action, branch, core, actions_core, options, version_dir
+    return branch_action, branch, subject, core_actions, options, version_dir
 
 
 def main(argv) -> None:
-    action: Optional[Actions]
+    branch_action: Optional[Actions]
     branch: Optional[Branches]
-    core: bool
-    actions_core: Optional[ActionsCore]
+    subject: Optional[Subject]
+    core_actions: Optional[ActionsCore]
     options: Dict[str, str]
-    dir_path: Path
-    action, branch, core, actions_core, options, version_dir = command_orders(argv)
+    version_dir: Path
+    branch_action, branch, subject, core_actions, options, version_dir = command_orders(argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
-    if core:
-        Core(actions_core, options=options, config_handler=config_handler).process()
+    if subject is Subject.CORE:
+        Core(core_actions, options=options, config_handler=config_handler).process()
     else:
         FlexioFlow(
             version_controller=VersionController.GITFLOW,
-            action=action,
+            action=branch_action,
             branch=branch,
             options=options,
             dir_path=version_dir,
