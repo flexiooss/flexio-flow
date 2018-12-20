@@ -3,8 +3,8 @@ from __future__ import annotations
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
-from VersionControl.BranchHandler import BranchHandler
-from VersionControl.Branches import Branches
+from Branches.BranchHandler import BranchHandler
+from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
 

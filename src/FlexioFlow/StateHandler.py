@@ -11,7 +11,7 @@ from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
 
-from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Github.IssueGithub import IssueGithub
 from VersionControlProvider.Issuers import Issuers
 
 
@@ -34,12 +34,12 @@ class StateHandler:
     def file_exists(self) -> bool:
         return self.file_path().is_file()
 
-    def __issues_from_list_dict(self, issues: List[Dict[str, Union[str, int]]]) -> List[Dict[Issuers, Issue]]:
-        ret: List[Dict[Issuers, Issue]] = []
+    def __issues_from_list_dict(self, issues: List[Dict[str, Union[str, int]]]) -> List[Dict[Issuers, IssueGithub]]:
+        ret: List[Dict[Issuers, IssueGithub]] = []
         for issue in issues:
-            item: Dict[Issuers, Issue] = dict()
+            item: Dict[Issuers, IssueGithub] = dict()
             for k, v in issue.items():
-                item[Issuers[k.upper()]] = Issue().with_number(v)
+                item[Issuers[k.upper()]] = IssueGithub().with_number(v)
 
         return ret
 
@@ -109,7 +109,7 @@ class StateHandler:
         self.__state = self.__state.set_stable()
         return self
 
-    def get_issue(self, issuer: Issuers) -> Optional[Issue]:
+    def get_issue(self, issuer: Issuers) -> Optional[IssueGithub]:
         for issue_conf in self.__state.issues:
             if issuer in issue_conf:
                 return issue_conf[issuer]
@@ -121,14 +121,14 @@ class StateHandler:
                 return True
         return False
 
-    def replace_issue(self, issuer: Issuers, issue: Issue) -> StateHandler:
+    def replace_issue(self, issuer: Issuers, issue: IssueGithub) -> StateHandler:
         for issue_conf in self.__state.issues:
             if issuer in issue_conf:
                 self.__state.issues.remove(issue_conf)
         return self.set_issue(issuer, issue)
 
-    def set_issue(self, issuer: Issuers, issue: Issue) -> StateHandler:
-        item: Dict[Issuers, Issue] = dict()
+    def set_issue(self, issuer: Issuers, issue: IssueGithub) -> StateHandler:
+        item: Dict[Issuers, IssueGithub] = dict()
         item[issuer] = issue
         if not self.has_issue(issuer):
             self.__state.issues.append(item)

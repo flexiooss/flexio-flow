@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Union
 from Schemes.Schemes import Schemes
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
-from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Github.IssueGithub import IssueGithub
 from VersionControlProvider.Issuers import Issuers
 
 
@@ -12,7 +12,7 @@ class State:
     __version: Version
     __level: Level
     __schemes: List[Schemes]
-    __issues: List[Dict[Issuers, Issue]]
+    __issues: List[Dict[Issuers, IssueGithub]]
 
     def __init__(self) -> None:
         self.__issues = []
@@ -47,12 +47,12 @@ class State:
         self.__schemes = v
 
     @property
-    def issues(self) -> List[Dict[Issuers, Issue]]:
+    def issues(self) -> List[Dict[Issuers, IssueGithub]]:
         return self.__issues
 
     @issues.setter
-    def issues(self, v: List[Dict[Issuers, Issue]]):
-        if not (isinstance(issuer, Issuers) and isinstance(issue, Issue) for issuer, issue in v):
+    def issues(self, v: List[Dict[Issuers, IssueGithub]]):
+        if not (isinstance(issuer, Issuers) and isinstance(issue, IssueGithub) for issuer, issue in v):
             raise TypeError('issues should be an instance of List[Dict[Issuers, Issue]]')
         self.__issues = v
 
@@ -104,7 +104,7 @@ class State:
     def __issuesListValue(self) -> List[Dict[str, Union[str, int]]]:
         ret = []
         issuer: Issuers
-        issue: Issue
+        issue: IssueGithub
         for issuer, issue in self.issues:
             number: int = 0 if issue.number is None else issue.number
             item: Dict[str, Union[str, int]] = dict()

@@ -4,7 +4,7 @@ import re
 from subprocess import Popen, PIPE
 from typing import List
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.GitFlow.GitCmd import GitCmd
 from VersionControl.GitFlow.GitConfig import GitConfig
 

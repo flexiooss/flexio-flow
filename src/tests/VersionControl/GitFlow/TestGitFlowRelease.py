@@ -1,6 +1,5 @@
 import unittest
 
-from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.State import State
@@ -8,7 +7,7 @@ from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.GitFlow.GitFlow import GitFlow
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 

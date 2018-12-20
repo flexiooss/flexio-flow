@@ -12,7 +12,7 @@ from FlexioFlow.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
 from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.VersionController import VersionController
 from pathlib import Path
 

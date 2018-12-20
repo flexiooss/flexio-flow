@@ -3,7 +3,7 @@ from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'

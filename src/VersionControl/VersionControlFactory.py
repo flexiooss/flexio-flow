@@ -6,8 +6,8 @@ from FlexioFlow.StateHandler import StateHandler
 
 class VersionControlFactory:
     @staticmethod
-    def create(versionController: VersionController, state_handler:StateHandler) -> VersionControl:
-        if versionController is VersionController.GITFLOW:
+    def build(version_controller: VersionController, state_handler:StateHandler) -> VersionControl:
+        if version_controller is VersionController.GITFLOW:
             return GitFlow(state_handler)
 
-        raise ValueError("Bad VersionControlFactory creation: " + versionController.value)
+        raise NotImplementedError

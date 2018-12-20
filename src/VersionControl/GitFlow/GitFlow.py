@@ -2,7 +2,7 @@ from __future__ import annotations
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
 from VersionControl.GitFlow.Branches.BranchFactory import BranchFactory
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 
 
 class GitFlow(VersionControl):

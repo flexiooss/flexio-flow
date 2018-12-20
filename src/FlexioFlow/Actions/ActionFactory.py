@@ -10,7 +10,7 @@ from FlexioFlow.Actions.PreCheck import PreCheck
 from typing import Type, Dict, Optional
 
 from FlexioFlow.Actions.Version import Version
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
 
@@ -18,7 +18,7 @@ from FlexioFlow.StateHandler import StateHandler
 class ActionFactory:
 
     @staticmethod
-    def create(
+    def build(
             action: Actions,
             version_control: Type[VersionControl],
             branch: Optional[Branches],

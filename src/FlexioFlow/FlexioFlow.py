@@ -4,7 +4,7 @@ from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.Actions.Action import Action
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from FlexioFlow.Actions.ActionFactory import ActionFactory
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
@@ -34,21 +34,24 @@ class FlexioFlow:
         self.__dir_path: Path = dir_path
         self.__config_handler: ConfigHandler = config_handler
 
-    def __should_init_state_handler(self) -> bool:
+    def __ensure_state_handler(self):
         self.__state_handler = StateHandler(self.__dir_path)
         if self.__action not in [Actions.INIT]:
             self.__state_handler.load_file_config()
-            return True
-        return False
+
+    def __ensure_config_handler(self):
+        self.__config_handler.load_file_config()
 
     def process(self):
-        self.__should_init_state_handler()
-        version_control: Type[VersionControl] = VersionControlFactory.create(
+        self.__ensure_state_handler()
+        self.__ensure_config_handler()
+
+        version_control: Type[VersionControl] = VersionControlFactory.build(
             self.__version_controller,
             self.__state_handler
         )
 
-        action: Type[Action] = ActionFactory.create(
+        action: Type[Action] = ActionFactory.build(
             self.__action,
             version_control,
             self.__branch,

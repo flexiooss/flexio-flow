@@ -9,7 +9,7 @@ from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Repo import Repo
-from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Github.IssueGithub import IssueGithub
 from tests.VersionControlProvider.Github.api___secret import TOKEN_TEST, USER
 
 CONFIG_DIR: Path = Path('/tmp/')
@@ -45,7 +45,7 @@ class TestGithub(unittest.TestCase):
         print(r.json())
 
     def test_create_issue(self):
-        issue: Issue = Issue()
+        issue: IssueGithub = IssueGithub()
         issue.title = 'issue test ' + str(int(time.time()))
         issue.body = 'test description'
         issue.assign(USER)
@@ -59,7 +59,7 @@ class TestGithub(unittest.TestCase):
         self.assertIs(r.status_code, 201)
 
     def test_create_issue_comment(self):
-        issue: Issue = Issue()
+        issue: IssueGithub = IssueGithub()
         issue.title = 'issue test ' + str(int(time.time()))
         issue.body = 'test description'
         issue.assign(USER)
@@ -68,7 +68,7 @@ class TestGithub(unittest.TestCase):
         r: Response = Github(self.config_handler).with_repo(
             Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).create_issue(issue)
 
-        issue_created: Issue = Issue()
+        issue_created: IssueGithub = IssueGithub()
         issue_created.number = r.json().get('number')
 
         r: Response = Github(self.config_handler).with_repo(

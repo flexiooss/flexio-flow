@@ -2,7 +2,7 @@ from VersionControl.GitFlow.Branches.Hotfix.Hotfix import Hotfix
 from VersionControl.GitFlow.Branches.Release.Release import Release
 from VersionControl.GitFlow.Branches.Master.Master import Master
 
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.Branch import Branch
 from FlexioFlow.StateHandler import StateHandler
 

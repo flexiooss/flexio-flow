@@ -8,7 +8,7 @@ from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Version import Version
 from Schemes.Schemes import Schemes
 from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.GitFlow.GitFlow import GitFlow
 
 

@@ -4,7 +4,7 @@ import requests
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Repo import Repo
-from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Github.IssueGithub import IssueGithub
 
 
 class Github:
@@ -36,7 +36,7 @@ class Github:
         headers: Dict[str, str] = {}
         return requests.get(url, headers=self.__auth(headers))
 
-    def create_issue(self, issue: Issue) -> Response:
+    def create_issue(self, issue: IssueGithub) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'issues'])
         return requests.post(url, json=issue.__dict__(), headers=self.__auth({}))
 
@@ -44,6 +44,6 @@ class Github:
         url: str = '/'.join([self.__repo_base_url(), 'labels'])
         return requests.get(url, headers=self.__auth({}))
 
-    def create_comment(self, issue: Issue, body: str) -> Response:
+    def create_comment(self, issue: IssueGithub, body: str) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'issues', str(issue.number), 'comments'])
         return requests.post(url, json={'body': body}, headers=self.__auth({}))

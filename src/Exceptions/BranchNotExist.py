@@ -1,4 +1,4 @@
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 
 
 class BranchNotExist(Exception):

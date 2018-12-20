@@ -2,7 +2,7 @@ from __future__ import annotations
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
 

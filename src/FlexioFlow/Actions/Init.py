@@ -5,7 +5,7 @@ from Schemes.Schemes import Schemes
 from typing import List
 from FlexioFlow.Actions.Action import Action
 from FlexioFlow.Actions.Actions import Actions
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 
 
 class Init(Action):

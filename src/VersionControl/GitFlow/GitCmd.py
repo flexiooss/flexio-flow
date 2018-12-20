@@ -6,8 +6,8 @@ from typing import List, Optional, Pattern
 from Exceptions.FileNotExistError import FileNotExistError
 from Exceptions.NoBranchSelected import NoBranchSelected
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.BranchHandler import BranchHandler
-from VersionControl.Branches import Branches
+from Branches.BranchHandler import BranchHandler
+from Branches.Branches import Branches
 from VersionControl.GitFlow.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
 

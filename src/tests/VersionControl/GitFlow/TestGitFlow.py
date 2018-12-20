@@ -4,7 +4,7 @@ from FlexioFlow.StateHandler import StateHandler
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
 
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControlProvider.Github.Repo import Repo
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 

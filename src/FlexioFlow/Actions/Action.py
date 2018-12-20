@@ -2,7 +2,7 @@ from __future__ import annotations
 import abc
 from typing import Optional, Dict, Type
 from Core.ConfigHandler import ConfigHandler
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
 

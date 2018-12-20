@@ -2,7 +2,7 @@ from typing import Optional
 
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
-from VersionControl.Branches import Branches
+from Branches.Branches import Branches
 
 
 class BranchHandler:
