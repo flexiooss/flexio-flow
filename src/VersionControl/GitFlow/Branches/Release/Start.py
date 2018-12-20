@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from typing import Type, Optional
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
@@ -7,11 +7,13 @@ from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Issue import Issue
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
         self.__state_handler: StateHandler = state_handler
+        self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 
@@ -34,8 +36,7 @@ class Start:
             raise BranchAlreadyExist(Branches.HOTFIX)
 
         self.__git.checkout(Branches.DEVELOP)
-        branch_name: str = BranchHandler.branch_name_from_version(
-            Branches.RELEASE,
+        branch_name: str = BranchHandler(Branches.RELEASE).branch_name_from_version(
             self.__state_handler.state.version
         )
 
@@ -46,10 +47,7 @@ class Start:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         self.__git.commit(
-            ''.join([
-                "'Start release : ",
-                branch_name,
-                "'"])
+            ''.join(["'Start release : ", branch_name, "'"])
         ).set_upstream()
 
     def process(self):

@@ -72,15 +72,13 @@ class GitCmd:
         if self.__branch in [Branches.HOTFIX]:
             self.__exec(['git', 'checkout', Branches.MASTER.value])
             self.__state_handler.load_file_config()
-            branch_name: str = BranchHandler.branch_name_from_version(
-                Branches.HOTFIX,
+            branch_name: str = BranchHandler(Branches.HOTFIX).branch_name_from_version(
                 self.__state_handler.state.version
             )
         if self.__branch in [Branches.RELEASE]:
             self.__exec(['git', 'checkout', Branches.DEVELOP.value])
             self.__state_handler.load_file_config()
-            branch_name: str = BranchHandler.branch_name_from_version(
-                Branches.RELEASE,
+            branch_name: str = BranchHandler(Branches.RELEASE).branch_name_from_version(
                 self.__state_handler.state.version
             )
         self.__remote_branch_name = branch_name

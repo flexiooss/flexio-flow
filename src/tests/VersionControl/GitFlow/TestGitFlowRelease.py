@@ -18,10 +18,10 @@ class TestGitFlowRelease(unittest.TestCase):
     state_handler: StateHandler
 
     def __release_start(self):
-        GitFlow(self.state_handler).build_branch(Branches.RELEASE).set_action(Actions.START).process()
+        GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.START).process()
 
     def __release_finish(self):
-        GitFlow(self.state_handler).build_branch(Branches.RELEASE).set_action(Actions.FINISH).process()
+        GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.FINISH).process()
 
     def __get_master_state(self) -> State:
         self.git.checkout(Branches.MASTER)

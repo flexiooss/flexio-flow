@@ -1,9 +1,6 @@
 from __future__ import annotations
-
 from typing import List, Dict
-
 from requests import Response
-
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
@@ -167,11 +164,7 @@ Choose between : {0!s}
         labels: List[str] = labels.split(';')
         labels = self.__sanitize_list_input(labels)
 
-        print('labels')
-        print(labels)
-
         if len(labels):
-            print('ici')
             issue.labels = labels
         return self
 
@@ -232,5 +225,4 @@ url : {url!s}
             else:
                 raise GithubRequestApiError(r)
 
-        print(issue_number)
         return issue.with_number(issue_number)

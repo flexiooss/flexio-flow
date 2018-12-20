@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Type, Optional
+
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Version import Version
@@ -8,11 +10,13 @@ from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Issue import Issue
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
         self.__state_handler: StateHandler = state_handler
+        self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 
@@ -36,7 +40,8 @@ class Start:
 
         self.__git.checkout(Branches.MASTER)
         next_version: Version = self.__state_handler.next_dev_patch()
-        branch_name: str = BranchHandler.branch_name_from_version(Branches.HOTFIX, next_version)
+        branch_name: str = BranchHandler(Branches.HOTFIX).with_issue(self.__issue).branch_name_from_version(
+            next_version)
 
         self.__git.create_branch_from(branch_name, Branches.MASTER)
 

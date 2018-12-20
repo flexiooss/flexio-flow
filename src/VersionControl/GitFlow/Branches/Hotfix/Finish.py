@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+from typing import Type, Optional
+
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler, issue:Optional[Type[Issue]]):
         self.__state_handler: StateHandler = state_handler
+        self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 

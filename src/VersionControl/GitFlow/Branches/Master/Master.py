@@ -9,7 +9,7 @@ class Master(Branch):
 
     def process(self):
         if self.action is Actions.INIT:
-            print('Master Init')
+            self.start_message('Master Init')
             Init(self.state_handler).process()
-
-        print(self.__dict__)
+        else:
+            raise NotImplementedError

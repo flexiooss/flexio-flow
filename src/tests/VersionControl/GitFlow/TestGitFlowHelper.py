@@ -50,5 +50,5 @@ class TestGitFlowHelper:
         cls.mount_workdir_and_clone()
         state_handler: StateHandler = StateHandler(cls.DIR_PATH_TEST)
         state_handler.state = cls.fake_state(version)
-        GitFlow(state_handler).build_branch(Branches.MASTER).set_action(Actions.INIT).process()
+        GitFlow(state_handler).build_branch(Branches.MASTER).with_action(Actions.INIT).process()
         return state_handler

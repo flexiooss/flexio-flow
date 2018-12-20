@@ -10,9 +10,10 @@ class Hotfix(Branch):
 
     def process(self):
         if self.action is Actions.START:
-            print('Hotfix start')
-            Start(self.state_handler).process()
-        if self.action is Actions.FINISH:
-            print('Hotfix finish')
-            Finish(self.state_handler).process()
-        print(self.__dict__)
+            self.start_message('Hotfix start')
+            Start(self.state_handler, self.issue).process()
+        elif self.action is Actions.FINISH:
+            self.start_message('Hotfix finish')
+            Finish(self.state_handler, self.issue).process()
+        else:
+            raise NotImplementedError
