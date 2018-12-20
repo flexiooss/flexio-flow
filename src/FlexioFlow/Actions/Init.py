@@ -55,7 +55,7 @@ Enjoy with Flexio FLow
 """)
         return self
 
-    def __ensure_have_state(self) -> Init:
+    def __ensure_have_state(self) -> bool:
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
             print(
@@ -68,18 +68,20 @@ Flexio Flow already initialized
             use: str = input('Use this file (y)/n : ')
             use = use if use else 'y'
             if use is 'y':
-                return self
+                return True
 
-        return self.__start_message() \
+        self.__start_message() \
             .__input_version() \
             .__input_level() \
             .__input_schemes()
+
+        return False
 
     def __ensure_version_control_initialized(self):
         self.version_control.with_branch(Branches.MASTER).set_action(Actions.INIT).process()
 
     def process(self):
-        self.__ensure_have_state()
-        self.__ensure_version_control_initialized()
+        if not self.__ensure_have_state():
+            self.__ensure_version_control_initialized()
 
         self.__final_message()

@@ -22,8 +22,8 @@ class InputConfig:
         return github == 'y'
 
     def __input_user(self) -> str:
-        default_user: str = self.__exec_for_stdout(['git', 'config', 'user.email'])
-        message: str = 'Github user'
+        default_user: str = self.__exec_for_stdout(['git', 'config', '--global', 'user.name'])
+        message: str = 'Github pseudo'
         message += ' (' + default_user + ') :' if len(default_user) else ' : '
         user: str = input(message)
         user = user if user else default_user

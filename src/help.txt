@@ -13,11 +13,21 @@ HELP
 
 flexio-flow
               --help, -h
+              -V, --version-dir               Directory of repository with flexio-flow.yml at the root
 
-              init
+
+              <core>
+
+              core
+                        config
+                                    -c, --create [default]
+                                    -r, --read
 
 
               <branch>
+
+              init
+
               hotfix
                         start
                         finish
@@ -26,6 +36,24 @@ flexio-flow
                         precheck
                         start
                         finish
+
+
+              <issue>
+
+              issue
+                        read
+                        comment
+
+
+              <scheme>
+
+              scheme
+                        update
+                                -S, --scheme          maven|package|composer|docker
+                                -s, --scheme-dir      Directory with scheme configuration file
+              <version>
+              version
+
 
 
 #######################################################################################

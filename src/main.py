@@ -20,12 +20,14 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
     options: Dict[str, str] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hp:s:", ["help", "path", "scheme"])
+        opts, args = getopt.gnu_getopt(argv, "hV:S:s:", ["help", "version-dir=", "scheme=", "scheme-dir="])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
         print('May help you !!!!')
         sys.exit(2)
+    print(opts)
+    print(args)
 
     for opt, arg in opts:
         arg = re.sub('[\s+]', '', arg)
@@ -33,9 +35,11 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
             print(file.read())
             sys.exit()
-        if opt in ("-p", "--path"):
-            options.update({'path': arg})
-        if opt in ("-s", "--scheme"):
+        if opt in ("-V", "--version-dir"):
+            options.update({'version-dir': arg})
+        if opt in ("-s", "--scheme-dir"):
+            options.update({'scheme-dir': arg})
+        if opt in ("-S", "--scheme"):
             options.update({'scheme': Schemes[arg.upper()]})
 
     return args, options
@@ -76,9 +80,12 @@ def command_orders(argv: List[str]) -> Tuple[
     actions_core: Optional[ActionsCore]
 
     branch, action, core, actions_core = extract_subject_action(argv_no_options)
-    dir_path: Path = Path(options.get('path')) if options.get('path') else Path.cwd()
+    version_dir: Path = Path(options.get('version-dir')) if options.get('version-dir') else Path.cwd()
+    print(options)
 
-    return action, branch, core, actions_core, options, dir_path
+    print(version_dir)
+
+    return action, branch, core, actions_core, options, version_dir
 
 
 def main(argv) -> None:
@@ -88,9 +95,9 @@ def main(argv) -> None:
     actions_core: Optional[ActionsCore]
     options: Dict[str, str]
     dir_path: Path
-    action, branch, core, actions_core, options, dir_path = command_orders(argv)
+    action, branch, core, actions_core, options, version_dir = command_orders(argv)
 
-    config_handler:ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
+    config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
     if core:
         Core(actions_core, options=options, config_handler=config_handler).process()
@@ -100,7 +107,7 @@ def main(argv) -> None:
             action=action,
             branch=branch,
             options=options,
-            dir_path=dir_path,
+            dir_path=version_dir,
             config_handler=config_handler
         ).process()
     sys.exit()
