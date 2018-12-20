@@ -9,7 +9,7 @@ from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Repo import Repo
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControlProvider.Github.api___secret import TOKEN_TEST, USER
 
 CONFIG_DIR: Path = Path('/tmp/')
@@ -41,6 +41,12 @@ class TestGithub(unittest.TestCase):
     def test_list_labels(self):
         r: Response = Github(self.config_handler).with_repo(
             Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).get_labels()
+        self.assertIs(r.status_code, 200)
+        print(r.json())
+
+    def test_list_milestones(self):
+        r: Response = Github(self.config_handler).with_repo(
+            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')).get_open_milestones()
         self.assertIs(r.status_code, 200)
         print(r.json())
 

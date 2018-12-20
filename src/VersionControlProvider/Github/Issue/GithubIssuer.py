@@ -1,6 +1,5 @@
-from VersionControl.GitFlow.GitCmd import GitCmd
 from VersionControlProvider.Github.Issue.Create import Create
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Issuer import Issuer
 

@@ -5,7 +5,7 @@ from VersionControl.Branch import Branch
 from Branches.Branches import Branches
 from typing import Optional, Type
 
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issue import Issue
 
 

@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Union
 from Schemes.Schemes import Schemes
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issuers import Issuers
 
 

@@ -4,7 +4,7 @@ import requests
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Repo import Repo
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 
 
 class Github:
@@ -42,6 +42,10 @@ class Github:
 
     def get_labels(self) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'labels'])
+        return requests.get(url, headers=self.__auth({}))
+
+    def get_open_milestones(self) -> Response:
+        url: str = '/'.join([self.__repo_base_url(), 'milestones'])
         return requests.get(url, headers=self.__auth({}))
 
     def create_comment(self, issue: IssueGithub, body: str) -> Response:

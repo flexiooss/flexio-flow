@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import List, Dict, Type
+from typing import List, Dict
 
 from requests import Response
 
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
-from VersionControlProvider.Issue import Issue
 
 
 class Create:
@@ -36,18 +35,7 @@ class Create:
 """)
         return self
 
-    def __input_issue(self):
-        issue: IssueGithub = IssueGithub()
-        title: str = ''
-
-        while not len(title) > 0:
-            title = input('[required] Title : ')
-        issue.title = title
-
-        body: str = input('Description : ')
-        if body:
-            issue.body = body
-
+    def __input_assignees(self, issue: IssueGithub):
         message: str = '[separator `;`] Assignees'
         message += ' (' + self.__config_handler.config.github.user + ') :' if len(
             self.__config_handler.config.github.user) else ' : '
@@ -60,10 +48,38 @@ class Create:
         if len(assignees):
             issue.assignees = assignees
 
-        milestone: str = input('Milestone number : ')
+    def __input_milestone(self, issue: IssueGithub):
+        milestone: str = input(
+            'Milestone number < number | `list` for list all milestone | `create` for create milestone > : ')
+        if milestone == 'list':
+            r: Response = self.__github.get_open_milestones()
+            milestones_repo: List[str] = []
+            if r.status_code is 200:
+                milestones_response: List[Dict[str, str]] = r.json()
+                l: Dict[str, str]
+                for l in milestones_response:
+                    milestones_repo.append('{number!s} : {title!s}'.format(
+                        number=l.get('number'),
+                        title=l.get('title')
+                    ))
+
+            if len(milestones_repo):
+                message: str = """ 
+                    Choose number between : {0!s}
+                    """.format(' | '.join(milestones_repo))
+            else:
+                message: str = 'No milestone, type `create` for new milestone or `abort`'
+
+            milestone: str = input(message)
+
+        if milestone == 'create':
+
+        milestone = milestone if not milestone == 'abort' else ''
+
         if milestone:
             issue.milestone = int(milestone)
 
+    def __input_labels(self, issue: IssueGithub):
         message: str = '[separator `;`] Labels : '
         r: Response = self.__github.get_labels()
 
@@ -76,8 +92,8 @@ class Create:
 
         if len(labels_repo):
             message += """ 
-Choose between : {0!s}
-""".format(' | '.join(labels_repo))
+        Choose between : {0!s}
+        """.format(' | '.join(labels_repo))
 
         labels: str = input(message)
         labels: List[str] = labels.split(';')
@@ -85,6 +101,23 @@ Choose between : {0!s}
 
         if len(labels):
             issue.labels = labels
+
+    def __input_issue(self):
+        issue: IssueGithub = IssueGithub()
+        title: str = ''
+
+        while not len(title) > 0:
+            title = input('[required] Title : ')
+        issue.title = title
+
+        body: str = input('Description : ')
+        if body:
+            issue.body = body
+
+        self.__input_assignees()
+        self.__input_milestone()
+
+        self.__input_labels()
 
         return issue
 

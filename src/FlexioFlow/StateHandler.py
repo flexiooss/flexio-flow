@@ -11,7 +11,7 @@ from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
 
-from VersionControlProvider.Github.IssueGithub import IssueGithub
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issuers import Issuers
 
 
