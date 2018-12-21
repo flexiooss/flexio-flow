@@ -46,11 +46,11 @@ class Create:
         message: str = '[separator `;`] Assignees'
         message += ' (' + self.__config_handler.config.github.user + ') :' if len(
             self.__config_handler.config.github.user) else ''
-        message += ' < pseudo | `list` for list all users > : '
+        message += ' < pseudo | `-l` to list users > : '
 
         assignees: str = input(message)
         assignees = assignees if assignees else self.__config_handler.config.github.user
-        if assignees == 'list':
+        if assignees == '-l':
             r: Response = self.__github.get_users()
             members: List[str] = []
             if r.status_code is 200:
@@ -61,8 +61,9 @@ class Create:
                         login=l.get('login')
                     ))
             if len(members):
-                message: str = """ 
-Choose between : {0!s}
+                message: str = """{0!s} 
+
+Choose pseudo :
 """.format(' | '.join(members))
             else:
                 message: str = 'No member, type `abort`'
@@ -108,8 +109,8 @@ url : {url!s}
 
     def __input_milestone(self, issue: IssueGithub) -> Create:
         milestone: str = input(
-            'Milestone number < number | `list` for list all milestone | `create` for create milestone > ')
-        if milestone == 'list':
+            'Milestone number < number | `-l` to list the existing | `-c` to create milestone > ')
+        if milestone == '-c':
             r: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []
             if r.status_code is 200:
@@ -122,15 +123,16 @@ url : {url!s}
                     ))
 
             if len(milestones_repo):
-                message: str = """ 
-                    Choose number between : {0!s}
-                    """.format(' | '.join(milestones_repo))
+                message: str = """{0!s}
+
+Choose number : 
+""".format(' | '.join(milestones_repo))
             else:
-                message: str = 'No milestone, type `create` for new milestone or `abort`'
+                message: str = 'No milestone, type `-c` to create milestone or `-a` for abort'
 
             milestone: str = input(message)
 
-        if milestone == 'create':
+        if milestone == '-c':
             milestone: Milestone = self.__create_milestone()
             r: Response = self.__github.create_milestone(milestone)
             if r.status_code is 201:
@@ -138,7 +140,7 @@ url : {url!s}
                 milestone = milestone_created.get('number')
                 self.__resume_milestone(milestone_created)
 
-        milestone = milestone if not milestone == 'abort' else ''
+        milestone = milestone if not milestone == '-a' else ''
 
         if milestone:
             issue.milestone = int(milestone)
@@ -156,8 +158,9 @@ url : {url!s}
                 labels_repo.append(l.get('name'))
 
         if len(labels_repo):
-            message += """ 
-Choose between : {0!s}
+            message += """{0!s}
+
+Choose label : 
 """.format(' | '.join(labels_repo))
 
         labels: str = input(message)
