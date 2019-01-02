@@ -4,7 +4,6 @@ from typing import Type, Optional
 
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
-from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
@@ -33,7 +32,7 @@ class Finish:
 
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
-        self.__git.commit(''.join(["'Finish feature ` ", "self.__current_branch_name", " ` for dev: ",
+        self.__git.commit(''.join(["'Finish feature ` ", self.__current_branch_name, " ` for dev: ",
                                    self.__state_handler.version_as_str()])).push()
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(Branches.FEATURE).push()

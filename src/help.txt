@@ -28,6 +28,10 @@ flexio-flow
 
               init
 
+              feature
+                        start
+                        finish
+
               hotfix
                         start
                         finish
@@ -45,6 +49,11 @@ flexio-flow
                         comment
 
 
+              <commit>
+
+              commit
+
+
               <scheme>
 
               scheme
@@ -52,6 +61,7 @@ flexio-flow
                                 -S, --scheme          maven|package|composer|docker
                                 -s, --scheme-dir      Directory with scheme configuration file
               <version>
+
               version
 
 
