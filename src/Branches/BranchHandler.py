@@ -21,7 +21,7 @@ class BranchHandler:
     def __format_branch_name(self, version: str) -> str:
         return "{version!s}{issue_ref!s}".format(
             version=version,
-            issue_ref=self.issue.get_ref() if self.issue is not None else None
+            issue_ref=self.issue.get_ref() if self.issue is not None else ''
         )
 
     def branch_name_from_version(self, version: Optional[Version] = None) -> str:

@@ -36,16 +36,16 @@ class TestGitFlowHotfix(unittest.TestCase):
         self.git.checkout(Branches.DEVELOP)
         return self.state_handler.state
 
-    def tearDown(self):
-        TestGitFlowHelper.clean_workdir()
-        TestGitFlowHelper.init_repo(INIT_VERSION)
-        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
-            'hotfix/0.0.1-dev',
-            remote=True
-        ).delete_tag('0.0.1', remote=True)
-
-        TestGitFlowHelper.clean_remote_repo()
-        TestGitFlowHelper.clean_workdir()
+    # def tearDown(self):
+    #     TestGitFlowHelper.clean_workdir()
+    #     TestGitFlowHelper.init_repo(INIT_VERSION)
+    #     GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+    #         'hotfix/0.0.1-dev',
+    #         remote=True
+    #     ).delete_tag('0.0.1', remote=True)
+    #
+    #     TestGitFlowHelper.clean_remote_repo()
+    #     TestGitFlowHelper.clean_workdir()
 
     def setUp(self):
         TestGitFlowHelper.clean_workdir()
@@ -57,7 +57,6 @@ class TestGitFlowHotfix(unittest.TestCase):
 
         TestGitFlowHelper.clean_remote_repo()
         TestGitFlowHelper.clean_workdir()
-
 
         self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
 
@@ -135,3 +134,13 @@ class TestGitFlowHotfix(unittest.TestCase):
             Level.DEV,
             state_dev.level
         )
+
+    def test_clean_fail(self):
+        TestGitFlowHelper.init_repo(INIT_VERSION)
+        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+            'hotfix/0.0.2-dev',
+            remote=True
+        ).delete_tag('0.1.0', remote=True)
+
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir()

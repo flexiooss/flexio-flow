@@ -14,6 +14,8 @@ from VersionControlProvider.Github.Repo import Repo
 
 
 class GitCmd:
+    SPACES_PATTERN = re.compile('^\*?\s*')
+
     def __init__(self, state_handler: StateHandler):
         self.__state_handler = state_handler
         self.__branch: Optional[Branches] = None
@@ -118,7 +120,7 @@ class GitCmd:
     def __get_branch_name_from_git_list(self, branch: str) -> str:
         branch: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep', branch + '*'])
         return re.sub(
-            pattern=re.compile('^\*?\s*'),
+            pattern=self.SPACES_PATTERN,
             repl='',
             string=branch
         )

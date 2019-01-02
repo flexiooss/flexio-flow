@@ -40,6 +40,17 @@ class GitFlowCmd:
     def has_release(self, remote: bool) -> bool:
         return self.__has_branch_from_parent(Branches.RELEASE, remote)
 
+    def has_feature(self, remote: bool) -> bool:
+        return self.__has_branch_from_parent(Branches.FEATURE, remote)
+
+    def is_feature(self) -> bool:
+        resp: str = self.__git.get_current_branch_name()
+
+        return len(resp) > 0 and re.match(
+            re.compile('^' + Branches.FEATURE.value + '/.*$'),
+            resp
+        ) is not None
+
     def __has_branch_from_parent(self, branch: Branches, remote: bool) -> bool:
         if remote:
             resp: str = self.__exec_for_stdout(

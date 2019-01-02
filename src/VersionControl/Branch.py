@@ -27,8 +27,8 @@ class Branch(abc.ABC):
         return self
 
     def start_message(self, message: str):
-        print(
-            """####################################################
+        print("""
+####################################################
 {message!s}           
 ####################################################
 """.format(message=message))

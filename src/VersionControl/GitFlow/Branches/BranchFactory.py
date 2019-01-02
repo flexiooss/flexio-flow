@@ -10,10 +10,12 @@ from FlexioFlow.StateHandler import StateHandler
 class BranchFactory:
     @staticmethod
     def create(branch: Branches, state_handler: StateHandler) -> Branch:
-        if branch is Branches.MASTER:
-            return Master(state_handler)
+        if branch is Branches.FEATURE:
+            return Feature(state_handler)
         if branch is Branches.HOTFIX:
             return Hotfix(state_handler)
+        if branch is Branches.MASTER:
+            return Master(state_handler)
         if branch is Branches.RELEASE:
             return Release(state_handler)
 

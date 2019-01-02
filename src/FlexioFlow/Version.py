@@ -17,8 +17,8 @@ class Version:
 
         return cls(
             major=int(matches.groupdict().get('__major', 0)),
-            minor=int(matches.groupdict().get('minor', 0)),
-            patch=int(matches.groupdict().get('patch', 0))
+            minor=int(matches.groupdict().get('__minor', 0)),
+            patch=int(matches.groupdict().get('__patch', 0))
         )
 
     @property
@@ -35,7 +35,7 @@ class Version:
 
     @staticmethod
     def parse_str(v: str) -> Match:
-        matches = re.match('^(?P<__major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$', v)
+        matches = re.match('^(?P<__major>\d+)\.(?P<__minor>\d+)\.(?P<__patch>\d+)$', v)
         if not isinstance(matches, Match):
             raise ValueError(v + 'should be ^\d+\.\d+\.\d+$')
         return matches

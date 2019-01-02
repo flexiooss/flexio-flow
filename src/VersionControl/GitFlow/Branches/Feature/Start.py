@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from typing import Type, Optional
 
-from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.Version import Version
-from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
@@ -32,24 +29,17 @@ class Start:
         self.__git.checkout(Branches.MASTER).pull()
         return self
 
-    def __start_hotfix(self):
-        if self.__gitflow.has_release(True) or self.__gitflow.has_release(False):
-            raise BranchAlreadyExist(Branches.RELEASE)
-        if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
-            raise BranchAlreadyExist(Branches.HOTFIX)
+    def __start_feature(self):
+        self.__git.checkout(Branches.DEVELOP)
+        branch_name: str = BranchHandler(Branches.FEATURE).with_issue(self.__issue).branch_name_from_version(
+            self.__state_handler.state.version
+        )
 
-        self.__git.checkout(Branches.MASTER)
-        branch_name: str = BranchHandler(Branches.HOTFIX).with_issue(self.__issue).branch_name_from_version(
-            self.__state_handler.get_next_patch_version())
+        self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 
-        self.__git.create_branch_from(branch_name, Branches.MASTER)
-
-        self.__state_handler.next_dev_patch()
-        self.__state_handler.write_file()
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            "'Start hotfix : {branch_name!s}'".format(branch_name=branch_name)
+            ''.join(["'Start feature : ", branch_name, "'"])
         ).set_upstream()
 
     def process(self):
-        self.__init_gitflow().__pull_develop().__pull_master().__start_hotfix()
+        self.__init_gitflow().__pull_develop().__pull_master().__start_feature()

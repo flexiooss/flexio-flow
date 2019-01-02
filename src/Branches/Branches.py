@@ -3,9 +3,10 @@ from enum import Enum, unique
 
 @unique
 class Branches(Enum):
-    MASTER: str = 'master'
     DEVELOP: str = 'develop'
+    FEATURE: str = 'feature'
     HOTFIX: str = 'hotfix'
+    MASTER: str = 'master'
     RELEASE: str = 'release'
 
     @classmethod
