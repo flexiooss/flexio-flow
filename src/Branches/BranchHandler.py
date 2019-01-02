@@ -35,6 +35,15 @@ class BranchHandler:
         else:
             return self.branch.value
 
+    def branch_name_from_version_with_name(self, version: Version, name: str) -> str:
+        if self.branch is Branches.FEATURE:
+            return self.__format_branch_name('/'.join([
+                Branches.RELEASE.value,
+                '-'.join([name, str(version)])
+            ]))
+        else:
+            return self.branch.value
+
     @staticmethod
     def issue_number_from_branch_name(name: str) -> Optional[int]:
         regexp = re.compile('.*(?:#(?P<issue_number>[\d]+))$')

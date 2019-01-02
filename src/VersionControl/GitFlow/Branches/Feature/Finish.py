@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Type, Optional
-
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches

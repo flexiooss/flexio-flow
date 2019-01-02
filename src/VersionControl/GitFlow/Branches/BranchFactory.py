@@ -1,3 +1,4 @@
+from VersionControl.GitFlow.Branches.Feature.Feature import Feature
 from VersionControl.GitFlow.Branches.Hotfix.Hotfix import Hotfix
 from VersionControl.GitFlow.Branches.Release.Release import Release
 from VersionControl.GitFlow.Branches.Master.Master import Master
