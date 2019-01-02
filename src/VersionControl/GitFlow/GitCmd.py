@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
 from Exceptions.FileNotExistError import FileNotExistError
@@ -51,12 +52,19 @@ class GitCmd:
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch))
         return self
 
-    def checkout_with_branch_name(self, branch: str):
+    def checkout_with_branch_name(self, branch: str) -> GitCmd:
         self.__exec(['git', 'checkout', branch])
         try:
             self.__state_handler.load_file_config()
         except FileNotExistError as e:
             print(e)
+        return self
+
+    def checkout_file_with_branch_name(self, branch: str, file: Path) -> GitCmd:
+        if not file.is_file():
+            raise FileNotFoundError()
+        self.__exec(['git', 'checkout', branch, file.as_posix()])
+
         return self
 
     def create_branch_from(self, target_branch_name: str, source: Branches) -> GitCmd:

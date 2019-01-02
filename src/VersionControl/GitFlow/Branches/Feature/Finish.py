@@ -49,6 +49,7 @@ class Finish:
         return self
 
     def __finish_feature(self):
+        self.__git.checkout_file_with_branch_name(Branches.DEVELOP.value, self.__state_handler.file_path())
         self.__merge_develop().__delete_feature()
 
     def process(self):
