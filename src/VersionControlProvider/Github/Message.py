@@ -6,5 +6,7 @@ from VersionControlProvider.Message import Message as AbstractMessage
 
 
 class Message(AbstractMessage):
-    def keywords_dialect(self) -> Type[AbstractKeyWordsDialect]:
+
+    @staticmethod
+    def keywords_dialect() -> Type[AbstractKeyWordsDialect]:
         return KeyWordsDialect

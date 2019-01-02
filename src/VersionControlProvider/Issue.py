@@ -34,5 +34,5 @@ class Issue(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def __dict__(self) -> dict:
+    def __dict__(self):
         pass

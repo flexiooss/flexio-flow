@@ -1,28 +1,12 @@
 from __future__ import annotations
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Type
 
+from VersionControlProvider.Issue import Issue
 from VersionControlProvider.IssueState import IssueState
 
 
-class IssueGithub:
-    PREFIX: str = '#'
-    number: Optional[int]
-    title: Optional[str]
-    body: Optional[str]
-    milestone: Optional[int]
-    state: Optional[IssueState]
-    labels: List[str]
-    assignees: List[str]
-
-    def __init__(self):
-        self.number = None
-        self.title = None
-        self.body = None
-        self.milestone = None
-        self.state = None
-        self.assignees = []
-        self.labels = []
+class IssueGithub(Issue):
 
     def with_number(self, number: int) -> IssueGithub:
         self.number = number

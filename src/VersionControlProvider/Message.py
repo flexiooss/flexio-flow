@@ -13,8 +13,9 @@ class Message(abc.ABC):
         self.message: str = message
         self.issue: Optional[Type[Issue]] = issue
 
+    @staticmethod
     @abc.abstractmethod
-    def keywords_dialect(self) -> Type[KeyWordsDialect]:
+    def keywords_dialect() -> Type[KeyWordsDialect]:
         pass
 
     def with_close(self) -> str:

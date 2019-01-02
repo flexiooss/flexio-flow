@@ -48,8 +48,8 @@ class InputConfig:
             self.config_handler.config = self.config_handler.config.with_github(github)
             self.__check_user()
         else:
-            user: Optional[str] = None
-            token: Optional[str] = None
-            github = ConfigGithub(activate=activate, user=user, token=token)
+            user_opt: Optional[str] = None
+            token_opt: Optional[str] = None
+            github = ConfigGithub(activate=activate, user=user_opt, token=token_opt)
             self.config_handler.config = self.config_handler.config.with_github(github)
         return github

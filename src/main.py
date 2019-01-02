@@ -1,5 +1,5 @@
 #! /usr/bin/env python3.7
-from typing import Tuple, List, Optional, Dict
+from typing import Tuple, List, Optional, Dict, Union
 import getopt
 import re
 import sys
@@ -17,8 +17,8 @@ from VersionControl.VersionController import VersionController
 from pathlib import Path
 
 
-def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, str]]:
-    options: Dict[str, str] = {}
+def parse_options(argv: List[str]) -> Tuple[List[str],Dict[str, Union[str, Schemes]]]:
+    options: Dict[str, Union[str, Schemes]] = {}
 
     try:
         opts, args = getopt.gnu_getopt(argv, "hV:S:s:", ["help", "version-dir=", "scheme=", "scheme-dir="])
@@ -70,9 +70,9 @@ def extract_subject_action(argv: List[str]) -> Tuple[
 
 
 def command_orders(argv: List[str]) -> Tuple[
-    Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[str, str], Path]:
+    Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[str, Union[str, Schemes]], Path]:
     argv_no_options: List[str]
-    options: Dict[str, str]
+    options: Dict[str, Union[str, Schemes]]
     argv_no_options, options = parse_options(argv)
 
     branch: Optional[Branches]
@@ -81,7 +81,7 @@ def command_orders(argv: List[str]) -> Tuple[
     core_actions: Optional[ActionsCore]
 
     branch, branch_action, subject, core_actions = extract_subject_action(argv_no_options)
-    version_dir: Path = Path(options.get('version-dir')) if options.get('version-dir') else Path.cwd()
+    version_dir: Path = Path(str(options.get('version-dir'))) if options.get('version-dir') else Path.cwd()
 
     return branch_action, branch, subject, core_actions, options, version_dir
 
@@ -91,15 +91,19 @@ def main(argv) -> None:
     branch: Optional[Branches]
     subject: Optional[Subject]
     core_actions: Optional[ActionsCore]
-    options: Dict[str, str]
+    options: Dict[str, Union[str, Schemes]]
     version_dir: Path
     branch_action, branch, subject, core_actions, options, version_dir = command_orders(argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
     if subject is Subject.CORE:
+        if core_actions is None:
+            raise ValueError('should have Action')
         Core(core_actions, options=options, config_handler=config_handler).process()
     else:
+        if branch_action is None:
+            raise ValueError('should have Action')
         FlexioFlow(
             version_controller=VersionController.GITFLOW,
             action=branch_action,

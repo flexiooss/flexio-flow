@@ -1,4 +1,4 @@
-from typing import Optional, Type, Dict
+from typing import Optional, Type, Dict, Union
 
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
@@ -6,6 +6,7 @@ from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.Actions.Action import Action
 from Branches.Branches import Branches
 from FlexioFlow.Actions.ActionFactory import ActionFactory
+from Schemes.Schemes import Schemes
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
 from VersionControl.VersionControlFactory import VersionControlFactory
@@ -19,7 +20,7 @@ class FlexioFlow:
                  version_controller: VersionController,
                  action: Actions,
                  branch: Optional[Branches],
-                 options: Dict[str, str],
+                 options: Dict[str, Union[str, Schemes]],
                  dir_path: Path,
                  config_handler: ConfigHandler
                  ) -> None:
@@ -27,10 +28,10 @@ class FlexioFlow:
         self.__version_controller: VersionController = version_controller
         self.__action: Actions = action
         self.__branch: Optional[Branches] = branch
-        self.__options: Dict[str, str] = options
+        self.__options: Dict[str, Union[str, Schemes]] = options
 
         if not dir_path.is_dir():
-            raise ValueError(dir_path + ' : Path not exists')
+            raise NotADirectoryError
 
         self.__dir_path: Path = dir_path
         self.__config_handler: ConfigHandler = config_handler

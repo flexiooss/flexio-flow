@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 
 class ConfigGithub:
@@ -21,9 +21,9 @@ class ConfigGithub:
     def activate(self) -> bool:
         return self.__activate
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, Union[bool, str]]:
         return {
             'activate': self.activate,
-            'user': self.user,
-            'token': self.token
+            'user': str(self.user) if self.user is not None else '',
+            'token': str(self.token) if self.user is not None else ''
         }

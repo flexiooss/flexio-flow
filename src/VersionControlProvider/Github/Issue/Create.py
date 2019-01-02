@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict
+from typing import List, Dict, Type
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Github import Github
@@ -7,6 +7,7 @@ from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApi
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
+from VersionControlProvider.Issue import Issue
 
 
 class Create:
@@ -111,10 +112,10 @@ url : {url!s}
         milestone: str = input(
             'Milestone number < number | `-l` to list the existing | `-c` to create milestone > ')
         if milestone == '-c':
-            r: Response = self.__github.get_open_milestones()
+            r1: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []
-            if r.status_code is 200:
-                milestones_response: List[Dict[str, str]] = r.json()
+            if r1.status_code is 200:
+                milestones_response: List[Dict[str, str]] = r1.json()
                 l: Dict[str, str]
                 for l in milestones_response:
                     milestones_repo.append('{number!s} : {title!s}'.format(
@@ -133,10 +134,10 @@ Choose number :
             milestone: str = input(message)
 
         if milestone == '-c':
-            milestone: Milestone = self.__create_milestone()
-            r: Response = self.__github.create_milestone(milestone)
-            if r.status_code is 201:
-                milestone_created: Dict[str, str] = r.json()
+            milestone_inst: Milestone = self.__create_milestone()
+            r2: Response = self.__github.create_milestone(milestone_inst)
+            if r2.status_code is 201:
+                milestone_created: Dict[str, str] = r2.json()
                 milestone = milestone_created.get('number')
                 self.__resume_milestone(milestone_created)
 
@@ -164,11 +165,11 @@ Choose label :
 """.format(' | '.join(labels_repo))
 
         labels: str = input(message)
-        labels: List[str] = labels.split(';')
-        labels = self.__sanitize_list_input(labels)
+        labels_lst: List[str] = labels.split(';')
+        labels_lst = self.__sanitize_list_input(labels_lst)
 
-        if len(labels):
-            issue.labels = labels
+        if len(labels_lst):
+            issue.labels = labels_lst
         return self
 
     def __input_issue(self):
@@ -207,7 +208,7 @@ url : {url!s}
         )
         return self
 
-    def process(self) -> IssueGithub:
+    def process(self) -> Type[Issue]:
         self.__start_message()
         issue_number: int
         if self.__would_attach_issue():

@@ -21,7 +21,7 @@ class Milestone:
         self.number = number
         return self
 
-    def __dict__(self) -> dict:
+    def __dict__(self):
         milestone: dict = {
             'title': self.title
         }
