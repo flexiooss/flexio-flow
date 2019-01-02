@@ -11,16 +11,12 @@ from VersionControl.GitFlow.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
 
 
-# from Branches.BranchHandler import BranchHandler
-
-
 class GitCmd:
-    SPACES_PATTERN = re.compile('^\*?\s*')
+    SPACES_PATTERN: Pattern = re.compile('^\*?\s*')
 
     def __init__(self, state_handler: StateHandler):
         self.__state_handler = state_handler
         self.__branch: Optional[Branches] = None
-        # self.__remote_branch_name: Optional[str] = None
 
     def __exec(self, args: List[str]):
         Popen(args, cwd=self.__state_handler.dir_path.as_posix()).communicate()
@@ -48,7 +44,6 @@ class GitCmd:
 
     def checkout(self, branch: Branches) -> GitCmd:
         self.__branch = branch
-        # self.__ensure_remote_branch_name()
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch))
         return self
 
@@ -75,25 +70,6 @@ class GitCmd:
         except FileNotExistError as e:
             print(e)
         return self
-
-    # def __ensure_remote_branch_name(self) -> GitCmd:
-    #     if not self.__branch:
-    #         raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
-    #     branch_name: str = self.__branch.value
-    #     if self.__branch in [Branches.HOTFIX]:
-    #         self.__exec(['git', 'checkout', Branches.MASTER.value])
-    #         self.__state_handler.load_file_config()
-    #         branch_name: str = BranchHandler(Branches.HOTFIX).branch_name_from_version(
-    #             self.__state_handler.state.version
-    #         )
-    #     if self.__branch in [Branches.RELEASE]:
-    #         self.__exec(['git', 'checkout', Branches.DEVELOP.value])
-    #         self.__state_handler.load_file_config()
-    #         branch_name: str = BranchHandler(Branches.RELEASE).branch_name_from_version(
-    #             self.__state_handler.state.version
-    #         )
-    #     self.__remote_branch_name = branch_name
-    #     return self
 
     def commit(self, msg: str) -> GitCmd:
         self.__exec(["git", "commit", "-am", msg])

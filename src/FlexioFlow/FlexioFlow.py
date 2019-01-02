@@ -28,9 +28,10 @@ class FlexioFlow:
         self.__action: Actions = action
         self.__branch: Optional[Branches] = branch
         self.__options: Dict[str, str] = options
+
         if not dir_path.is_dir():
             raise ValueError(dir_path + ' : Path not exists')
-        # self.__dir_path: Path = dir_path.rstrip('/') + '/'
+
         self.__dir_path: Path = dir_path
         self.__config_handler: ConfigHandler = config_handler
 

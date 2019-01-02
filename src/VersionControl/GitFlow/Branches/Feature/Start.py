@@ -11,9 +11,11 @@ from VersionControlProvider.Issue import Issue
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], name: str):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
+        self.__name: str = name
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 
