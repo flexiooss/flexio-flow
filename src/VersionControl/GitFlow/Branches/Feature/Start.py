@@ -7,6 +7,7 @@ from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 
 
@@ -41,7 +42,10 @@ class Start:
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 
         self.__git.commit(
-            ''.join(["'Start feature : ", branch_name, "'"])
+            Message(
+                message=''.join(["'Start feature : ", branch_name, "'"]),
+                issue=self.__issue
+            ).with_ref()
         ).set_upstream()
 
     def process(self):

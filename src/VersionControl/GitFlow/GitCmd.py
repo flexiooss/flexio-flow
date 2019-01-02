@@ -138,11 +138,13 @@ class GitCmd:
         self.__state_handler.load_file_config()
         return self
 
-    def merge_with_version_message(self, branch: Branches, options: List[str] = []) -> GitCmd:
+    def merge_with_version_message(self, branch: Branches, message: str = '', options: List[str] = []) -> GitCmd:
+        commit_message: str = """merge : {branch_name!s}
+{message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
             branch,
-            options=['--commit', '-m', '"merge : ' + self.get_branch_name_from_git(branch) + '"',
-                     *options])
+            options=['--commit', '-m', commit_message, *options]
+        )
 
     def merge_with_theirs(self, branch: Branches) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)

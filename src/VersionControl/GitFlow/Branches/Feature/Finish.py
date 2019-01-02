@@ -6,6 +6,7 @@ from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 
 
@@ -31,11 +32,27 @@ class Finish:
 
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
-        self.__git.commit(''.join(["'Finish feature ` ", self.__current_branch_name, " ` for dev: ",
-                                   self.__state_handler.version_as_str()])).push()
+        self.__git.commit(
+            Message(
+                message=''.join([
+                    "'Finish feature ` ",
+                    self.__current_branch_name,
+                    " ` for dev: ",
+                    self.__state_handler.version_as_str()
+                ]),
+                issue=self.__issue
+            ).with_close()
+        ).push()
 
-        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(Branches.FEATURE).push()
-        if (self.__git.has_conflict()):
+        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
+            branch=Branches.FEATURE,
+            message=Message(
+                message='',
+                issue=self.__issue
+            ).with_ref()
+        ).push()
+
+        if self.__git.has_conflict():
             print('##################################################')
             print('develop have conflicts : ')
             print(self.__git.get_conflict())

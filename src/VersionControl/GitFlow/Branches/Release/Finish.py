@@ -8,6 +8,7 @@ from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 
 
@@ -32,8 +33,12 @@ class Finish:
 
     def __merge_master(self) -> Finish:
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
-            Branches.RELEASE,
-            ['--no-ff', '--strategy-option', 'theirs']
+            branch=Branches.RELEASE,
+            message=Message(
+                message='',
+                issue=self.__issue
+            ).with_ref(),
+            options=['--no-ff', '--strategy-option', 'theirs']
         ).tag(
             self.__state_handler.version_as_str(),
             ' '.join([
@@ -56,9 +61,21 @@ class Finish:
         self.__state_handler.set_dev()
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(''.join(["'Finish release for dev: ", self.__state_handler.version_as_str()])).push()
+        self.__git.commit(
+            Message(
+                message=''.join(["'Finish release for dev: ", self.__state_handler.version_as_str()]),
+                issue=self.__issue
+            ).with_ref()
+        ).push()
 
-        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(Branches.RELEASE).push()
+        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
+            branch=Branches.RELEASE,
+            message=Message(
+                message='',
+                issue=self.__issue
+            ).with_ref()
+        ).push()
+
         if (self.__git.has_conflict()):
             print('##################################################')
             print('develop have conflicts : ')

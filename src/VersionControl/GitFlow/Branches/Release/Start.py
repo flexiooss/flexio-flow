@@ -7,6 +7,7 @@ from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 
 
@@ -47,7 +48,10 @@ class Start:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         self.__git.commit(
-            ''.join(["'Start release : ", branch_name, "'"])
+            Message(
+                message=''.join(["'Start release : ", branch_name, "'"]),
+                issue=self.__issue
+            ).with_ref()
         ).set_upstream()
 
     def process(self):

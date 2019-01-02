@@ -4,12 +4,12 @@ from typing import Type, Optional
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.Version import Version
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 
 
@@ -48,7 +48,10 @@ class Start:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            "'Start hotfix : {branch_name!s}'".format(branch_name=branch_name)
+            Message(
+                message="'Start hotfix : {branch_name!s}'".format(branch_name=branch_name),
+                issue=self.__issue
+            ).with_ref()
         ).set_upstream()
 
     def process(self):
