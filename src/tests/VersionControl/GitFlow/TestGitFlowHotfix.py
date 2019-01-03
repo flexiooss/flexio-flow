@@ -1,5 +1,5 @@
 import unittest
-from typing import Dict
+from typing import Dict, Optional
 
 from requests import Response
 
@@ -29,8 +29,11 @@ class TestGitFlowHotfix(unittest.TestCase):
     config_handler: ConfigHandler
     github: Github
 
-    def __hotfix_start(self):
-        GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.START).process()
+    def __hotfix_start(self, issue: Optional[IssueGithub]=None):
+        if issue is not None:
+            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_issue(issue).with_action(Actions.START).process()
+        else:
+            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.START).process()
 
     def __hotfix_finish(self):
         GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.FINISH).process()
@@ -47,12 +50,12 @@ class TestGitFlowHotfix(unittest.TestCase):
         self.git.checkout(Branches.DEVELOP)
         return self.state_handler.state
 
-    def __post_issue(self, issue: IssueGithub) -> int:
+    def __post_issue(self, issue: IssueGithub) -> IssueGithub:
         r: Response = self.github.create_issue(issue)
 
         if r.status_code is 201:
             issue_created: Dict[str, str] = r.json()
-            return int(issue_created.get('number'))
+            return issue.with_number(int(issue_created.get('number')))
         else:
             raise GithubRequestApiError(r)
 
@@ -128,12 +131,12 @@ class TestGitFlowHotfix(unittest.TestCase):
         issue: IssueGithub = IssueGithub()
         issue.title = 'test_should_start_hotfix_with_issue'
 
-        issue_number: int = self.__post_issue(issue)
+        issue_created: int = self.__post_issue(issue)
 
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), False)
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), False)
 
-        self.__hotfix_start()
+        self.__hotfix_start(issue_created)
 
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), True)
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), True)

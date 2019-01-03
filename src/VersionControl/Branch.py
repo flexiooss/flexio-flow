@@ -12,9 +12,9 @@ class Branch(abc.ABC):
 
     def __init__(self, state_handler: StateHandler) -> None:
         self.state_handler: StateHandler = state_handler
-        self.issue: Optional[Type[Issue]] = None
+        self.issue: Optional[Issue] = None
 
-    def with_issue(self, issue: Type[Issue]) -> Branch:
+    def with_issue(self, issue: Issue) -> Branch:
         self.issue = issue
         return self
 
