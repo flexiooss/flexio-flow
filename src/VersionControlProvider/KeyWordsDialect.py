@@ -7,10 +7,10 @@ class KeyWordsDialect(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def ref(self) -> str:
+    def ref() -> str:
         pass
 
     @staticmethod
     @abc.abstractmethod
-    def close(self) -> str:
+    def close() -> str:
         pass

@@ -4,9 +4,9 @@ from VersionControlProvider.KeyWordsDialect import KeyWordsDialect as AbstractKe
 class KeyWordsDialect(AbstractKeyWordsDialect):
 
     @staticmethod
-    def ref(self) -> str:
+    def ref() -> str:
         return 'ref'
 
     @staticmethod
-    def close(self) -> str:
+    def close() -> str:
         return 'close'

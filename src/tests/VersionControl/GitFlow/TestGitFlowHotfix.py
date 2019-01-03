@@ -20,6 +20,7 @@ from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'
+ISSUE_NUMBER: int = 14
 
 
 class TestGitFlowHotfix(unittest.TestCase):
@@ -29,9 +30,10 @@ class TestGitFlowHotfix(unittest.TestCase):
     config_handler: ConfigHandler
     github: Github
 
-    def __hotfix_start(self, issue: Optional[IssueGithub]=None):
+    def __hotfix_start(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_issue(issue).with_action(Actions.START).process()
+            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_issue(issue).with_action(
+                Actions.START).process()
         else:
             GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.START).process()
 
@@ -62,29 +64,36 @@ class TestGitFlowHotfix(unittest.TestCase):
     def tearDown(self):
         TestGitFlowHelper.clean_workdir()
         TestGitFlowHelper.init_repo(INIT_VERSION)
-        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+        self.git.delete_branch_from_name(
             'hotfix/0.0.1-dev',
             remote=True
-        ).delete_tag('0.0.1', remote=True)
+        ).delete_tag('0.0.1', remote=True).delete_branch_from_name(
+            'hotfix/0.0.1-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
+            remote=True
+        )
 
         TestGitFlowHelper.clean_remote_repo()
         TestGitFlowHelper.clean_workdir()
 
     def setUp(self):
-        TestGitFlowHelper.clean_workdir()
-        TestGitFlowHelper.init_repo(INIT_VERSION)
-        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
-            'hotfix/0.0.1-dev',
-            remote=True
-        ).delete_tag('0.0.1', remote=True)
+        # TestGitFlowHelper.clean_workdir()
+        # TestGitFlowHelper.init_repo(INIT_VERSION)
+        # GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+        #     'hotfix/0.0.1-dev',
+        #     remote=True
+        # ).delete_tag('0.0.1', remote=True)
 
-        TestGitFlowHelper.clean_remote_repo()
-        TestGitFlowHelper.clean_workdir()
+        # TestGitFlowHelper.clean_remote_repo()
+        # TestGitFlowHelper.clean_workdir()
 
         self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
 
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
+
+    def __setup_config(self):
+        self.config_handler = TestGitFlowHelper.setup_config_handler()
+        self.github = TestGitFlowHelper.setup_github_repo(self.config_handler)
 
     def test_should_start_hotfix(self):
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), False)
@@ -128,18 +137,24 @@ class TestGitFlowHotfix(unittest.TestCase):
             self.__hotfix_start()
 
     def test_should_start_hotfix_with_issue(self):
-        issue: IssueGithub = IssueGithub()
-        issue.title = 'test_should_start_hotfix_with_issue'
+        # self.__setup_config()
+        #
+        # issue: IssueGithub = IssueGithub()
+        # issue.title = 'test_should_start_hotfix_with_issue'
+        #
+        # issue_created: IssueGithub = self.__post_issue(issue)
+        issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
 
-        issue_created: int = self.__post_issue(issue)
-
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), False)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), False)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True),
+                      False)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=False),
+                      False)
 
         self.__hotfix_start(issue_created)
 
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), True)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), True)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True), True)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=False),
+                      True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -151,16 +166,6 @@ class TestGitFlowHotfix(unittest.TestCase):
             state_master.level
         )
 
-        state_hotfix: State = self.__get_hotfix_state()
-        self.assertEqual(
-            '0.0.1',
-            str(state_hotfix.version)
-        )
-        self.assertEqual(
-            Level.DEV,
-            state_hotfix.level
-        )
-
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
             '0.1.0',
@@ -169,6 +174,16 @@ class TestGitFlowHotfix(unittest.TestCase):
         self.assertEqual(
             Level.DEV,
             state_dev.level
+        )
+
+        state_hotfix: State = self.__get_hotfix_state()
+        self.assertEqual(
+            '0.0.1',
+            str(state_hotfix.version)
+        )
+        self.assertEqual(
+            Level.DEV,
+            state_hotfix.level
         )
         with self.assertRaises(BranchAlreadyExist):
             self.__hotfix_start()
@@ -205,11 +220,11 @@ class TestGitFlowHotfix(unittest.TestCase):
         )
 
     def test_clean_fail(self):
-        TestGitFlowHelper.init_repo(INIT_VERSION)
-        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
-            'hotfix/0.0.2-dev',
-            remote=True
-        ).delete_tag('0.1.0', remote=True)
+        # TestGitFlowHelper.init_repo(INIT_VERSION)
+        # GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+        #     'hotfix/0.0.2-dev',
+        #     remote=True
+        # ).delete_tag('0.1.0', remote=True)
 
         TestGitFlowHelper.clean_remote_repo()
         TestGitFlowHelper.clean_workdir()
