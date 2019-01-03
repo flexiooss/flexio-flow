@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 
+from Core.Config import Config
+from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.Actions.Actions import Actions
 from FlexioFlow.Level import Level
 from FlexioFlow.State import State
@@ -10,6 +12,10 @@ from Schemes.Schemes import Schemes
 from VersionControl.GitFlow.GitCmd import GitCmd
 from Branches.Branches import Branches
 from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControlProvider.Github.ConfigGithub import ConfigGithub
+from VersionControlProvider.Github.Github import Github
+from VersionControlProvider.Github.Repo import Repo
+from tests.VersionControlProvider.Github.api___secret import TOKEN_TEST, USER
 
 
 class TestGitFlowHelper:
@@ -52,3 +58,19 @@ class TestGitFlowHelper:
         state_handler.state = cls.fake_state(version)
         GitFlow(state_handler).build_branch(Branches.MASTER).with_action(Actions.INIT).process()
         return state_handler
+
+    @classmethod
+    def setup_config_handler(cls) -> ConfigHandler:
+        config_handler: ConfigHandler = ConfigHandler(cls.DIR_PATH_TEST)
+        config_handler.config = Config(ConfigGithub(
+            activate=True,
+            user=USER,
+            token=TOKEN_TEST
+        ))
+        return config_handler
+
+    @classmethod
+    def setup_github_repo(cls, config_handler: ConfigHandler) -> Github:
+        return Github(config_handler).with_repo(
+            Repo(owner='flexiooss', repo='flexio-flow-punching-ball')
+        )

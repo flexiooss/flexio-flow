@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from typing import List, Dict, Optional, Type
-
 from VersionControlProvider.Issue import Issue
-from VersionControlProvider.IssueState import IssueState
 
 
 class IssueGithub(Issue):
-
-    def with_number(self, number: int) -> IssueGithub:
-        self.number = number
-        return self
 
     def get_ref(self) -> str:
         if self.number is None:
@@ -27,7 +20,7 @@ class IssueGithub(Issue):
             self.labels.append(label)
         return self
 
-    def __dict__(self) -> dict:
+    def __dict__(self):
         issue: dict = {
             'title': self.title
         }

@@ -1,5 +1,9 @@
 import unittest
+from typing import Dict
 
+from requests import Response
+
+from Core.ConfigHandler import ConfigHandler
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.Actions.Actions import Actions
@@ -10,6 +14,9 @@ from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.GitFlow.GitCmd import GitCmd
 from Branches.Branches import Branches
 from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControlProvider.Github.Github import Github
+from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'
@@ -17,6 +24,10 @@ INIT_VERSION: str = '0.0.0'
 
 class TestGitFlowHotfix(unittest.TestCase):
     state_handler: StateHandler
+    git: GitCmd
+    git_flow: GitFlowCmd
+    config_handler: ConfigHandler
+    github: Github
 
     def __hotfix_start(self):
         GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.START).process()
@@ -36,16 +47,25 @@ class TestGitFlowHotfix(unittest.TestCase):
         self.git.checkout(Branches.DEVELOP)
         return self.state_handler.state
 
-    # def tearDown(self):
-    #     TestGitFlowHelper.clean_workdir()
-    #     TestGitFlowHelper.init_repo(INIT_VERSION)
-    #     GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
-    #         'hotfix/0.0.1-dev',
-    #         remote=True
-    #     ).delete_tag('0.0.1', remote=True)
-    #
-    #     TestGitFlowHelper.clean_remote_repo()
-    #     TestGitFlowHelper.clean_workdir()
+    def __post_issue(self, issue: IssueGithub) -> int:
+        r: Response = self.github.create_issue(issue)
+
+        if r.status_code is 201:
+            issue_created: Dict[str, str] = r.json()
+            return int(issue_created.get('number'))
+        else:
+            raise GithubRequestApiError(r)
+
+    def tearDown(self):
+        TestGitFlowHelper.clean_workdir()
+        TestGitFlowHelper.init_repo(INIT_VERSION)
+        GitCmd(state_handler=StateHandler(TestGitFlowHelper.DIR_PATH_TEST)).delete_branch_from_name(
+            'hotfix/0.0.1-dev',
+            remote=True
+        ).delete_tag('0.0.1', remote=True)
+
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir()
 
     def setUp(self):
         TestGitFlowHelper.clean_workdir()
@@ -71,6 +91,52 @@ class TestGitFlowHotfix(unittest.TestCase):
 
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=False), True)
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), True)
+
+        state_master: State = self.__get_master_state()
+        self.assertEqual(
+            '0.0.0',
+            str(state_master.version)
+        )
+        self.assertEqual(
+            Level.STABLE,
+            state_master.level
+        )
+
+        state_hotfix: State = self.__get_hotfix_state()
+        self.assertEqual(
+            '0.0.1',
+            str(state_hotfix.version)
+        )
+        self.assertEqual(
+            Level.DEV,
+            state_hotfix.level
+        )
+
+        state_dev: State = self.__get_dev_state()
+        self.assertEqual(
+            '0.1.0',
+            str(state_dev.version)
+        )
+        self.assertEqual(
+            Level.DEV,
+            state_dev.level
+        )
+        with self.assertRaises(BranchAlreadyExist):
+            self.__hotfix_start()
+
+    def test_should_start_hotfix_with_issue(self):
+        issue: IssueGithub = IssueGithub()
+        issue.title = 'test_should_start_hotfix_with_issue'
+
+        issue_number: int = self.__post_issue(issue)
+
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), False)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), False)
+
+        self.__hotfix_start()
+
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=True), True)
+        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev#' + str(issue_number), remote=False), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
