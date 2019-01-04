@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Type, Optional
 from slugify import slugify
+
+from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
@@ -38,6 +40,9 @@ class Start:
             version=self.__state_handler.state.version,
             name=self.__name
         )
+
+        if self.__git.branch_exists_from_name(branch_name,True) or self.__git.branch_exists_from_name(branch_name,False):
+            raise BranchAlreadyExist(Branches.FEATURE, branch_name)
 
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Type, Optional
 from Exceptions.BranchNotExist import BranchNotExist
+from Exceptions.GitMergeConflictError import GitMergeConflictError
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
@@ -53,10 +54,7 @@ class Finish:
         ).push()
 
         if self.__git.has_conflict():
-            print('##################################################')
-            print('develop have conflicts : ')
-            print(self.__git.get_conflict())
-            print('##################################################')
+            raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
         return self
 
     def __delete_feature(self) -> Finish:

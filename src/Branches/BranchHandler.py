@@ -38,7 +38,7 @@ class BranchHandler:
     def branch_name_from_version_with_name(self, version: Version, name: str) -> str:
         if self.branch is Branches.FEATURE:
             return self.__format_branch_name('/'.join([
-                Branches.RELEASE.value,
+                Branches.FEATURE.value,
                 '-'.join([name, str(version), Level.DEV.value])
             ]))
         else:

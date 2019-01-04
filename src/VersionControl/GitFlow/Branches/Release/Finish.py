@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Type, Optional
 
 from Exceptions.BranchNotExist import BranchNotExist
+from Exceptions.GitMergeConflictError import GitMergeConflictError
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
@@ -49,10 +50,7 @@ class Finish:
                 "'"])
         ).push_tag(self.__state_handler.version_as_str()).push()
         if (self.__git.has_conflict()):
-            print('##################################################')
-            print('master have conflicts : ')
-            print(self.__git.get_conflict())
-            print('##################################################')
+            raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
         return self
 
     def __merge_develop(self) -> Finish:
@@ -77,10 +75,7 @@ class Finish:
         ).push()
 
         if (self.__git.has_conflict()):
-            print('##################################################')
-            print('develop have conflicts : ')
-            print(self.__git.get_conflict())
-            print('##################################################')
+            raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
         return self
 
     def __delete_release(self) -> Finish:

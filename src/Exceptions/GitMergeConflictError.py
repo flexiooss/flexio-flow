@@ -1,6 +1,3 @@
-from Branches.Branches import Branches
-
-
 class GitMergeConflictError(Exception):
     def __init__(self, branch_name: str, message: str = ''):
         self.branch: str = branch_name
