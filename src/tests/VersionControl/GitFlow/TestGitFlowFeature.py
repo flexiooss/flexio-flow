@@ -1,6 +1,8 @@
 import unittest
 from typing import Optional
 
+from slugify import slugify
+
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.Actions.Actions import Actions
@@ -16,19 +18,20 @@ from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'
 ISSUE_NUMBER: int = 14
+FEATURE_NAME: int = 'Ma super nouvelle feature accentué'
 
 
-class TestGitFlowRelease(unittest.TestCase):
+class TestGitFlowFeature(unittest.TestCase):
     state_handler: StateHandler
 
-    def __release_start(self, issue: Optional[IssueGithub] = None):
+    def __feature_start(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
             GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
                 Actions.START).process()
         else:
             GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.START).process()
 
-    def __release_finish(self, issue: Optional[IssueGithub] = None):
+    def __feature_finish(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
             GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
                 Actions.FINISH).process()
@@ -39,7 +42,7 @@ class TestGitFlowRelease(unittest.TestCase):
         self.git.checkout(Branches.MASTER)
         return self.state_handler.state
 
-    def __get_release_state(self) -> State:
+    def __get_feature_state(self) -> State:
         print('__get_feature_state')
         self.git.checkout(Branches.RELEASE)
         return self.state_handler.state
@@ -69,17 +72,15 @@ class TestGitFlowRelease(unittest.TestCase):
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
 
-    def test_vide(self):
-        pass
+    def test_should_start_feature(self):
+        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True),
+                      False)
+        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=False), False)
 
-    def test_should_start_release(self):
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=True), False)
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=False), False)
+        self.__feature_start()
 
-        self.__release_start()
-
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=False), True)
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=True), True)
+        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=False), True)
+        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -101,17 +102,17 @@ class TestGitFlowRelease(unittest.TestCase):
             state_dev.level
         )
 
-        state_release: State = self.__get_release_state()
+        state_feature: State = self.__get_feature_state()
         self.assertEqual(
             '0.1.0',
-            str(state_release.version)
+            str(state_feature.version)
         )
         self.assertEqual(
-            Level.STABLE,
-            state_release.level
+            Level.DEV,
+            state_feature.level
         )
         with self.assertRaises(BranchAlreadyExist):
-            self.__release_start()
+            self.__feature_start()
 
     def test_should_start_release_with_issue(self):
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
@@ -123,7 +124,7 @@ class TestGitFlowRelease(unittest.TestCase):
             self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
                                              remote=False), False)
 
-        self.__release_start(issue_created)
+        self.__feature_start(issue_created)
 
         self.assertIs(
             self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
@@ -152,7 +153,7 @@ class TestGitFlowRelease(unittest.TestCase):
             state_dev.level
         )
 
-        state_release: State = self.__get_release_state()
+        state_release: State = self.__get_feature_state()
         self.assertEqual(
             '0.1.0',
             str(state_release.version)
@@ -162,14 +163,14 @@ class TestGitFlowRelease(unittest.TestCase):
             state_release.level
         )
         with self.assertRaises(BranchAlreadyExist):
-            self.__release_start()
+            self.__feature_start()
 
     def test_should_finish_release(self):
         with self.assertRaises(BranchNotExist):
-            self.__release_finish()
+            self.__feature_finish()
 
-        self.__release_start()
-        self.__release_finish()
+        self.__feature_start()
+        self.__feature_finish()
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -198,10 +199,10 @@ class TestGitFlowRelease(unittest.TestCase):
     def test_should_finish_release_with_issue(self):
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
         with self.assertRaises(BranchNotExist):
-            self.__release_finish()
+            self.__feature_finish()
 
-        self.__release_start(issue_created)
-        self.__release_finish(issue_created)
+        self.__feature_start(issue_created)
+        self.__feature_finish(issue_created)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
