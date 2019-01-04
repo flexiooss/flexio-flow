@@ -3,7 +3,6 @@ import re
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
-from Exceptions.FileNotExistError import FileNotExistError
 from Exceptions.NoBranchSelected import NoBranchSelected
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
@@ -51,7 +50,7 @@ class GitCmd:
         self.__exec(['git', 'checkout', branch])
         try:
             self.__state_handler.load_file_config()
-        except FileNotExistError as e:
+        except FileNotFoundError as e:
             print(e)
         return self
 
@@ -67,7 +66,7 @@ class GitCmd:
         self.__exec(['git', 'checkout', '-b', target_branch_name, source_branch_name])
         try:
             self.__state_handler.load_file_config()
-        except FileNotExistError as e:
+        except FileNotFoundError as e:
             print(e)
         return self
 

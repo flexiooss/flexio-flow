@@ -1,15 +1,8 @@
 import unittest
-from Exceptions.FileNotExistError import FileNotExistError
 from Schemes.Package.PackageScheme import PackageScheme
 from Schemes.Package.PackageFileHandler import PackageFileHandler
-import os
-import json
-import shutil
 from tests.Schemes.Package.TestPackageHelper import TestPackageHelper
 from FlexioFlow.State import State
-from FlexioFlow.Version import Version
-from FlexioFlow.Level import Level
-from Schemes.Schemes import Schemes
 from Schemes.Dependencies import Dependencies
 from pathlib import Path
 from FlexioFlow.StateHandler import StateHandler
@@ -24,7 +17,7 @@ class TestPackageScheme(unittest.TestCase):
         TestPackageHelper.mount_workdir_without_dev_dependencies()
 
         PackageFileHandler(TestPackageHelper.DIR_PATH_TEST)
-        with self.assertRaises(FileNotExistError):
+        with self.assertRaises(FileNotFoundError):
             PackageFileHandler(Path('.'))
 
     def test_should_change_version(self):

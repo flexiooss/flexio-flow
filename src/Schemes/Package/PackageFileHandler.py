@@ -1,6 +1,5 @@
 from __future__ import annotations
 import json
-from Exceptions.FileNotExistError import FileNotExistError
 
 import re
 from pathlib import Path
@@ -21,7 +20,7 @@ class PackageFileHandler:
 
     def __load_file(self):
         if not self.__file_path.is_file():
-            raise FileNotExistError(self.__file_path)
+            raise FileNotFoundError(self.__file_path)
         with self.__file_path.open() as json_data:
             d = json.load(json_data)
             return d

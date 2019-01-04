@@ -1,7 +1,7 @@
 from __future__ import annotations
 import abc
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.Branch import Branch
+from VersionControl.Branch import Branch as VersionControlBranch
 from Branches.Branches import Branches
 
 
@@ -11,17 +11,17 @@ class VersionControl:
         self.state_handler: StateHandler = state_handler
 
     @abc.abstractmethod
-    def hotfix(self) -> Branch:
+    def hotfix(self) -> VersionControlBranch:
         pass
 
     @abc.abstractmethod
-    def release(self) -> Branch:
+    def release(self) -> VersionControlBranch:
         pass
 
     @abc.abstractmethod
-    def feature(self) -> Branch:
+    def feature(self) -> VersionControlBranch:
         pass
 
     @abc.abstractmethod
-    def build_branch(self, branch: Branches) -> Branch:
+    def build_branch(self, branch: Branches) -> VersionControlBranch:
         pass

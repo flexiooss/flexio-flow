@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional, List, Type
+from typing import Optional
 
 import yaml
 from Core.Config import Config
-from Exceptions.FileNotExistError import FileNotExistError
 from pathlib import Path
 import fileinput
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
@@ -31,7 +30,7 @@ class ConfigHandler:
 
     def load_file_config(self) -> ConfigHandler:
         if not self.file_path().is_file():
-            raise FileNotExistError(
+            raise FileNotFoundError(
                 self.file_path(),
                 'Flexio Flow Core not initialized try : flexio-flow core config'
             )

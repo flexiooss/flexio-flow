@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any
 from Schemes.Schemes import Schemes
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
-from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
-from VersionControlProvider.Issuers import Issuers
 
 
 class State:
     __version: Version
     __level: Level
     __schemes: List[Schemes]
-    __issues: List[Dict[Issuers, IssueGithub]]
 
     def __init__(self) -> None:
         self.__issues = []
@@ -46,22 +43,11 @@ class State:
             raise TypeError('schemes should be an instance of List[FlexioFlow.Scheme]')
         self.__schemes = v
 
-    @property
-    def issues(self) -> List[Dict[Issuers, IssueGithub]]:
-        return self.__issues
-
-    @issues.setter
-    def issues(self, v: List[Dict[Issuers, IssueGithub]]):
-        if not (isinstance(issuer, Issuers) and isinstance(issue, IssueGithub) for issuer, issue in v):
-            raise TypeError('issues should be an instance of List[Dict[Issuers, Issue]]')
-        self.__issues = v
-
     def to_dict(self) -> Dict[str, Any]:
         return {
             'version': str(self.version),
             'level': self.level.value,
-            'schemes': self.__schemeListValue(),
-            'issues': self.__issuesListValue()
+            'schemes': self.__schemeListValue()
         }
 
     def next_major(self) -> Version:
@@ -99,17 +85,6 @@ class State:
         ret = []
         for scheme in self.schemes:
             ret.append(scheme.value)
-        return ret
-
-    def __issuesListValue(self) -> List[Dict[str, Union[str, int]]]:
-        ret = []
-        issuer: Issuers
-        issue: IssueGithub
-        for issuer, issue in self.issues:
-            number: int = 0 if issue.number is None else issue.number
-            item: Dict[str, Union[str, int]] = dict()
-            item[issuer.value] = number
-            ret.append(item)
         return ret
 
     def __str__(self):
