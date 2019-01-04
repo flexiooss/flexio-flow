@@ -33,3 +33,6 @@ class Dependencies:
 
     def __dict__(self):
         return dict(self.__list)
+
+    def to_list(self):
+        return self.__list
