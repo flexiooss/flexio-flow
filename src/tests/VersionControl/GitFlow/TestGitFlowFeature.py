@@ -51,31 +51,30 @@ class TestGitFlowFeature(unittest.TestCase):
         self.git.checkout(Branches.DEVELOP)
         return self.state_handler.state
 
-    # def tearDown(self):
-    #     TestGitFlowHelper.clean_workdir()
-    #     TestGitFlowHelper.init_repo(INIT_VERSION)
-    #
-    #     self.git.delete_branch_from_name(
-    #         'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev',
-    #         True
-    #     ).delete_branch_from_name(
-    #         'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-    #         True
-    #     )
-    #
-    #     TestGitFlowHelper.clean_remote_repo()
-    #     TestGitFlowHelper.clean_workdir()
-    #
-    # def setUp(self):
-    #     self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
-    #
-    #     self.git: GitCmd = GitCmd(state_handler=self.state_handler)
-    #     self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
+    def tearDown(self):
+        TestGitFlowHelper.clean_workdir()
+        TestGitFlowHelper.init_repo(INIT_VERSION)
 
-    def test_slugify(self):
-        toto = 'slugify moi'
-        toto_s = slugify(toto)
-        print(toto_s)
+        self.git.delete_branch_from_name(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev',
+            True
+        ).delete_branch_from_name(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
+            True
+        )
+
+        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_workdir()
+
+    def setUp(self):
+        self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
+
+        self.git: GitCmd = GitCmd(state_handler=self.state_handler)
+        self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
+
+    def test_vide(self):
+        pass
+
 
     def test_should_start_feature(self):
         self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True),
