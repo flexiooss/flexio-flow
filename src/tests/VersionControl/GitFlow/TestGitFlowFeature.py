@@ -73,7 +73,7 @@ class TestGitFlowFeature(unittest.TestCase):
     #     self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
 
     def test_slugify(self):
-        toto = u'slugify moi'
+        toto = 'slugify moi'
         toto_s = slugify(toto)
         print(toto_s)
 
