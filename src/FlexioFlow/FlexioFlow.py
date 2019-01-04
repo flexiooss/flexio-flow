@@ -2,10 +2,10 @@ from typing import Optional, Type, Dict, Union
 
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
-from FlexioFlow.Actions.Actions import Actions
-from FlexioFlow.Actions.Action import Action
+from Branches.Actions.Actions import Actions
+from Branches.Actions.Action import Action
 from Branches.Branches import Branches
-from FlexioFlow.Actions.ActionFactory import ActionFactory
+from Branches.Actions.ActionFactory import ActionFactory
 from Schemes.Schemes import Schemes
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl

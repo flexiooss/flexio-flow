@@ -7,9 +7,11 @@ import os
 
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
+from FlexioFlow.Actions.Version import Version
 from FlexioFlow.FlexioFlow import FlexioFlow
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
+from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
 from Branches.Branches import Branches
@@ -17,7 +19,7 @@ from VersionControl.VersionController import VersionController
 from pathlib import Path
 
 
-def parse_options(argv: List[str]) -> Tuple[List[str],Dict[str, Union[str, Schemes]]]:
+def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Schemes]]]:
     options: Dict[str, Union[str, Schemes]] = {}
 
     try:
@@ -27,8 +29,6 @@ def parse_options(argv: List[str]) -> Tuple[List[str],Dict[str, Union[str, Schem
         print('flexio-flow -h')
         print('May help you !!!!')
         sys.exit(2)
-    print(opts)
-    print(args)
 
     for opt, arg in opts:
         arg = re.sub('[\s+]', '', arg)
@@ -70,7 +70,8 @@ def extract_subject_action(argv: List[str]) -> Tuple[
 
 
 def command_orders(argv: List[str]) -> Tuple[
-    Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[str, Union[str, Schemes]], Path]:
+    Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[
+        str, Union[str, Schemes]], Path]:
     argv_no_options: List[str]
     options: Dict[str, Union[str, Schemes]]
     argv_no_options, options = parse_options(argv)
@@ -101,6 +102,8 @@ def main(argv) -> None:
         if core_actions is None:
             raise ValueError('should have Action')
         Core(core_actions, options=options, config_handler=config_handler).process()
+    elif subject is Subject.VERSION:
+        Version(StateHandler(version_dir).load_file_config(), options).process()
     else:
         if branch_action is None:
             raise ValueError('should have Action')

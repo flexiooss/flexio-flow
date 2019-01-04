@@ -1,8 +1,8 @@
 from __future__ import annotations
 import abc
-from typing import Optional, Type
+from typing import Optional
 
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Issue import Issue
 

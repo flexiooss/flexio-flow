@@ -66,6 +66,7 @@ flexio-flow
               <version>
 
               version
+                                -S, --scheme          maven|package|composer|docker
 
 
 

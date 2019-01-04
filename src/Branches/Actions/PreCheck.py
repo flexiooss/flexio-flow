@@ -1,5 +1,5 @@
 from __future__ import annotations
-from FlexioFlow.Actions.Action import Action
+from Branches.Actions.Action import Action
 from Schemes.Schemes import Schemes
 from Schemes.SchemeFactory import SchemeFactory
 from Schemes.Scheme import Scheme

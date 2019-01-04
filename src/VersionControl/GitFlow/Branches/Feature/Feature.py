@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from VersionControl.Branch import Branch
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from VersionControl.GitFlow.Branches.Feature.Finish import Finish
 from VersionControl.GitFlow.Branches.Feature.Start import Start
 from slugify import slugify

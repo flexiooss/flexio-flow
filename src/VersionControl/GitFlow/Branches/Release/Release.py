@@ -1,6 +1,6 @@
 from __future__ import annotations
 from VersionControl.Branch import Branch
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from VersionControl.GitFlow.Branches.Release.Finish import Finish
 from VersionControl.GitFlow.Branches.Release.PreCheck import PreCheck
 from VersionControl.GitFlow.Branches.Release.Start import Start

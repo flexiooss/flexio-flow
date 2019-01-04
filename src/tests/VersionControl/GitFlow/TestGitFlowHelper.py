@@ -3,7 +3,7 @@ from pathlib import Path
 
 from Core.Config import Config
 from Core.ConfigHandler import ConfigHandler
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from FlexioFlow.Level import Level
 from FlexioFlow.State import State
 from FlexioFlow.StateHandler import StateHandler

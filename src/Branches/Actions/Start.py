@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Type
 
-from FlexioFlow.Actions.Action import Action
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Action import Action
+from Branches.Actions.Actions import Actions
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Issuer import Issuer
 from VersionControlProvider.IssuerFactory import IssuerFactory

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from FlexioFlow.Actions.Action import Action
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Action import Action
+from Branches.Actions.Actions import Actions
 
 class Finish(Action):
     def process(self):

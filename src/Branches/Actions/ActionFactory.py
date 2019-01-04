@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from Core.ConfigHandler import ConfigHandler
-from FlexioFlow.Actions.Actions import Actions
-from FlexioFlow.Actions.Action import Action
-from FlexioFlow.Actions.Init import Init
-from FlexioFlow.Actions.Start import Start
-from FlexioFlow.Actions.Finish import Finish
-from FlexioFlow.Actions.PreCheck import PreCheck
+from Branches.Actions.Actions import Actions
+from Branches.Actions.Action import Action
+from Branches.Actions.Init import Init
+from Branches.Actions import Start
+from Branches.Actions import Finish
+from Branches.Actions.PreCheck import PreCheck
 from typing import Type, Dict, Optional
-
-from FlexioFlow.Actions.Version import Version
 from Branches.Branches import Branches
 from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
@@ -28,18 +26,15 @@ class ActionFactory:
     ) -> Action:
 
         if action is Actions.INIT:
-            return Init(version_control, branch, state_handler, options,config_handler)
+            return Init(version_control, branch, state_handler, options, config_handler)
 
         if action is Actions.START:
             return Start(version_control, branch, state_handler, options, config_handler)
 
         if action is Actions.FINISH:
-            return Finish(version_control, branch, state_handler, options,config_handler)
+            return Finish(version_control, branch, state_handler, options, config_handler)
 
         if action is Actions.PRECHECK:
-            return PreCheck(version_control, branch, state_handler, options,config_handler)
-
-        if action is Actions.VERSION:
-            return Version(version_control, branch, state_handler, options,config_handler)
+            return PreCheck(version_control, branch, state_handler, options, config_handler)
 
         raise ValueError("Bad ActionFactory creation: " + action.value)

@@ -3,8 +3,8 @@ from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
 from typing import List
-from FlexioFlow.Actions.Action import Action
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Action import Action
+from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
 
 

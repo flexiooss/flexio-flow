@@ -4,6 +4,7 @@ from enum import Enum, unique
 @unique
 class Subject(Enum):
     CORE: str = 'core'
+    COMMIT: str = 'commit'
     ISSUE: str = 'issue'
     SCHEME: str = 'scheme'
     VERSION: str = 'version'

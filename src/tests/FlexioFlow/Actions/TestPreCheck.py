@@ -2,13 +2,13 @@ import unittest
 from tests.Schemes.TestSchemesHelper import TestSchemesHelper
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.VersionController import VersionController
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
 from typing import Type
 from VersionControl.VersionControl import VersionControl
 from VersionControl.VersionControlFactory import VersionControlFactory
-from FlexioFlow.Actions.ActionFactory import ActionFactory
-from FlexioFlow.Actions.Action import Action
+from Branches.Actions.ActionFactory import ActionFactory
+from Branches.Actions.Action import Action
 from Exceptions.HaveDevDependencyException import HaveDevDependencyException
 
 

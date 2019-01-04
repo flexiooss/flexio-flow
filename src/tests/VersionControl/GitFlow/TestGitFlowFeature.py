@@ -5,7 +5,7 @@ from slugify import slugify
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from Exceptions.BranchNotExist import BranchNotExist
-from FlexioFlow.Actions.Actions import Actions
+from Branches.Actions.Actions import Actions
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
@@ -19,7 +19,6 @@ from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 INIT_VERSION: str = '0.0.0'
 ISSUE_NUMBER: int = 14
 FEATURE_NAME: int = 'Ma super nouvelle feature accentué'
-import unicodedata
 
 
 class TestGitFlowFeature(unittest.TestCase):
