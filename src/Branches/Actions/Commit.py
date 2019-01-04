@@ -1,11 +1,18 @@
 from __future__ import annotations
+
+from Exceptions.NoIssue import NoIssue
+from Exceptions.NoIssuerConfigured import NoIssuerConfigured
 from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
-from typing import List
+from typing import List, Type, Optional
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
+from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Issuer import Issuer
+from VersionControlProvider.IssuerFactory import IssuerFactory
+from VersionControlProvider.Issuers import Issuers
 
 
 class Commit(Action):
@@ -22,29 +29,6 @@ class Commit(Action):
     def __input_version(self) -> Commit:
         version: str = input('Version (0.0.0) : ')
         self.state_handler.state.version = Version.from_str(version if version else '0.0.0')
-        return self
-
-    def __input_level(self) -> Commit:
-        level: str = input('Level <(stable)|dev> : ')
-        self.state_handler.state.level = Level[level.upper()] if level else Level.STABLE
-        return self
-
-    def __input_schemes(self) -> Commit:
-        schemes: List[Schemes] = []
-        for scheme in Schemes:
-            add: str = input('With ' + scheme.value + ' y/(n) : ')
-            if add is 'y':
-                schemes.append(scheme)
-
-        self.state_handler.state.schemes = schemes
-        return self
-
-    def __write_file(self) -> Commit:
-        yml: str = self.state_handler.write_file()
-        print("""#################################################
-Write file : {0!s} 
-#################################################""".format(self.state_handler.file_path()))
-        print(yml)
         return self
 
     def __final_message(self) -> Commit:
@@ -77,11 +61,22 @@ Flexio Flow already Commitialized
 
         return False
 
-    def __ensure_version_control_Commitialized(self):
-        self.version_control.build_branch(Branches.MASTER).with_action(Actions.Commit).process()
+    def __ensure_version_control_initialized(self):
+        self.version_control.build_branch(Branches.MASTER).with_action(Actions.INIT).process()
 
     def process(self):
         if not self.__ensure_have_state():
             self.__ensure_version_control_Commitialized()
+
+        if self.config_handler.has_issuer():
+            issuer: Issuers = Issuers.GITHUB
+            issuer: Type[Issuer] = IssuerFactory.build(self.state_handler, self.config_handler, issuer)
+            issue_number: Optional[int] = self.version_control.get_issue_number()
+            if issue_number is None:
+                raise NoIssue()
+            else:
+                print('ici')
+        else:
+            raise NoIssuerConfigured()
 
         self.__final_message()

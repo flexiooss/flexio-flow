@@ -1,8 +1,11 @@
 from __future__ import annotations
 import abc
+from typing import Optional
+
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl.Branch import Branch as VersionControlBranch
 from Branches.Branches import Branches
+from VersionControlProvider.Issue import Issue
 
 
 class VersionControl:
@@ -24,4 +27,8 @@ class VersionControl:
 
     @abc.abstractmethod
     def build_branch(self, branch: Branches) -> VersionControlBranch:
+        pass
+
+    @abc.abstractmethod
+    def get_issue_number(self) -> Optional[Issue]:
         pass

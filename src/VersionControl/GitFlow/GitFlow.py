@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+from typing import Optional
+
+from VersionControl.GitFlow.IssueHandler import IssueHandler
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
 from VersionControl.GitFlow.Branches.BranchFactory import BranchFactory
@@ -26,3 +30,7 @@ class GitFlow(VersionControl):
     def release(self) -> Branch:
         branch_inst: Branch = BranchFactory.create(Branches.RELEASE, self.state_handler)
         return branch_inst
+
+    def get_issue_number(self) -> Optional[int]:
+        issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
+        return issue_number
