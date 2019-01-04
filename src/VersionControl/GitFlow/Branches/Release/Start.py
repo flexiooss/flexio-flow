@@ -37,7 +37,7 @@ class Start:
             raise BranchAlreadyExist(Branches.HOTFIX)
 
         self.__git.checkout(Branches.DEVELOP)
-        branch_name: str = BranchHandler(Branches.RELEASE).branch_name_from_version(
+        branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).branch_name_from_version(
             self.__state_handler.state.version
         )
 

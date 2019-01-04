@@ -15,7 +15,7 @@ class Start:
 
     def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], name: str):
         self.__state_handler: StateHandler = state_handler
-        self.__issue: Optional[Type[Issue]] = issue
+        self.__issue: Optional[Issue] = issue
         self.__name: str = slugify(name)
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
