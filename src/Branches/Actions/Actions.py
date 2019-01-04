@@ -3,8 +3,9 @@ from enum import Enum, unique
 
 @unique
 class Actions(Enum):
-    INIT: str = 'init'
+    COMMIT: str = 'commit'
     FINISH: str = 'finish'
+    INIT: str = 'init'
     PRECHECK: str = 'precheck'
     START: str = 'start'
 
