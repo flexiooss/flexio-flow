@@ -39,34 +39,8 @@ Enjoy with Flexio FLow
 """)
         return self
 
-    def __ensure_have_state(self) -> bool:
-        if self.state_handler.file_exists():
-            self.state_handler.load_file_config()
-            print(
-                """###############################################
-Flexio Flow already Commitialized 
-###############################################
-""")
-            print('at : ' + self.state_handler.file_path().as_posix())
-            print('with : ' + str(self.state_handler.state.to_dict()))
-            use: str = input('Use this file (y)/n : ')
-            use = use if use else 'y'
-            if use is 'y':
-                return True
-
-        self.__start_message() \
-            .__input_version() \
-            .__input_level() \
-            .__input_schemes()
-
-        return False
-
-    def __ensure_version_control_initialized(self):
-        self.version_control.build_branch(Branches.MASTER).with_action(Actions.INIT).process()
-
     def process(self):
-        if not self.__ensure_have_state():
-            self.__ensure_version_control_Commitialized()
+
 
         if self.config_handler.has_issuer():
             issuer: Issuers = Issuers.GITHUB
@@ -75,8 +49,8 @@ Flexio Flow already Commitialized
             if issue_number is None:
                 raise NoIssue()
             else:
-                print('ici')
+                self.__start_message()
         else:
-            raise NoIssuerConfigured()
+            self.version_control.commit()
 
         self.__final_message()

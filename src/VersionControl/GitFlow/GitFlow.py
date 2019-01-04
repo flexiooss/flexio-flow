@@ -34,3 +34,6 @@ class GitFlow(VersionControl):
     def get_issue_number(self) -> Optional[int]:
         issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
         return issue_number
+
+    def commit(self):
+        pass

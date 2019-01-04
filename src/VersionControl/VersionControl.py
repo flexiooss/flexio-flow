@@ -32,3 +32,7 @@ class VersionControl:
     @abc.abstractmethod
     def get_issue_number(self) -> Optional[Issue]:
         pass
+
+    @abc.abstractmethod
+    def commit(self):
+        pass
