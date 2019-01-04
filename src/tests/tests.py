@@ -4,8 +4,9 @@ import unittest
 # from tests.FlexioFlow.TestState import TestState
 # from tests.FlexioFlow.Actions.TestPreCheck import TestPreCheck
 # from tests.VersionControl.GitFlow.TestGitFlow import TestGitFlow
-from tests.VersionControl.GitFlow.TestGitFlowHotfix import TestGitFlowHotfix
+# from tests.VersionControl.GitFlow.TestGitFlowHotfix import TestGitFlowHotfix
 # from tests.VersionControl.GitFlow.TestGitFlowInit import TestGitFlowInit
+from tests.Schemes.Maven.TestReportFileReader import TestReportFileReader
 
 
 def suite():
@@ -16,7 +17,8 @@ def suite():
     # suite.addTest(TestPackageScheme())
     # suite.addTest(TestGitFlow())
     # suite.addTest(TestGitFlowInit())
-    suite.addTest(TestGitFlowHotfix())
+    # suite.addTest(TestGitFlowHotfix())
+    suite.addTest(TestReportFileReader())
     return suite
 
 
