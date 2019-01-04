@@ -37,8 +37,12 @@ class TestGitFlowHotfix(unittest.TestCase):
         else:
             GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.START).process()
 
-    def __hotfix_finish(self):
-        GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.FINISH).process()
+    def __hotfix_finish(self, issue: Optional[IssueGithub] = None):
+        if issue is not None:
+            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_issue(issue).with_action(
+                Actions.FINISH).process()
+        else:
+            GitFlow(self.state_handler).build_branch(Branches.HOTFIX).with_action(Actions.FINISH).process()
 
     def __get_master_state(self) -> State:
         self.git.checkout(Branches.MASTER)
@@ -137,12 +141,6 @@ class TestGitFlowHotfix(unittest.TestCase):
             self.__hotfix_start()
 
     def test_should_start_hotfix_with_issue(self):
-        # self.__setup_config()
-        #
-        # issue: IssueGithub = IssueGithub()
-        # issue.title = 'test_should_start_hotfix_with_issue'
-        #
-        # issue_created: IssueGithub = self.__post_issue(issue)
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
 
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True),
@@ -205,6 +203,42 @@ class TestGitFlowHotfix(unittest.TestCase):
             state_master.level
         )
         self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), False)
+
+        self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
+        self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
+
+        state_dev: State = self.__get_dev_state()
+        self.assertEqual(
+            '0.1.0',
+            str(state_dev.version)
+        )
+        self.assertEqual(
+            Level.DEV,
+            state_dev.level
+        )
+
+    def test_should_finish_hotfix_with_issue(self):
+        issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
+
+        with self.assertRaises(BranchNotExist):
+            self.__hotfix_finish(issue_created)
+
+        self.__hotfix_start(issue_created)
+        self.__hotfix_finish(issue_created)
+
+        state_master: State = self.__get_master_state()
+        self.assertEqual(
+            '0.0.1',
+            str(state_master.version)
+        )
+        self.assertEqual(
+            Level.STABLE,
+            state_master.level
+        )
+        self.assertIs(
+            self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True),
+            False
+        )
 
         self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
         self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
