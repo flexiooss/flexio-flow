@@ -13,7 +13,7 @@ from VersionControlProvider.Issue import Issue
 
 class Start:
 
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], name: str):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Issue], name: str):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Issue] = issue
         self.__name: str = slugify(name)

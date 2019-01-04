@@ -39,7 +39,7 @@ class BranchHandler:
         if self.branch is Branches.FEATURE:
             return self.__format_branch_name('/'.join([
                 Branches.RELEASE.value,
-                '-'.join([name, str(version)])
+                '-'.join([name, str(version), Level.DEV.value])
             ]))
         else:
             return self.branch.value

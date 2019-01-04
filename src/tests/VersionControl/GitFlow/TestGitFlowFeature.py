@@ -19,24 +19,24 @@ from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 INIT_VERSION: str = '0.0.0'
 ISSUE_NUMBER: int = 14
 FEATURE_NAME: int = 'Ma super nouvelle feature accentué'
-
+import unicodedata
 
 class TestGitFlowFeature(unittest.TestCase):
     state_handler: StateHandler
 
     def __feature_start(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
-                Actions.START).process()
+            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_issue(issue).with_action(
+                Actions.START).with_name(FEATURE_NAME).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.START).process()
+            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_action(Actions.START).with_name(FEATURE_NAME).process()
 
     def __feature_finish(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
             GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
-                Actions.FINISH).process()
+                Actions.FINISH).with_name(FEATURE_NAME).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.FINISH).process()
+            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.FINISH).with_name(FEATURE_NAME).process()
 
     def __get_master_state(self) -> State:
         self.git.checkout(Branches.MASTER)
@@ -51,26 +51,31 @@ class TestGitFlowFeature(unittest.TestCase):
         self.git.checkout(Branches.DEVELOP)
         return self.state_handler.state
 
-    def tearDown(self):
-        TestGitFlowHelper.clean_workdir()
-        TestGitFlowHelper.init_repo(INIT_VERSION)
+    # def tearDown(self):
+    #     TestGitFlowHelper.clean_workdir()
+    #     TestGitFlowHelper.init_repo(INIT_VERSION)
+    #
+    #     self.git.delete_branch_from_name(
+    #         'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev',
+    #         True
+    #     ).delete_branch_from_name(
+    #         'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
+    #         True
+    #     )
+    #
+    #     TestGitFlowHelper.clean_remote_repo()
+    #     TestGitFlowHelper.clean_workdir()
+    #
+    # def setUp(self):
+    #     self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
+    #
+    #     self.git: GitCmd = GitCmd(state_handler=self.state_handler)
+    #     self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
 
-        self.git.delete_branch_from_name(
-            'release/0.1.0',
-            True
-        ).delete_branch_from_name(
-            'release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            True
-        ).delete_tag('0.2.0', remote=True)
-
-        TestGitFlowHelper.clean_remote_repo()
-        TestGitFlowHelper.clean_workdir()
-
-    def setUp(self):
-        self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
-
-        self.git: GitCmd = GitCmd(state_handler=self.state_handler)
-        self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
+    def test_slugify(self):
+        toto = u'slugify moi'
+        toto_s = slugify(toto)
+        print(toto_s)
 
     def test_should_start_feature(self):
         self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True),
