@@ -5,8 +5,8 @@ from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
-from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
+from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 

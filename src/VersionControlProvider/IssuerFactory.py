@@ -3,7 +3,7 @@ from __future__ import annotations
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider import Issuer
-from VersionControlProvider.Github.Issue.GithubIssuer import GithubIssuer
+from VersionControlProvider.Github.GithubIssuer import GithubIssuer
 from VersionControlProvider.Issuers import Issuers
 
 

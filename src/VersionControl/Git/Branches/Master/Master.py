@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from VersionControl.Branch import Branch
 from Branches.Actions.Actions import Actions
-from VersionControl.GitFlow.Branches.Master.Init import Init
+from VersionControl.Git.Branches.Master.Init import Init
 
 
 class Master(Branch):

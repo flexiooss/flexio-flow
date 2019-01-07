@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
-from VersionControl.GitFlow.IssueHandler import IssueHandler
+from VersionControl.Git.IssueHandler import IssueHandler
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
-from VersionControl.GitFlow.Branches.BranchFactory import BranchFactory
+from VersionControl.Git.Branches.BranchFactory import BranchFactory
 from Branches.Branches import Branches
 
 
-class GitFlow(VersionControl):
+class Git(VersionControl):
 
     def build_branch(self, branch: Branches) -> Branch:
         branch_inst: Branch = BranchFactory.create(branch, self.state_handler)
@@ -35,5 +35,6 @@ class GitFlow(VersionControl):
         issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
         return issue_number
 
-    def commit(self):
-        pass
+    def commit(self, message: str):
+        print('commit')
+        print(message)

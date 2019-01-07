@@ -1,7 +1,7 @@
 from typing import List, Type
 
 from Core.ConfigHandler import ConfigHandler
-from VersionControlProvider.Github.Issue.GithubIssuer import GithubIssuer
+from VersionControlProvider.Github.GithubIssuer import GithubIssuer
 from VersionControlProvider.Issuer import Issuer
 
 

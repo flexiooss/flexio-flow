@@ -34,5 +34,5 @@ class VersionControl:
         pass
 
     @abc.abstractmethod
-    def commit(self):
+    def commit(self, message: str):
         pass

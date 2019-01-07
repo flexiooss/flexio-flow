@@ -5,8 +5,8 @@ from subprocess import Popen, PIPE
 from typing import List
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
-from VersionControl.GitFlow.GitCmd import GitCmd
-from VersionControl.GitFlow.GitConfig import GitConfig
+from VersionControl.Git.GitCmd import GitCmd
+from VersionControl.Git.GitConfig import GitConfig
 
 
 class GitFlowCmd:

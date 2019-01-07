@@ -2,7 +2,7 @@ import unittest
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.GitCmd import GitCmd
 from Branches.Branches import Branches
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 

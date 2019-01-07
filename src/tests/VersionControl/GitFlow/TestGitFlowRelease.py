@@ -7,10 +7,10 @@ from Branches.Actions.Actions import Actions
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
+from VersionControl.Git.GitCmd import GitCmd
 from Branches.Branches import Branches
-from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControl.Git.Git import Git
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
@@ -23,17 +23,17 @@ class TestGitFlowRelease(unittest.TestCase):
 
     def __release_start(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
+            Git(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
                 Actions.START).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.START).process()
+            Git(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.START).process()
 
     def __release_finish(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
+            Git(self.state_handler).build_branch(Branches.RELEASE).with_issue(issue).with_action(
                 Actions.FINISH).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.FINISH).process()
+            Git(self.state_handler).build_branch(Branches.RELEASE).with_action(Actions.FINISH).process()
 
     def __get_master_state(self) -> State:
         self.git.checkout(Branches.MASTER)

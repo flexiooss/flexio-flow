@@ -1,8 +1,8 @@
 import unittest
 
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
+from VersionControl.Git.GitCmd import GitCmd
 
 from Branches.Branches import Branches
 from VersionControlProvider.Github.Repo import Repo

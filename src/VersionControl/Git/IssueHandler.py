@@ -2,7 +2,7 @@ from typing import Optional
 
 from Branches.BranchHandler import BranchHandler
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.GitCmd import GitCmd
 
 
 class IssueHandler:

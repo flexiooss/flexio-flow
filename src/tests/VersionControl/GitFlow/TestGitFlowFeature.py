@@ -9,10 +9,10 @@ from Branches.Actions.Actions import Actions
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
-from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
+from VersionControl.Git.GitCmd import GitCmd
 from Branches.Branches import Branches
-from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControl.Git.Git import Git
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
@@ -26,18 +26,18 @@ class TestGitFlowFeature(unittest.TestCase):
 
     def __feature_start(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_issue(issue).with_action(
+            Git(self.state_handler).build_branch(Branches.FEATURE).with_issue(issue).with_action(
                 Actions.START).with_name(FEATURE_NAME).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_action(Actions.START).with_name(
+            Git(self.state_handler).build_branch(Branches.FEATURE).with_action(Actions.START).with_name(
                 FEATURE_NAME).process()
 
     def __feature_finish(self, issue: Optional[IssueGithub] = None):
         if issue is not None:
-            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_issue(issue).with_action(
+            Git(self.state_handler).build_branch(Branches.FEATURE).with_issue(issue).with_action(
                 Actions.FINISH).with_name(FEATURE_NAME).process()
         else:
-            GitFlow(self.state_handler).build_branch(Branches.FEATURE).with_action(Actions.FINISH).with_name(
+            Git(self.state_handler).build_branch(Branches.FEATURE).with_action(Actions.FINISH).with_name(
                 FEATURE_NAME).process()
 
     def __get_master_state(self) -> State:

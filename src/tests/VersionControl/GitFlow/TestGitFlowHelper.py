@@ -9,9 +9,9 @@ from FlexioFlow.State import State
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Version import Version
 from Schemes.Schemes import Schemes
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.GitCmd import GitCmd
 from Branches.Branches import Branches
-from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControl.Git.Git import Git
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Repo import Repo
@@ -56,7 +56,7 @@ class TestGitFlowHelper:
         cls.mount_workdir_and_clone()
         state_handler: StateHandler = StateHandler(cls.DIR_PATH_TEST)
         state_handler.state = cls.fake_state(version)
-        GitFlow(state_handler).build_branch(Branches.MASTER).with_action(Actions.INIT).process()
+        Git(state_handler).build_branch(Branches.MASTER).with_action(Actions.INIT).process()
         return state_handler
 
     @classmethod

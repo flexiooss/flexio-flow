@@ -3,8 +3,8 @@ from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
-from VersionControl.GitFlow.Branches.GitFlowCmd import GitFlowCmd
-from VersionControl.GitFlow.GitCmd import GitCmd
+from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
+from VersionControl.Git.GitCmd import GitCmd
 
 
 class Init:

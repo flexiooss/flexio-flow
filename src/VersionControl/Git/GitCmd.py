@@ -6,7 +6,7 @@ from typing import List, Optional, Pattern, Match
 from Exceptions.NoBranchSelected import NoBranchSelected
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
-from VersionControl.GitFlow.GitConfig import GitConfig
+from VersionControl.Git.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
 
 

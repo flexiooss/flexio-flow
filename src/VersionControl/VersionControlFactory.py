@@ -1,13 +1,13 @@
 from typing import Type
 from VersionControl.VersionControl import VersionControl
 from VersionControl.VersionController import VersionController
-from VersionControl.GitFlow.GitFlow import GitFlow
+from VersionControl.Git.Git import Git
 from FlexioFlow.StateHandler import StateHandler
 
 class VersionControlFactory:
     @staticmethod
     def build(version_controller: VersionController, state_handler:StateHandler) -> VersionControl:
         if version_controller is VersionController.GITFLOW:
-            return GitFlow(state_handler)
+            return Git(state_handler)
 
         raise NotImplementedError
