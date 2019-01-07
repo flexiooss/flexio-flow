@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Type, Optional
+from typing import Optional
 
 from VersionControlProvider.IssueState import IssueState
 
@@ -9,4 +9,10 @@ class Topicer(abc.ABC):
     number: int
     title: str
     state: Optional[IssueState]
-    description: Optional[str]
+    body: Optional[str]
+
+    def __init__(self):
+        self.number = None
+        self.title = None
+        self.body = None
+        self.state = None
