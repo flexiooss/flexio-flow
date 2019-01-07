@@ -1,8 +1,9 @@
+from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 from VersionControlProvider.IssueState import IssueState
 from VersionControlProvider.Topic import Topic
 
 
-class FlexioTopic(Topic):
+class FlexioTopic(Topic, FlexioRessource):
     RESSOURCE_ID: str = '5c336c70f3bb2517591449ab'
     NUMBER_ID: str = '5c336cebf3bb2517583dac83'
     TITLE_ID: str = '5c336c7ff3bb2517583dac61'
@@ -26,3 +27,6 @@ class FlexioTopic(Topic):
             self.STATE_ID: self.__state_to_value(),
             self.BODY_ID: self.__body_to_value()
         }
+
+    def to_api_dict(self)->dict:
+        return self.__dict__()

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.Issue import Issue
 
 
-class FlexioIssue(Issue):
+class FlexioIssue(Issue, FlexioRessource):
     RESSOURCE_ID: str = '5c336d47f3bb2517583dac84'
     TOPIC_ID: str = '5c336d65f3bb251c3d227327'
     GITHUB_NUMBER_ID: str = '5c336de1f3bb251c3d227329'
