@@ -3,6 +3,7 @@ from typing import Type, Optional
 from VersionControlProvider.Github.Issue.Create import Create
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Github.Repo import Repo
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Issuer import Issuer
 from VersionControlProvider.Message import Message as AbstractMessage
@@ -19,3 +20,6 @@ class GithubIssuer(Issuer):
 
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> AbstractMessage:
         return Message(message, issue)
+
+    def issue_builder(self) -> Issue:
+        return IssueGithub()

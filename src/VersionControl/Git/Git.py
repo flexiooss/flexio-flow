@@ -36,5 +36,4 @@ class Git(VersionControl):
         return issue_number
 
     def commit(self, message: str):
-        print('commit')
-        print(message)
+        pass

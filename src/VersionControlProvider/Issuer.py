@@ -31,3 +31,7 @@ class Issuer(abc.ABC):
     @abc.abstractmethod
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> Message:
         pass
+
+    @abc.abstractmethod
+    def issue_builder(self) -> Issue:
+        pass

@@ -22,10 +22,10 @@ class Commit(Action):
         message: str = input('Message : ')
         return message
 
-    def __final_message(self, message:str) -> Commit:
+    def __final_message(self, message: str) -> Commit:
         print(
             """###############################################
-Commited with message : 
+Commited and push with message : 
 {message!s}
 ###############################################
 """.format(message=message))
@@ -41,8 +41,8 @@ Commited with message :
                 issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler).issuer()
                 message = issuer.message_builder(
                     message=message,
-                    issue=issuer.create().with_number(issue_number)
-                )
+                    issue=issuer.issue_builder().with_number(issue_number)
+                ).with_ref()
 
         self.version_control.commit(message=message)
 
