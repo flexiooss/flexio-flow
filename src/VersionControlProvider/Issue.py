@@ -30,6 +30,10 @@ class Issue(abc.ABC):
         self.number = number
         return self
 
+    def with_url(self, url: str) -> Issue:
+        self.url = url
+        return self
+
     @abc.abstractmethod
     def get_ref(self) -> str:
         pass

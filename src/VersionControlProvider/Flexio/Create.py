@@ -11,9 +11,8 @@ from VersionControlProvider.Issue import Issue
 
 
 class Create:
-    def __init__(self, config_handler: ConfigHandler, repo: Repo):
+    def __init__(self, config_handler: ConfigHandler):
         self.__config_handler: ConfigHandler = config_handler
-        self.__repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
 
     def __would_attach_issue(self) -> bool:
@@ -208,7 +207,7 @@ url : {url!s}
         )
         return self
 
-    def process(self) -> Issue:
+    def process(self) -> Type[Issue]:
         self.__start_message()
         issue_number: int
         if self.__would_attach_issue():
@@ -225,9 +224,8 @@ url : {url!s}
             if r.status_code is 201:
                 issue_created: Dict[str, str] = r.json()
                 issue_number = issue_created.get('number')
-                issue_url = issue_created.get('url')
                 self.__resume_issue(issue_created)
             else:
                 raise GithubRequestApiError(r)
 
-        return issue.with_number(issue_number).with_url(issue_url)
+        return issue.with_number(issue_number)
