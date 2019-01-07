@@ -6,7 +6,7 @@ from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Issue import Issue
-from VersionControlProvider.Message import Message
+from VersionControlProvider.IssueMessage import IssueMessage
 
 
 class Issuer(abc.ABC):
@@ -29,7 +29,7 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def message_builder(self, message: str, issue: Optional[Issue] = None) -> Message:
+    def message_builder(self, message: str, issue: Optional[Issue] = None) -> IssueMessage:
         pass
 
     @abc.abstractmethod

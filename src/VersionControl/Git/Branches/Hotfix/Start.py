@@ -48,7 +48,7 @@ class Start:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message="'Start hotfix : {branch_name!s}'".format(branch_name=branch_name),
                 issue=self.__issue
             ).with_ref()

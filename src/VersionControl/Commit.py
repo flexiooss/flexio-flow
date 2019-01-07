@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from VersionControlProvider.Message import Message
+from VersionControlProvider.IssueMessage import IssueMessage
 
 
 class Commit:
-    message: Optional[Message]
+    message: Optional[IssueMessage]
     id: Optional[str]
 
     def __init__(self):

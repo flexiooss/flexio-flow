@@ -6,7 +6,7 @@ from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Issuer import Issuer
-from VersionControlProvider.Message import Message as AbstractMessage
+from VersionControlProvider.IssueMessage import IssueMessage as AbstractMessage
 
 
 class GithubIssuer(Issuer):
@@ -19,7 +19,7 @@ class GithubIssuer(Issuer):
         return Create(self.config_handler, repo).process()
 
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> AbstractMessage:
-        return Message(message, issue)
+        return IssueMessage(message, issue)
 
     def issue_builder(self) -> Issue:
         return IssueGithub()

@@ -47,7 +47,7 @@ class Start:
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message=''.join(["'Start feature : ", branch_name, "'"]),
                 issue=self.__issue
             ).with_ref()

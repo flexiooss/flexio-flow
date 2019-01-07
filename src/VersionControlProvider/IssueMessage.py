@@ -8,7 +8,7 @@ from VersionControlProvider.Issue import Issue
 from VersionControlProvider.KeyWordsDialect import KeyWordsDialect
 
 
-class Message(abc.ABC):
+class IssueMessage(abc.ABC):
     def __init__(self, message: str, issue: Optional[Type[Issue]] = None):
         self.message: str = message
         self.issue: Optional[Type[Issue]] = issue

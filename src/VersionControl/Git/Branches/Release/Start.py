@@ -48,7 +48,7 @@ class Start:
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message=''.join(["'Start release : ", branch_name, "'"]),
                 issue=self.__issue
             ).with_ref()

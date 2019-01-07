@@ -38,7 +38,7 @@ class Finish:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message=''.join(["'Finish hotfix for master: ", self.__state_handler.version_as_str()]),
                 issue=self.__issue
             ).with_close()
@@ -46,7 +46,7 @@ class Finish:
 
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
             branch=Branches.HOTFIX,
-            message=Message(
+            message=IssueMessage(
                 message='',
                 issue=self.__issue
             ).with_ref(),
@@ -72,7 +72,7 @@ class Finish:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message=''.join(["'Finish hotfix for dev: ", self.__state_handler.version_as_str()]),
                 issue=self.__issue
             ).with_ref()
@@ -80,7 +80,7 @@ class Finish:
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
             branch=Branches.HOTFIX,
-            message=Message(
+            message=IssueMessage(
                 message='',
                 issue=self.__issue
             ).with_ref()

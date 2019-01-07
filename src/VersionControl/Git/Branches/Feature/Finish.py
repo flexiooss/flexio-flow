@@ -34,7 +34,7 @@ class Finish:
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
         self.__git.commit(
-            Message(
+            IssueMessage(
                 message=''.join([
                     "'Finish feature ` ",
                     self.__current_branch_name,
@@ -47,7 +47,7 @@ class Finish:
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
             branch=Branches.FEATURE,
-            message=Message(
+            message=IssueMessage(
                 message='',
                 issue=self.__issue
             ).with_ref()
