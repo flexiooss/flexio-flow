@@ -3,7 +3,9 @@ from __future__ import annotations
 from Core.IssuerHandler import IssuerHandler
 from typing import Optional
 from Branches.Actions.Action import Action
-
+from Exceptions.NoChangesInBranch import NoChangesInBranch
+from VersionControl.Commit import Commit as CommitValueObject
+from VersionControl.CommitHandler import CommitHandler
 from VersionControlProvider.Issuer import Issuer
 
 
@@ -44,6 +46,12 @@ Commited and push with message :
                     issue=issuer.issue_builder().with_number(issue_number)
                 ).with_ref()
 
-        self.version_control.commit(message=message)
+        commit: CommitValueObject = CommitValueObject().with_message(message)
+        commit_handler: CommitHandler = self.version_control.commit(commit=commit)
+
+        if commit_handler.can_commit():
+            commit_handler.do_commit().push()
+        else:
+            raise NoChangesInBranch('Can\'t commit')
 
         self.__final_message(message)

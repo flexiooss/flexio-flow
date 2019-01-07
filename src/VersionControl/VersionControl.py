@@ -3,8 +3,10 @@ import abc
 from typing import Optional
 
 from FlexioFlow.StateHandler import StateHandler
+from VersionControl import Commit
 from VersionControl.Branch import Branch as VersionControlBranch
 from Branches.Branches import Branches
+from VersionControl.CommitHandler import CommitHandler
 from VersionControlProvider.Issue import Issue
 
 
@@ -34,5 +36,5 @@ class VersionControl:
         pass
 
     @abc.abstractmethod
-    def commit(self, message: str):
+    def commit(self, commit: Commit) -> CommitHandler:
         pass

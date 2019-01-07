@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
+from VersionControl.Git.Actions.CommitHandler import CommitHandler
+from VersionControl.CommitHandler import CommitHandler as AbstractCommitHandler
 from VersionControl.Git.IssueHandler import IssueHandler
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
 from VersionControl.Git.Branches.BranchFactory import BranchFactory
 from Branches.Branches import Branches
+from VersionControl.Commit import Commit as CommitValueObject
 
 
 class Git(VersionControl):
@@ -35,5 +38,5 @@ class Git(VersionControl):
         issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
         return issue_number
 
-    def commit(self, message: str):
-        pass
+    def commit(self, commit: CommitValueObject) -> AbstractCommitHandler:
+        return CommitHandler(self.state_handler).with_commit(commit)

@@ -41,6 +41,10 @@ class GitCmd:
             resp: str = self.__get_branch_name_from_git_list(branch)
             return len(resp) > 0
 
+    def can_commit(self) -> bool:
+        stdout: str = self.__exec_for_stdout(['git', 'status', '-s'])
+        return stdout is not None and len(stdout) > 0
+
     def checkout(self, branch: Branches) -> GitCmd:
         self.__branch = branch
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch))
