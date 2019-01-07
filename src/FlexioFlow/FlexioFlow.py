@@ -20,7 +20,7 @@ class FlexioFlow:
                  version_controller: VersionController,
                  action: Actions,
                  branch: Optional[Branches],
-                 options: Dict[str, Union[str, Schemes]],
+                 options: Dict[str, Union[str, Schemes, bool]],
                  dir_path: Path,
                  config_handler: ConfigHandler
                  ) -> None:
@@ -28,7 +28,7 @@ class FlexioFlow:
         self.__version_controller: VersionController = version_controller
         self.__action: Actions = action
         self.__branch: Optional[Branches] = branch
-        self.__options: Dict[str, Union[str, Schemes]] = options
+        self.__options: Dict[str, Union[str, Schemes, bool]] = options
 
         if not dir_path.is_dir():
             raise NotADirectoryError

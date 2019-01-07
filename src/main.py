@@ -19,11 +19,12 @@ from VersionControl.VersionController import VersionController
 from pathlib import Path
 
 
-def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Schemes]]]:
-    options: Dict[str, Union[str, Schemes]] = {}
+def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Schemes, bool]]]:
+    options: Dict[str, Union[str, Schemes, bool]] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hV:S:s:", ["help", "version-dir=", "scheme=", "scheme-dir="])
+        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rc",
+                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read"])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
@@ -42,6 +43,10 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
             options.update({'scheme-dir': arg})
         if opt in ("-S", "--scheme"):
             options.update({'scheme': Schemes[arg.upper()]})
+        if opt in ("-r", "--read"):
+            options.update({'read': True})
+        if opt in ("-c", "--create"):
+            options.update({'create': True})
 
     return args, options
 
@@ -71,9 +76,9 @@ def extract_subject_action(argv: List[str]) -> Tuple[
 
 def command_orders(argv: List[str]) -> Tuple[
     Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[
-        str, Union[str, Schemes]], Path]:
+        str, Union[str, Schemes, bool]], Path]:
     argv_no_options: List[str]
-    options: Dict[str, Union[str, Schemes]]
+    options: Dict[str, Union[str, Schemes, bool]]
     argv_no_options, options = parse_options(argv)
 
     branch: Optional[Branches]
@@ -92,7 +97,7 @@ def main(argv) -> None:
     branch: Optional[Branches]
     subject: Optional[Subject]
     core_actions: Optional[ActionsCore]
-    options: Dict[str, Union[str, Schemes]]
+    options: Dict[str, Union[str, Schemes, bool]]
     version_dir: Path
     branch_action, branch, subject, core_actions, options, version_dir = command_orders(argv)
 

@@ -6,8 +6,8 @@ from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 
 
 class Config:
-    __github: Optional[ConfigGithub]
-    __flexio: Optional[ConfigFlexio]
+    __github: Optional[ConfigGithub] = None
+    __flexio: Optional[ConfigFlexio] = None
 
     def with_github(self, github: ConfigGithub) -> Config:
         c: Config = Config()
