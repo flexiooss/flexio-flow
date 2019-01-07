@@ -15,6 +15,7 @@ class Issue(abc.ABC):
     state: Optional[IssueState]
     labels: List[str]
     assignees: List[str]
+    url: Optional[str]
 
     def __init__(self):
         self.number = None
