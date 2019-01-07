@@ -6,6 +6,8 @@ import yaml
 from Core.Config import Config
 from pathlib import Path
 import fileinput
+
+from VersionControlProvider.Flexio.ConfigFlexio import ConfigFlexio
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 
 
@@ -38,13 +40,17 @@ class ConfigHandler:
         data: dict = yaml.load(f)
         f.close()
 
-        self.__config = Config(
+        self.__config = Config().with_github(
             github=ConfigGithub(
                 activate=data.get('github', {}).get('activate', False),
                 user=data.get('github', {}).get('user', ''),
                 token=data.get('github', {}).get('token', '')
             )
-        )
+        ).with_flexio(flexio=ConfigFlexio(
+            activate=data.get('flexio', {}).get('activate', False),
+            user_token=data.get('flexio', {}).get('user_token', ''),
+            service_token=data.get('flexio', {}).get('service_token', '')
+        ))
         return self
 
     def write_file(self) -> str:

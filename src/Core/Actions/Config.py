@@ -3,7 +3,8 @@ from __future__ import annotations
 from subprocess import Popen, PIPE
 from typing import List
 from Core.ConfigHandler import ConfigHandler
-from VersionControlProvider.Github.InputConfig import InputConfig
+from VersionControlProvider.Flexio.InputConfig import InputConfig as FlexioInputConfig
+from VersionControlProvider.Github.InputConfig import InputConfig as GithubInputConfig
 
 
 class Config:
@@ -65,7 +66,8 @@ Flexio Flow  Core already initialized
 
         self.__start_message()
 
-        InputConfig(self.config_handler).add_to_config_handler()
+        GithubInputConfig(self.config_handler).add_to_config_handler()
+        FlexioInputConfig(self.config_handler).add_to_config_handler()
 
         self.__write_file()
 

@@ -26,3 +26,5 @@ class FlexioClient:
     def post_record(self, record: FlexioRessource) -> Response:
         url: str = '/'.join([self.BASE_URL, 'record', record.RESSOURCE_ID])
         return requests.post(url, json=record.to_api_dict(), headers=self.__auth({}))
+
+    # def get_user(self)->Response:
