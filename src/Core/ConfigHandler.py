@@ -66,3 +66,6 @@ class ConfigHandler:
 
     def has_issuer(self) -> bool:
         return self.__config.github.activate is True
+
+    def has_topicer(self) -> bool:
+        return self.__config.flexio.activate is True

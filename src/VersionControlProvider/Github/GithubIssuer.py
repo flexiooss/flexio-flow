@@ -11,7 +11,7 @@ from VersionControlProvider.IssueMessage import IssueMessage as AbstractMessage
 
 
 class GithubIssuer(Issuer):
-    def create(self) -> Type[Issue]:
+    def create(self) -> Issue:
         print('create issue')
 
         # repo: Repo = Repo(owner='flexiooss', repo='flexio-flow-punching-ball')

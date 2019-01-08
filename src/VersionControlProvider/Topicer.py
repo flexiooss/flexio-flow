@@ -3,6 +3,7 @@ import abc
 
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
+from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
 
 
@@ -13,10 +14,13 @@ class Topicer(abc.ABC):
     def __init__(self, state_handler: StateHandler, config_handler: ConfigHandler):
         self.state_handler: StateHandler = state_handler
         self.config_handler: ConfigHandler = config_handler
-        self.__repo = None
 
     @abc.abstractmethod
     def create(self) -> Topic:
+        pass
+
+    @abc.abstractmethod
+    def create_with_issue(self, issue:Issue) -> Topic:
         pass
 
     @abc.abstractmethod

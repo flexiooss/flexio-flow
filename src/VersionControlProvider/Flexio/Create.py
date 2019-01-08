@@ -2,18 +2,22 @@ from __future__ import annotations
 from typing import List, Dict, Type
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
-from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
-from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Topic import Topic
 
 
 class Create:
+    issue: Issue
+
     def __init__(self, config_handler: ConfigHandler):
         self.__config_handler: ConfigHandler = config_handler
-        self.__github = Github(self.__config_handler).with_repo(self.__repo)
+
+    def with_issue(self, issue: Issue) -> Create:
+        self.issue = issue
+        return self
 
     def __would_attach_issue(self) -> bool:
         issue: str = input('Have already an issue y/(n) : ')
@@ -207,8 +211,10 @@ url : {url!s}
         )
         return self
 
-    def process(self) -> Type[Issue]:
+    def process(self) -> Topic:
         self.__start_message()
+
+
         issue_number: int
         if self.__would_attach_issue():
             issue_number = self.__number_issue()

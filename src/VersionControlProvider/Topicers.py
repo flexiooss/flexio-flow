@@ -2,8 +2,8 @@ from enum import Enum, unique
 
 
 @unique
-class Issuers(Enum):
-    GITHUB: str = 'github'
+class Topicers(Enum):
+    FLEXIO: str = 'flexio'
 
     @classmethod
     def has_value(cls, value) -> bool:
