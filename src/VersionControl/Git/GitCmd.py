@@ -116,7 +116,7 @@ class GitCmd:
         return self.__exec_for_stdout(['git', 'ls-files', '-u'])
 
     def get_repo(self) -> Repo:
-        url: str = self.__exec_for_stdout(['git', 'config', '--get', 'remote.origin.url'])
+        url: str = self.__exec_for_stdout(['git', 'config', '--local', '--get', 'remote.origin.url'])
         regexp: Pattern[str] = re.compile(
             '^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$',
             re.IGNORECASE)
@@ -131,6 +131,13 @@ class GitCmd:
 
     def has_conflict(self) -> bool:
         return len(self.get_conflict()) > 0
+
+    def has_remote(self) -> bool:
+        try:
+            repo: Repo = self.get_repo()
+            return True
+        except ValueError:
+            return False
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
