@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 from VersionControlProvider.IssueState import IssueState
 from VersionControlProvider.Topic import Topic
@@ -21,12 +23,20 @@ class FlexioTopic(Topic, FlexioRessource):
         return self.body if self.body is not None else ''
 
     def __dict__(self):
-        return {
-            self.NUMBER_ID: self.number,
+        ret: dict = {
             self.TITLE_ID: self.title,
             self.STATE_ID: self.__state_to_value(),
             self.BODY_ID: self.__body_to_value()
         }
+        if self.number is not None:
+            ret[self.NUMBER_ID] = self.number
+        return ret
 
-    def to_api_dict(self)->dict:
-        return self.__dict__()
+    @classmethod
+    def build_from_api(cls, json: dict) -> FlexioTopic:
+        topic: FlexioTopic = FlexioTopic()
+        topic.number = json.get(cls.NUMBER_ID)
+        topic.title = json.get(cls.TITLE_ID)
+        topic.body = json.get(cls.BODY_ID)
+        topic.state = IssueState.OPEN if json.get(cls.STATE_ID) == '1' else IssueState.CLOSED
+        return topic

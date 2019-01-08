@@ -8,7 +8,7 @@ from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 
 
 class FlexioClient:
-    BASE_URL: str = 'https://my.flexio.io/api/'
+    BASE_URL: str = 'https://my.flexio.io/api'
 
     def __init__(self, config_handler: ConfigHandler):
         self.__config_handler: ConfigHandler = config_handler

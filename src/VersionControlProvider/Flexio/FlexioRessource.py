@@ -10,4 +10,6 @@ class FlexioRessource(abc.ABC):
         pass
 
     def to_api_dict(self) -> dict:
-        return self.__dict__()
+        ret: dict = self.__dict__()
+        # ret['type_id'] = self.RESSOURCE_ID
+        return ret
