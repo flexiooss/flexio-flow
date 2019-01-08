@@ -25,17 +25,17 @@ class Finish:
         return self
 
     def __pull_develop(self) -> Finish:
-        self.__git.checkout(Branches.DEVELOP).pull()
+        self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
-        self.__git.checkout(Branches.MASTER).pull()
+        self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
     def __merge_master(self) -> Finish:
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
             branch=Branches.RELEASE,
-            message=IssueMessage(
+            message=Message(
                 message='',
                 issue=self.__issue
             ).with_ref(),
@@ -48,7 +48,7 @@ class Finish:
                 'tag : ',
                 self.__state_handler.version_as_str(),
                 "'"])
-        ).push_tag(self.__state_handler.version_as_str()).push()
+        ).try_to_push_tag(self.__state_handler.version_as_str()).try_to_push()
         if (self.__git.has_conflict()):
             raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
         return self
@@ -60,21 +60,21 @@ class Finish:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            IssueMessage(
+            Message(
                 message=''.join(["'Finish release for dev: ", self.__state_handler.version_as_str()]),
                 issue=self.__issue
             ).with_ref()
-        ).push()
+        ).try_to_push()
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
             branch=Branches.RELEASE,
-            message=IssueMessage(
+            message=Message(
                 message='',
                 issue=self.__issue
             ).with_ref()
-        ).push()
+        ).try_to_push()
 
-        if (self.__git.has_conflict()):
+        if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
         return self
 

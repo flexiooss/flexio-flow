@@ -25,11 +25,11 @@ class Start:
         return self
 
     def __pull_develop(self) -> Start:
-        self.__git.checkout(Branches.DEVELOP).pull()
+        self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Start:
-        self.__git.checkout(Branches.MASTER).pull()
+        self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
     def __start_hotfix(self):
@@ -48,11 +48,11 @@ class Start:
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
         self.__git.commit(
-            IssueMessage(
+            Message(
                 message="'Start hotfix : {branch_name!s}'".format(branch_name=branch_name),
                 issue=self.__issue
             ).with_ref()
-        ).set_upstream()
+        ).try_to_set_upstream()
 
     def process(self):
         self.__init_gitflow().__pull_develop().__pull_master().__start_hotfix()

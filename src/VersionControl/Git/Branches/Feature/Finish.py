@@ -24,17 +24,17 @@ class Finish:
         return self
 
     def __pull_develop(self) -> Finish:
-        self.__git.checkout(Branches.DEVELOP).pull()
+        self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
-        self.__git.checkout(Branches.MASTER).pull()
+        self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
         self.__git.commit(
-            IssueMessage(
+            Message(
                 message=''.join([
                     "'Finish feature ` ",
                     self.__current_branch_name,
@@ -43,15 +43,15 @@ class Finish:
                 ]),
                 issue=self.__issue
             ).with_close()
-        ).push()
+        ).try_to_push()
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
             branch=Branches.FEATURE,
-            message=IssueMessage(
+            message=Message(
                 message='',
                 issue=self.__issue
             ).with_ref()
-        ).push()
+        ).try_to_push()
 
         if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())

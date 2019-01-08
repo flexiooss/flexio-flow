@@ -176,8 +176,6 @@ class GitCmd:
         return self
 
     def push_force(self) -> GitCmd:
-        if not self.__branch:
-            raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
         return self
 
@@ -197,6 +195,31 @@ class GitCmd:
         if not self.__branch:
             raise NoBranchSelected('Try with GitCmd.checkout(branch_name:str) before')
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.get_current_branch_name()])
+        return self
+
+    def try_to_pull(self) -> GitCmd:
+        if self.has_remote():
+            return self.pull()
+        return self
+
+    def try_to_push(self) -> GitCmd:
+        if self.has_remote():
+            return self.push()
+        return self
+
+    def try_to_push_force(self) -> GitCmd:
+        if self.has_remote():
+            return self.push_force()
+        return self
+
+    def try_to_push_tag(self, tag: str) -> GitCmd:
+        if self.has_remote():
+            return self.push_tag(tag)
+        return self
+
+    def try_to_set_upstream(self) -> GitCmd:
+        if self.has_remote():
+            return self.set_upstream()
         return self
 
     def tag(self, tag: str, msg: Optional[str] = None) -> GitCmd:

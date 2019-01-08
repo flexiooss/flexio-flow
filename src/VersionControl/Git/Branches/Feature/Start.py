@@ -27,11 +27,11 @@ class Start:
         return self
 
     def __pull_develop(self) -> Start:
-        self.__git.checkout(Branches.DEVELOP).pull()
+        self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Start:
-        self.__git.checkout(Branches.MASTER).pull()
+        self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
     def __start_feature(self):
@@ -41,17 +41,18 @@ class Start:
             name=self.__name
         )
 
-        if self.__git.branch_exists_from_name(branch_name,True) or self.__git.branch_exists_from_name(branch_name,False):
+        if self.__git.branch_exists_from_name(branch_name, True) or self.__git.branch_exists_from_name(branch_name,
+                                                                                                       False):
             raise BranchAlreadyExist(Branches.FEATURE, branch_name)
 
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 
         self.__git.commit(
-            IssueMessage(
+            Message(
                 message=''.join(["'Start feature : ", branch_name, "'"]),
                 issue=self.__issue
             ).with_ref()
-        ).set_upstream()
+        ).try_to_set_upstream()
 
     def process(self):
         self.__init_gitflow().__pull_develop().__pull_master().__start_feature()

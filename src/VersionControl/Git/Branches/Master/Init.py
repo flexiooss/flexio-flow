@@ -26,10 +26,10 @@ class Init:
 
         git.add_all().commit(
             ''.join(["'Init master : ", version, "'"])
-        ).tag(version).set_upstream()
+        ).tag(version).try_to_set_upstream()
 
         print('Init master at : ' + version)
-        git.push_tag(version)
+        git.try_to_push_tag(version)
         print('Tag master at : ' + version)
         return self
 
@@ -45,7 +45,7 @@ class Init:
 
         git.add_all().commit(
             ''.join(["'Init develop : ", version, "'"])
-        ).set_upstream()
+        ).try_to_set_upstream()
 
         print('Init develop at : ' + version)
         return self
