@@ -20,7 +20,7 @@ class TestGithub(unittest.TestCase):
 
     def setUp(self):
         self.config_handler = ConfigHandler(CONFIG_DIR)
-        self.config_handler.config = Config(ConfigGithub(
+        self.config_handler.config = Config().with_github(ConfigGithub(
             activate=True,
             user=USER,
             token=TOKEN_TEST
@@ -34,7 +34,7 @@ class TestGithub(unittest.TestCase):
         print(r.json())
 
         falsy_config_handler = ConfigHandler(CONFIG_DIR)
-        falsy_config_handler.config = Config(ConfigGithub(
+        falsy_config_handler.config = Config().with_github(ConfigGithub(
             activate=True,
             user='dudu',
             token='dudu'
@@ -48,7 +48,7 @@ class TestGithub(unittest.TestCase):
         print(r.json())
 
         falsy_config_handler = ConfigHandler(CONFIG_DIR)
-        falsy_config_handler.config = Config(ConfigGithub(
+        falsy_config_handler.config = Config().with_github(ConfigGithub(
             activate=True,
             user='dudu',
             token='dudu'
