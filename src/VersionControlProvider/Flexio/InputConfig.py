@@ -40,8 +40,8 @@ class InputConfig:
         activate: bool = self.__input_flexio()
         flexio: ConfigFlexio
         if activate:
-            user: str = self.__input_user()
-            token: str = self.__input_token()
+            user: str = self.__input_user_token()
+            token: str = self.__input_service_token()
             flexio = ConfigFlexio(activate=activate, user_token=user, service_token=token)
             self.config_handler.config = self.config_handler.config.with_flexio(flexio)
             # self.__check_user()

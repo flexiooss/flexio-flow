@@ -10,22 +10,15 @@ class Read:
     def __config_handler(self) -> ConfigHandler:
         return self.config_handler
 
-    def __final_message(self) -> Read:
-        print(
-            """###############################################
-Enjoy with Flexio FLow 
-###############################################
-""")
-        return self
-
     def __ensure_have_config(self) -> Read:
         if self.__config_handler().file_exists():
             self.__config_handler().load_file_config()
             print(
                 """###############################################
-Flexio Flow Core 
+Flexio Flow 
+Core configuration
+{path!s}
 ###############################################
-at : {path!s}
 
 {config!s}
 """.format(
@@ -41,4 +34,3 @@ at : {path!s}
 
     def process(self):
         self.__ensure_have_config()
-        self.__final_message()

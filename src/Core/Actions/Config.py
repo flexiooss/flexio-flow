@@ -23,10 +23,20 @@ class Config:
 
     def __start_message(self) -> Config:
         print(
-            """###############################################
-################# Flexio FLow Core #################
-###############################################
+            """#######################################################################################
+#######################################################################################
+#######################################################################################
+
+   __  _            _             __  _
+  / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
+ |  _|| |/ -_)\ \ /| |/ _ \|___||  _|| |/ _ \\ V  V /
+ |_|  |_|\___|/_\_\|_|\___/     |_|  |_|\___/ \_/\_/
+
+https://github.com/flexiooss/flexio-flow
+
+#################################################
 #################    Config     #################
+#################################################
 """)
         return self
 
@@ -51,11 +61,19 @@ Enjoy with Flexio FLow
             self.__config_handler().load_file_config()
             print(
                 """###############################################
-Flexio Flow  Core already initialized 
+Flexio Flow  
+Core already initialized at : {path!s}
 ###############################################
-""")
-            print('at : ' + self.__config_handler().file_path().as_posix())
-            print('with : ' + str(self.__config_handler().config.to_dict()))
+
+{config!s}
+
+""".format(
+                    path=self.__config_handler().file_path().as_posix(),
+                    config=str(self.__config_handler().config.to_dict())
+                )
+
+            )
+
             use: str = input('Use this file (y)/n : ')
             use = use if use else 'y'
             if use is 'y':
