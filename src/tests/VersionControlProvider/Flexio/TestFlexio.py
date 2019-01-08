@@ -6,7 +6,7 @@ from requests import Response
 from Core.Config import Config
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Flexio.ConfigFlexio import ConfigFlexio
-from VersionControlProvider.Flexio.FlexioClient import FlexioClient
+from VersionControlProvider.Flexio.FlexioClient import FlexioClient, Range
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.IssueState import IssueState
 from tests.VersionControlProvider.Flexio.api___secret import USER_TOKEN, SERVICE_TOKEN
@@ -33,7 +33,6 @@ class TestFlexio(unittest.TestCase):
 
         r: Response = FlexioClient(self.config_handler).post_record(record=topic)
 
-
         topic_created: FlexioTopic = FlexioTopic.build_from_api(r.json())
         self.assertEqual(topic.title, topic_created.title)
         self.assertEqual(topic.body, topic_created.body)
@@ -50,3 +49,21 @@ class TestFlexio(unittest.TestCase):
         ))
         r: Response = FlexioClient(falsy_config_handler).post_record(record=topic)
         self.assertIsNot(r.status_code, 200)
+
+    def test_get_records(self):
+        topic: FlexioTopic = FlexioTopic()
+
+        r: Response = FlexioClient(self.config_handler).get_records(record=topic)
+
+        print(r.headers)
+        print(r.json())
+
+        self.assertIs(r.status_code, 200)
+
+    def test_get_total(self):
+        topic: FlexioTopic = FlexioTopic()
+        r: Range = FlexioClient(self.config_handler).get_total(ressource=topic)
+        print(r.accept_range)
+        print(r.offset)
+        print(r.limit)
+        print(r.total)
