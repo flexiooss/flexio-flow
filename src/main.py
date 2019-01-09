@@ -7,6 +7,7 @@ import os
 
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
+from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.FlexioFlow import FlexioFlow
 from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
@@ -51,11 +52,12 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
 
 def extract_subject_action(argv: List[str]) -> Tuple[
-    Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore]]:
+    Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore], Optional[IssueActions]]:
     branch: Optional[Branches] = None
     branch_action: Optional[Actions] = None
     subject: Optional[Subject] = None
     core_actions: Optional[ActionsCore] = None
+    issue_action: Optional[IssueActions] = None
 
     arg: str
     for arg in argv:
@@ -63,19 +65,21 @@ def extract_subject_action(argv: List[str]) -> Tuple[
 
         if Actions.has_value(arg):
             branch_action = Actions[arg.upper()]
-        elif Branches.has_value(arg):
+        if Branches.has_value(arg):
             branch = Branches[arg.upper()]
-        elif Subject.has_value(arg):
+        if Subject.has_value(arg):
             subject = Subject[arg.upper()]
-        elif ActionsCore.has_value(arg):
+        if ActionsCore.has_value(arg):
             core_actions = ActionsCore[arg.upper()]
+        if IssueActions.has_value(arg):
+            issue_action = IssueActions[arg.upper()]
 
-    return branch, branch_action, subject, core_actions
+    return branch, branch_action, subject, core_actions, issue_action
 
 
 def command_orders(argv: List[str]) -> Tuple[
     Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[
-        str, Union[str, Schemes, bool]], Path]:
+        str, Union[str, Schemes, bool]], Path, Optional[IssueActions]]:
     argv_no_options: List[str]
     options: Dict[str, Union[str, Schemes, bool]]
     argv_no_options, options = parse_options(argv)
@@ -85,10 +89,10 @@ def command_orders(argv: List[str]) -> Tuple[
     subject: Optional[Subject]
     core_actions: Optional[ActionsCore]
 
-    branch, branch_action, subject, core_actions = extract_subject_action(argv_no_options)
+    branch, branch_action, subject, core_actions, issue_action = extract_subject_action(argv_no_options)
     version_dir: Path = Path(str(options.get('version-dir'))) if options.get('version-dir') else Path.cwd()
 
-    return branch_action, branch, subject, core_actions, options, version_dir
+    return branch_action, branch, subject, core_actions, options, version_dir, issue_action
 
 
 def main(argv) -> None:
@@ -98,7 +102,9 @@ def main(argv) -> None:
     core_action: Optional[ActionsCore]
     options: Dict[str, Union[str, Schemes, bool]]
     version_dir: Path
-    branch_action, branch, subject, core_action, options, version_dir = command_orders(argv)
+    issue_action: Optional[IssueActions]
+
+    branch_action, branch, subject, core_action, options, version_dir,issue_action = command_orders(argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
@@ -108,6 +114,7 @@ def main(argv) -> None:
         version_controller=VersionController.GITFLOW,
         branch_action=branch_action,
         core_action=core_action,
+        issue_action=issue_action,
         branch=branch,
         options=options,
         dir_path=version_dir,

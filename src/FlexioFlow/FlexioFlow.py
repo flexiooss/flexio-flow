@@ -4,6 +4,9 @@ from typing import Optional, Type, Dict, Union
 
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
+from Exceptions.NoIssuerConfigured import NoIssuerConfigured
+from FlexioFlow.Actions.Issue import Issue
+from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Actions.Actions import Actions as BranchActions
 from Branches.Actions.Action import Action
@@ -25,9 +28,11 @@ class FlexioFlow:
     __config_handler: ConfigHandler
     __core_action: Optional[ActionsCore]
     __dir_path: Path
+    __issue_action: Optional[IssueActions]
     __options: Dict[str, Union[str, Schemes, bool]]
     __state_handler: Optional[StateHandler] = None
     __version_controller: VersionController
+    __version_control: VersionControl
 
     def __init__(self, subject: Subject):
         self.subject: Subject = subject
@@ -37,6 +42,7 @@ class FlexioFlow:
                         version_controller: VersionController,
                         branch_action: Optional[BranchActions],
                         core_action: Optional[ActionsCore],
+                        issue_action: Optional[IssueActions],
                         branch: Optional[Branches],
                         options: Dict[str, Union[str, Schemes, bool]],
                         dir_path: Path,
@@ -44,7 +50,12 @@ class FlexioFlow:
                         ) -> FlexioFlow:
 
         self.__version_controller: VersionController = version_controller
+        self.__version_control: VersionControl = VersionControlFactory.build(
+            self.__version_controller,
+            self.__state_handler
+        )
         self.__branch_action: Optional[BranchActions] = branch_action
+        self.__issue_action: Optional[IssueActions] = issue_action
         self.__core_action: Optional[ActionsCore] = core_action
         self.__branch: Optional[Branches] = branch
         self.__options: Dict[str, Union[str, Schemes, bool]] = options
@@ -74,8 +85,22 @@ class FlexioFlow:
         ).process()
 
     def __process_subject_version(self):
+        self.__ensure_state_handler()
         Version(
-            state_handler=StateHandler(self.__dir_path).load_file_config(),
+            state_handler=self.__state_handler,
+            options=self.__options
+        ).process()
+
+    def __process_subject_issue(self):
+        if not self.__config_handler.has_issuer():
+            raise NoIssuerConfigured()
+        if self.__issue_action is None:
+            raise ValueError('should have Action')
+        self.__ensure_state_handler()
+        Issue(
+            action=self.__issue_action,
+            state_handler=self.__state_handler,
+            version_control=self.__version_control,
             options=self.__options
         ).process()
 
@@ -86,14 +111,9 @@ class FlexioFlow:
         self.__ensure_state_handler()
         self.__ensure_config_handler()
 
-        version_control: VersionControl = VersionControlFactory.build(
-            self.__version_controller,
-            self.__state_handler
-        )
-
         action: Type[Action] = ActionFactory.build(
             action=self.__branch_action,
-            version_control=version_control,
+            version_control=self.__version_control,
             branch=self.__branch,
             state_handler=self.__state_handler,
             options=self.__options,
@@ -107,5 +127,7 @@ class FlexioFlow:
             self.__process_subject_core()
         elif self.subject is Subject.VERSION:
             self.__process_subject_version()
+        elif self.subject is Subject.ISSUE:
+            self.__process_subject_issue()
         elif self.subject is Subject.BRANCH:
             self.__process_branch_action()
