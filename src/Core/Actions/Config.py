@@ -42,9 +42,7 @@ https://github.com/flexiooss/flexio-flow
 
     def __write_file(self) -> Config:
         yml: str = self.__config_handler().write_file()
-        print("""#################################################
-Write file : {0!s} 
-#################################################""".format(self.__config_handler().file_path()))
+
         print(yml)
         return self
 

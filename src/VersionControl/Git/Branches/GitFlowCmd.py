@@ -31,7 +31,7 @@ class GitFlowCmd:
             self.__git.checkout(Branches.MASTER).create_branch_from(
                 Branches.DEVELOP.value,
                 Branches.MASTER
-            ).set_upstream().push()
+            ).try_to_set_upstream().try_to_push_force()
         return self
 
     def has_hotfix(self, remote: bool) -> bool:
