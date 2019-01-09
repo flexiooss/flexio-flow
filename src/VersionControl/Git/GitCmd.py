@@ -22,6 +22,9 @@ class GitCmd:
         stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__state_handler.dir_path.as_posix()).communicate()
         return stdout.strip().decode('utf-8')
 
+    def __decode_stdout(self, stdout) -> str:
+        return stdout.strip().decode('utf-8')
+
     def add_all(self) -> GitCmd:
         self.__exec(['git', 'add', '.'])
         return self
@@ -37,6 +40,7 @@ class GitCmd:
             return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
         else:
             resp: str = self.__get_branch_name_from_git_list(branch)
+            print(resp)
             return len(resp) > 0
 
     def can_commit(self) -> bool:
@@ -106,9 +110,22 @@ class GitCmd:
         return branch_name
 
     def __get_branch_name_from_git_list(self, branch: str) -> str:
-        print(branch)
-        branch_name: str = self.__exec_for_stdout(['git', 'branch', '--list', '|', 'grep', '"' + branch + '*"'])
-        print(branch_name)
+        p1 = Popen(
+            ['git', 'branch', '--list'],
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix()
+        )
+
+        p2 = Popen(
+            ['grep', '-E', r"^\*?\s*.*{branch}.*".format(branch=branch)],
+            stdin=p1.stdout,
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix())
+        p1.stdout.close()
+        result = p2.communicate()[0]
+        p1.wait()
+
+        branch_name = self.__decode_stdout(result)
         return re.sub(
             pattern=self.SPACES_PATTERN,
             repl='',
@@ -130,6 +147,7 @@ class GitCmd:
         return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
 
     def get_current_branch_name(self) -> str:
+        # git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g'
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
 
     def has_conflict(self) -> bool:
@@ -139,9 +157,7 @@ class GitCmd:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
     def init_head(self) -> GitCmd:
-        print('toto')
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
-        print('tutu')
         return self
 
     def has_remote(self) -> bool:
@@ -196,7 +212,23 @@ class GitCmd:
             resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
             return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
         else:
-            resp: str = self.__exec_for_stdout(['git', 'tag', '-l', '|', 'grep', tag])
+            p1 = Popen(
+                ['git', 'tag', '-l'],
+                stdout=PIPE,
+                cwd=self.__state_handler.dir_path.as_posix()
+            )
+
+            p2 = Popen(
+                ['grep', '-E', tag],
+                stdin=p1.stdout,
+                stdout=PIPE,
+                cwd=self.__state_handler.dir_path.as_posix())
+            p1.stdout.close()
+            result = p2.communicate()[0]
+            p1.wait()
+
+            resp = self.__decode_stdout(result)
+
             return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
