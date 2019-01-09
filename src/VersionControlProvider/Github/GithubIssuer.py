@@ -1,6 +1,9 @@
 from typing import Type, Optional
 
+from requests import Response
+
 from VersionControl.Git.GitCmd import GitCmd
+from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.Issue.Create import Create
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Github.Repo import Repo
@@ -24,3 +27,12 @@ class GithubIssuer(Issuer):
 
     def issue_builder(self) -> Issue:
         return IssueGithub()
+
+    def read_issue_by_number(self, number: int) -> Issue:
+        repo: Repo = GitCmd(self.state_handler).get_repo()
+        # repo: Repo = Repo(owner='flexiooss', repo='flexio-flow-punching-ball')
+        resp: Response = Github(self.config_handler).with_repo(repo).read_issue(IssueGithub().with_number(number))
+        return IssueGithub.from_api_dict(resp.json())
+
+    def comment(self):
+        pass

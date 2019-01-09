@@ -29,6 +29,10 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def read_issue_by_number(self, number: int) -> Issue:
+        pass
+
+    @abc.abstractmethod
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> IssueMessage:
         pass
 
@@ -38,7 +42,4 @@ class Issuer(abc.ABC):
 
     @abc.abstractmethod
     def comment(self):
-        pass
-
-    def read(self) -> Issue:
         pass

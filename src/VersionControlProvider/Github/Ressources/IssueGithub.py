@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.IssueState import IssueState
 
 
 class IssueGithub(Issue):
@@ -19,6 +20,17 @@ class IssueGithub(Issue):
         if label not in self.labels:
             self.labels.append(label)
         return self
+
+    @staticmethod
+    def from_api_dict(data: dict) -> IssueGithub:
+        inst: IssueGithub = IssueGithub()
+        inst.number = data.get('number')
+        print(data.get('state'))
+        inst.state = IssueState.CLOSED if data.get('state') == 'closed' else IssueState.OPEN
+        inst.milestone = data.get('milestone')
+        inst.assignees = data.get('assignees')
+        inst.url = data.get('url')
+        return inst
 
     def __dict__(self):
         issue: dict = {

@@ -99,18 +99,21 @@ class FlexioFlow:
         ).process()
 
     def __process_subject_issue(self):
-        if not self.__config_handler.has_issuer():
-            raise NoIssuerConfigured()
-
         if self.__issue_action is None:
             raise ValueError('should have Action')
+
         self.__ensure_state_handler()
         self.__ensure_version_control()
+        self.__ensure_config_handler()
+
+        if not self.__config_handler.has_issuer():
+            raise NoIssuerConfigured()
 
         Issue(
             action=self.__issue_action,
             state_handler=self.__state_handler,
             version_control=self.__version_control,
+            config_handler=self.__config_handler,
             options=self.__options
         ).process()
 

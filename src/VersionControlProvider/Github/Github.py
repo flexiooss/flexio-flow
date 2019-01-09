@@ -51,6 +51,10 @@ class Github:
         url: str = '/'.join([self.__repo_base_url(), 'issues'])
         return requests.post(url, json=issue.__dict__(), headers=self.__auth({}))
 
+    def read_issue(self, issue: IssueGithub) -> Response:
+        url: str = '/'.join([self.__repo_base_url(), 'issues', str(issue.number)])
+        return requests.get(url, headers=self.__auth({}))
+
     def create_milestone(self, milestone: Milestone) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'milestones'])
         return requests.post(url, json=milestone.__dict__(), headers=self.__auth({}))

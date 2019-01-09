@@ -211,6 +211,7 @@ url : {url!s}
     def process(self) -> Issue:
         self.__start_message()
         issue_number: int
+        issue_url: str
         if self.__would_attach_issue():
             issue_number = self.__number_issue()
             issue: IssueGithub = IssueGithub()
