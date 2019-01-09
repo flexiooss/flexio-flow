@@ -45,16 +45,16 @@ flexio-flow
                         finish
 
 
+              <commit>
+
+              commit
+
+
               <issue>
 
               issue
                         read
                         comment
-
-
-              <commit>
-
-              commit
 
 
               <scheme>

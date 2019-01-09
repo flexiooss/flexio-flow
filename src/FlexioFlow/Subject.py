@@ -3,6 +3,7 @@ from enum import Enum, unique
 
 @unique
 class Subject(Enum):
+    BRANCH: str = 'branch'
     CORE: str = 'core'
     ISSUE: str = 'issue'
     SCHEME: str = 'scheme'

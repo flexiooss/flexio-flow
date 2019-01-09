@@ -7,7 +7,6 @@ import os
 
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
-from FlexioFlow.Actions.Version import Version
 from FlexioFlow.FlexioFlow import FlexioFlow
 from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
@@ -96,30 +95,25 @@ def main(argv) -> None:
     branch_action: Optional[Actions]
     branch: Optional[Branches]
     subject: Optional[Subject]
-    core_actions: Optional[ActionsCore]
+    core_action: Optional[ActionsCore]
     options: Dict[str, Union[str, Schemes, bool]]
     version_dir: Path
-    branch_action, branch, subject, core_actions, options, version_dir = command_orders(argv)
+    branch_action, branch, subject, core_action, options, version_dir = command_orders(argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
-    if subject is Subject.CORE:
-        if core_actions is None:
-            raise ValueError('should have Action')
-        Core(core_actions, options=options, config_handler=config_handler).process()
-    elif subject is Subject.VERSION:
-        Version(StateHandler(version_dir).load_file_config(), options).process()
-    else:
-        if branch_action is None:
-            raise ValueError('should have Action')
-        FlexioFlow(
-            version_controller=VersionController.GITFLOW,
-            action=branch_action,
-            branch=branch,
-            options=options,
-            dir_path=version_dir,
-            config_handler=config_handler
-        ).process()
+    subject = Subject.BRANCH if subject is None else subject
+
+    FlexioFlow(subject=subject).set_environment(
+        version_controller=VersionController.GITFLOW,
+        branch_action=branch_action,
+        core_action=core_action,
+        branch=branch,
+        options=options,
+        dir_path=version_dir,
+        config_handler=config_handler
+    ).process()
+
     sys.exit()
 
 

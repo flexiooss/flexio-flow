@@ -19,7 +19,7 @@ class ActionFactory:
     @staticmethod
     def build(
             action: Actions,
-            version_control: Type[VersionControl],
+            version_control: VersionControl,
             branch: Optional[Branches],
             state_handler: StateHandler,
             options: Dict[str, str],

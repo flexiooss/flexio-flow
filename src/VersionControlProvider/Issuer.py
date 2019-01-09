@@ -35,3 +35,10 @@ class Issuer(abc.ABC):
     @abc.abstractmethod
     def issue_builder(self) -> Issue:
         pass
+
+    @abc.abstractmethod
+    def comment(self):
+        pass
+
+    def read(self) -> Issue:
+        pass
