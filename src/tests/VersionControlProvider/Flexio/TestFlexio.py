@@ -9,7 +9,7 @@ from VersionControlProvider.Flexio.ConfigFlexio import ConfigFlexio
 from VersionControlProvider.Flexio.FlexioClient import FlexioClient, Range
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.IssueState import IssueState
-from tests.VersionControlProvider.Flexio.api___secret import USER_TOKEN, SERVICE_TOKEN
+from tests.VersionControlProvider.Flexio.api___secret import USER_TOKEN
 
 CONFIG_DIR: Path = Path('/tmp/')
 
@@ -19,8 +19,7 @@ class TestFlexio(unittest.TestCase):
         self.config_handler = ConfigHandler(CONFIG_DIR)
         self.config_handler.config = Config().with_flexio(ConfigFlexio(
             activate=True,
-            user_token=USER_TOKEN,
-            service_token=SERVICE_TOKEN
+            user_token=USER_TOKEN
         ))
 
     def test_post_record(self):
@@ -44,8 +43,7 @@ class TestFlexio(unittest.TestCase):
         falsy_config_handler = ConfigHandler(CONFIG_DIR)
         falsy_config_handler.config = Config().with_flexio(ConfigFlexio(
             activate=True,
-            user_token='dudu',
-            service_token='dudu'
+            user_token='dudu'
         ))
         r: Response = FlexioClient(falsy_config_handler).post_record(record=topic)
         self.assertIsNot(r.status_code, 200)

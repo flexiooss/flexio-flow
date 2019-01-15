@@ -48,8 +48,7 @@ class ConfigHandler:
             )
         ).with_flexio(flexio=ConfigFlexio(
             activate=data.get('flexio', {}).get('activate', False),
-            user_token=data.get('flexio', {}).get('user_token', ''),
-            service_token=data.get('flexio', {}).get('service_token', '')
+            user_token=data.get('flexio', {}).get('user_token', '')
         ))
         return self
 

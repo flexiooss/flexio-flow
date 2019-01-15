@@ -27,10 +27,6 @@ class InputConfig:
         token: str = input('User token api Flexio : ')
         return token
 
-    def __input_service_token(self) -> str:
-        token: str = input('Service token api Flexio : ')
-        return token
-
     # def __check_user(self):
     #     r: Response = FlexioClient(self.config_handler).get_user()
     #     if r.status_code is not 200:
@@ -41,13 +37,11 @@ class InputConfig:
         flexio: ConfigFlexio
         if activate:
             user: str = self.__input_user_token()
-            token: str = self.__input_service_token()
-            flexio = ConfigFlexio(activate=activate, user_token=user, service_token=token)
+            flexio = ConfigFlexio(activate=activate, user_token=user)
             self.config_handler.config = self.config_handler.config.with_flexio(flexio)
             # self.__check_user()
         else:
             user_opt: Optional[str] = None
-            token_opt: Optional[str] = None
-            flexio = ConfigFlexio(activate=activate, user_token=user_opt, service_token=token_opt)
+            flexio = ConfigFlexio(activate=activate, user_token=user_opt)
             self.config_handler.config = self.config_handler.config.with_flexio(flexio)
         return flexio
