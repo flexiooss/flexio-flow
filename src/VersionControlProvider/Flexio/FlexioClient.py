@@ -34,19 +34,16 @@ class FlexioClient:
     CONTENT_RANGE = 'Content-Range'
     AUTHORIZATION = 'Authorization'
     ACCEPT_RANGE = 'Accept-Range'
-    X_USER = 'X-user'
 
     def __init__(self, config_handler: ConfigHandler):
         self.__config_handler: ConfigHandler = config_handler
 
     def __auth(self, headers: Dict[str, str]) -> Dict[str, str]:
-        if self.__config_handler.config.flexio.service_token and self.__config_handler.config.flexio.user_token:
-            headers[self.AUTHORIZATION] = 'Bearer {service_token!s}'.format(
-                service_token=self.__config_handler.config.flexio.service_token)
-            headers[self.X_USER] = '{user_token!s}'.format(
+        if self.__config_handler.config.flexio.user_token:
+            headers[self.AUTHORIZATION] = 'Bearer {user_token!s}'.format(
                 user_token=self.__config_handler.config.flexio.user_token)
         else:
-            raise AttributeError('No user or service token')
+            raise AttributeError('No user token')
         return headers
 
     def __with_content_range(self, headers: Dict[str, str], range: Range) -> Dict[str, str]:
