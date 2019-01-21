@@ -13,11 +13,11 @@ class MavenScheme(Scheme):
         return 'SNAPSHOT'
 
     def set_version(self) -> MavenScheme:
-        MavenSetVersion(self.__state_handler.dir_path.as_posix(), self.get_version()).set()
+        MavenSetVersion(self.state_handler,  self.get_version()).set()
         return self
 
     def release_precheck(self) -> Dependencies:
-        return MavenPreCheck(self.__state_handler.dir_path.as_posix()).check()
+        return MavenPreCheck(self.state_handler).check()
 
     def get_version(self) -> str:
         return '-'.join([self.state_handler.version_as_str(),

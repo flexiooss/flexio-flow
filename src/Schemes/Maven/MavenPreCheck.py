@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from subprocess import Popen
 
-from Schemes.Maven import ReportFileReader
+from FlexioFlow.StateHandler import StateHandler
+from Schemes.Maven.ReportFileReader import ReportFileReader
 from Schemes.Dependencies import Dependencies
-from pathlib import Path
 
 import random
 import string
@@ -12,10 +12,10 @@ import os
 
 
 class MavenPreCheck:
-    dir_path: str
+    __state_handler: StateHandler
 
-    def __init__(self, dir_path: Path):
-        self.dir_path = dir_path
+    def __init__(self, state_handler: StateHandler):
+        self.__state_handler: StateHandler = state_handler
 
     def check(self) -> Dependencies:
         deps: Dependencies
@@ -23,7 +23,8 @@ class MavenPreCheck:
         reportpath: str = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
 
         status = Popen(
-            ['mvn', 'clean', 'io.flexio.maven:flexio-flow-maven-plugin:1.0.0-SNAPSHOT:check-deps', '--fail-at-end', '-Dreport.to=/tmp/' + reportpath],
+            ['mvn', 'clean', 'io.flexio.maven:flexio-flow-maven-plugin:1.0.0-SNAPSHOT:check-deps', '--fail-at-end',
+             '-Dreport.to=/tmp/' + reportpath],
             cwd=self.__state_handler.dir_path.as_posix()
         ).wait()
 
