@@ -36,3 +36,13 @@ class GithubIssuer(Issuer):
 
     def comment(self):
         pass
+
+    def has_repo(self) -> bool:
+        has_repo: bool = False
+        try:
+            repo: Repo = GitCmd(self.state_handler).get_repo()
+            has_repo = True
+        except ValueError:
+            print('GithubIssuer have not repo')
+        finally:
+            return has_repo

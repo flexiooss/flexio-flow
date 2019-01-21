@@ -84,7 +84,7 @@ class Finish:
                 message='',
                 issue=self.__issue
             ).with_ref()
-        ).try_to_push_tag()
+        ).try_to_push()
         if (self.__git.has_conflict()):
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
         return self

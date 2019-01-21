@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Type
+from typing import Optional
 
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
@@ -13,13 +13,26 @@ from VersionControlProvider.Topicer import Topicer
 
 
 class Start(Action):
+
+    def __process_without_issue(self):
+        self.version_control.build_branch(self.branch).with_action(Actions.START).process()
+
     def process(self):
         if self.config_handler.has_issuer():
-            issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler).issuer()
-            issue: Issue = issuer.create()
-            if self.config_handler.has_topicer():
-                topicer: Topicer = TopicerHandler(self.state_handler, self.config_handler).topicer()
-                topic: Topic = topicer.create()
-            self.version_control.build_branch(self.branch).with_issue(issue).with_action(Actions.START).process()
+            issuer: Optional[Issuer] = IssuerHandler(self.state_handler, self.config_handler).issuer()
+
+            if issuer is not None and issuer.has_repo():
+                issue: Issue = issuer.create()
+
+                if self.config_handler.has_topicer():
+                    topicer: Optional[Topicer] = TopicerHandler(self.state_handler, self.config_handler).topicer()
+
+                    if topicer is not None:
+                        topic: Topic = topicer.create()
+                self.version_control.build_branch(self.branch).with_issue(issue).with_action(Actions.START).process()
+
+            else:
+                self.__process_without_issue()
+
         else:
-            self.version_control.build_branch(self.branch).with_action(Actions.START).process()
+            self.__process_without_issue()

@@ -16,7 +16,7 @@ class CommitHandler(AbstractCommitHandler):
         return self
 
     def push(self) -> CommitHandler:
-        self.__git.push()
+        self.__git.try_to_push()
         return self
 
     def can_commit(self) -> bool:

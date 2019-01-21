@@ -8,7 +8,7 @@ from slugify import slugify
 
 
 class Feature(Branch):
-    __name: str
+    __name: str = None
 
     def with_name(self, name: str) -> Feature:
         self.__name: str = slugify(name)

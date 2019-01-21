@@ -43,3 +43,7 @@ class Issuer(abc.ABC):
     @abc.abstractmethod
     def comment(self):
         pass
+
+    @abc.abstractmethod
+    def has_repo(self) -> bool:
+        pass

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 
@@ -11,7 +13,7 @@ class TopicerHandler:
         self.state_handler: StateHandler = state_handler
         self.config_handler: ConfigHandler = config_handler
 
-    def topicer(self) -> Topicer:
+    def topicer(self) -> Optional[Topicer]:
         topicers: Topicers = Topicers.FLEXIO
         topicer: Topicer = TopicerFactory.build(self.state_handler, self.config_handler, topicers)
         return topicer

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Issuer import Issuer
@@ -10,7 +12,13 @@ class IssuerHandler:
         self.state_handler: StateHandler = state_handler
         self.config_handler: ConfigHandler = config_handler
 
-    def issuer(self) -> Issuer:
-        issuer: Issuers = Issuers.GITHUB
-        issuer: Issuer = IssuerFactory.build(self.state_handler, self.config_handler, issuer)
-        return issuer
+    def issuer(self) -> Optional[Issuer]:
+        issuers: Issuers = Issuers.GITHUB
+        issuer = None
+
+        try:
+            issuer: Issuer = IssuerFactory.build(self.state_handler, self.config_handler, issuers)
+        except ValueError:
+            print('Can\'t get Issuer')
+        finally:
+            return issuer
