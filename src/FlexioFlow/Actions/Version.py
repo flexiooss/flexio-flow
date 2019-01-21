@@ -18,10 +18,14 @@ class Version:
 
     def __get_scheme_option_or_default(self) -> Optional[Schemes]:
         #todo getdefault
-        pass
+        schemes: Optional[Schemes] = self.options.get('scheme')
+        if schemes is None:
+            schemes = self.state_handler.first_scheme()
+        return schemes
+
 
     def process(self):
-        schemes: Optional[Schemes] = self.options.get('scheme')
+        schemes: Optional[Schemes] = self.__get_scheme_option_or_default()
 
         if schemes:
             scheme: Type[Scheme] = SchemeFactory.create(
