@@ -16,8 +16,13 @@ class Version:
         self.state_handler: StateHandler = state_handler
         self.options: Dict[str, str] = options
 
+    def __get_scheme_option_or_default(self) -> Optional[Schemes]:
+        #todo getdefault
+        pass
+
     def process(self):
         schemes: Optional[Schemes] = self.options.get('scheme')
+
         if schemes:
             scheme: Type[Scheme] = SchemeFactory.create(
                 scheme=schemes,

@@ -90,3 +90,6 @@ class StateHandler:
     def set_stable(self) -> StateHandler:
         self.__state = self.__state.set_stable()
         return self
+
+    def first_scheme(self) -> Schemes:
+        return self.state.schemes[0]

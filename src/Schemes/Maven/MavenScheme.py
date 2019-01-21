@@ -6,13 +6,13 @@ from Schemes.Scheme import Scheme
 from Schemes.Dependencies import Dependencies
 
 
-class PackageScheme(Scheme):
+class MavenScheme(Scheme):
 
     @property
     def DEV_SUFFIX(self) -> str:
         return 'SNAPSHOT'
 
-    def set_version(self) -> PackageScheme:
+    def set_version(self) -> MavenScheme:
         MavenSetVersion(self.__state_handler.dir_path.as_posix(), self.get_version()).set()
         return self
 
