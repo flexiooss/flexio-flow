@@ -29,10 +29,19 @@ schemes: maven|package|composer|docker
 
 ### Main orders
 ```bash
+flexio-flow -h
+
 flexio-flow core config
 flexio-flow init
+
+flexio-flow commit
+
 flexio-flow hotfix start
 flexio-flow hotfix finish
+
+flexio-flow feature start
+flexio-flow feature finish
+
 flexio-flow release precheck
 flexio-flow release start
 flexio-flow release finish
