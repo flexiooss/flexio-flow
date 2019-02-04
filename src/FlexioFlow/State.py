@@ -13,7 +13,6 @@ class State:
 
     def __init__(self) -> None:
         self.__issues = []
-        pass
 
     @property
     def version(self) -> Version:

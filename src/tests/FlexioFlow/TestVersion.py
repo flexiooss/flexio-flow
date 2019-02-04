@@ -12,13 +12,12 @@ class TestVersion(unittest.TestCase):
     def tearDown(self):
         del self.version
 
-    def test_enum(self):
-        Level
-        try:
-            ma_var = Level['tutu']
-            print(ma_var)
-        except KeyError:
-            print('tampis')
+    # def test_enum(self):
+    #     try:
+    #         ma_var = Level['tutu']
+    #         print(ma_var)
+    #     except KeyError:
+    #         print('tampis')
 
     def test_should_bump_major(self):
         bumped_version: Version = self.version.next_major()

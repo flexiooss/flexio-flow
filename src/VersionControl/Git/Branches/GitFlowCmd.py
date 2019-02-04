@@ -28,23 +28,19 @@ class GitFlowCmd:
 
     def ensure_head(self) -> GitFlowCmd:
         if not self.__git.has_head():
-            print('has not head')
+            print('The repository does not have a HEAD yet')
             self.__git.init_head().commit('Initial commit', ['--allow-empty'])
         return self
 
     def ensure_master_branch(self) -> GitFlowCmd:
-        print('ensure_master_branch')
-        print(self.__git.branch_exists_from_name(Branches.MASTER.value, remote=False))
+        print('Ensure have Master branch')
         if not self.__git.branch_exists_from_name(Branches.MASTER.value, remote=False):
-            print('lala')
             self.ensure_head()
         return self
 
     def ensure_develop_branch(self) -> GitFlowCmd:
-        print('ensure_develop_branch')
-        print(self.__git.branch_exists_from_name(Branches.DEVELOP.value, remote=False))
+        print('Ensure have Develop branch')
         if not self.__git.branch_exists_from_name(Branches.DEVELOP.value, remote=False):
-            print('lala')
             self.__git.checkout(Branches.MASTER).create_branch_from(
                 Branches.DEVELOP.value,
                 Branches.MASTER

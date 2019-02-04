@@ -17,7 +17,7 @@ class InputConfig:
         return stdout.strip().decode('utf-8')
 
     def __input_github(self) -> bool:
-        github: str = input('Activate Github automatic issuer (y)/n :')
+        github: str = input('Activate Github automatic issuer (y)/n : ')
         github = github if github else 'y'
         return github == 'y'
 

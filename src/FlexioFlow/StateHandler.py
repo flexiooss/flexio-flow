@@ -14,7 +14,7 @@ class StateHandler:
 
     def __init__(self, dir_path: Path):
         self.dir_path: Path = dir_path
-        self.__state = State()
+        self.reset_state()
 
     @property
     def state(self) -> State:
@@ -23,6 +23,9 @@ class StateHandler:
     @state.setter
     def state(self, v: State):
         self.__state = v
+
+    def reset_state(self):
+        self.__state = State()
 
     def file_exists(self) -> bool:
         return self.file_path().is_file()
@@ -44,7 +47,7 @@ class StateHandler:
         stream = self.file_path().open('w')
         yaml.dump(self.state.to_dict(), stream)
         stream.close()
-        print('write file : ' + self.file_path().as_posix())
+        print('Write file state : ' + self.file_path().as_posix())
         return yaml.dump(self.state.to_dict())
 
     def file_path(self) -> Path:

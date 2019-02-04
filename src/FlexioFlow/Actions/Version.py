@@ -17,7 +17,6 @@ class Version:
         self.options: Dict[str, str] = options
 
     def __get_scheme_option_or_default(self) -> Optional[Schemes]:
-        #todo getdefault
         schemes: Optional[Schemes] = self.options.get('scheme')
         if schemes is None:
             schemes = self.state_handler.first_scheme()

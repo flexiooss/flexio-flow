@@ -51,14 +51,6 @@ Write file : {0!s}
         print(yml)
         return self
 
-    def __final_message(self) -> Init:
-        print(
-            """###############################################
-Enjoy with Flexio FLow 
-###############################################
-""")
-        return self
-
     def __ensure_have_state(self) -> bool:
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
@@ -73,10 +65,22 @@ Flexio Flow already initialized
             use = use if use else 'y'
             if use is 'y':
                 return True
+            else:
+                self.state_handler.reset_state()
+
 
         self.__start_message().__input_version().__input_level().__input_schemes()
+        print(self.state_handler.state.schemes)
 
         return False
+
+    def __final_message(self) -> Init:
+        print(
+            """###############################################
+Enjoy with Flexio FLow 
+###############################################
+""")
+        return self
 
     def __ensure_version_control_initialized(self):
         self.version_control.build_branch(Branches.MASTER).with_action(Actions.INIT).process()

@@ -19,7 +19,7 @@ class Init:
         version: str = str(self.__state_handler.state.version)
 
         git: GitCmd = GitCmd(self.__state_handler)
-        git.checkout(Branches.MASTER)
+        git.checkout_without_refresh_state(Branches.MASTER)
 
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
@@ -38,7 +38,7 @@ class Init:
         version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
 
         git: GitCmd = GitCmd(self.__state_handler)
-        git.checkout(Branches.DEVELOP)
+        git.checkout_without_refresh_state(Branches.DEVELOP)
 
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)

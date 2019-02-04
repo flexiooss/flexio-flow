@@ -19,7 +19,7 @@ class InputConfig:
         return stdout.strip().decode('utf-8')
 
     def __input_flexio(self) -> bool:
-        flexio: str = input('Activate Flexio automatic topicer (y)/n :')
+        flexio: str = input('Activate Flexio automatic topicer (y)/n : ')
         flexio = flexio if flexio else 'y'
         return flexio == 'y'
 

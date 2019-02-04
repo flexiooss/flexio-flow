@@ -48,6 +48,10 @@ class GitCmd:
         return stdout is not None and len(stdout) > 0
 
     def checkout(self, branch: Branches, options: List[str] = []) -> GitCmd:
+        self.checkout_with_branch_name(self.get_branch_name_from_git(branch), options).reload_state()
+        return self
+
+    def checkout_without_refresh_state(self, branch: Branches, options: List[str] = []) -> GitCmd:
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch), options)
         return self
 
@@ -55,11 +59,15 @@ class GitCmd:
         print('branch')
         print(branch)
         self.__exec(['git', 'checkout', branch, *options])
+        return self
+
+    def reload_state(self)-> GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
             print(e)
         return self
+
 
     def checkout_file_with_branch_name(self, branch: str, file: Path) -> GitCmd:
         if not file.is_file():
@@ -240,26 +248,31 @@ class GitCmd:
         return self
 
     def try_to_pull(self) -> GitCmd:
+        print('Try to pull')
         if self.has_remote():
             return self.pull()
         return self
 
     def try_to_push(self) -> GitCmd:
+        print('Try to push')
         if self.has_remote():
             return self.push()
         return self
 
     def try_to_push_force(self) -> GitCmd:
+        print('Try to push')
         if self.has_remote():
             return self.push_force()
         return self
 
     def try_to_push_tag(self, tag: str) -> GitCmd:
+        print('Try to push tag')
         if self.has_remote():
             return self.push_tag(tag)
         return self
 
     def try_to_set_upstream(self) -> GitCmd:
+        print('Try to set upstream')
         if self.has_remote():
             return self.set_upstream()
         return self
