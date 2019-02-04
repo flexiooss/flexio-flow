@@ -76,6 +76,10 @@ Core already initialized at : {path!s}
             use = use if use else 'y'
             if use is 'y':
                 return self
+            else:
+                self.config_handler.reset_config()
+        else:
+            self.config_handler.reset_config()
 
         if not self.config_handler.dir_path.exists():
             self.config_handler.dir_path.mkdir()

@@ -70,3 +70,7 @@ Write file : {0!s}
 
     def has_topicer(self) -> bool:
         return self.__config.flexio.activate is True
+
+    def reset_config(self) -> ConfigHandler:
+        self.__config = Config()
+        return self
