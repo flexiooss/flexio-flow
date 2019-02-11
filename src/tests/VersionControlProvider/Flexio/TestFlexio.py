@@ -84,10 +84,15 @@ class TestFlexio(unittest.TestCase):
         range.limit = r.total
         range.offset = 0 if r.total < r.accept_range else r.total - r.accept_range
 
-        resp_records: Response = FlexioClient(self.config_handler).get_records(topic,range)
+        resp_records: Response = FlexioClient(self.config_handler).get_records(topic, range)
 
         print(resp_records.headers)
         print(resp_records.json())
 
-        self.assertIn(resp_records.status_code, [200, 206])
+        for t_d in resp_records.json():
+            t: FlexioTopic
+            t = FlexioTopic.build_from_api(t_d)
+            print('{topic_number!s} : {topic_title!s}'.format(
+                topic_number=t.number, topic_title=t.title))
 
+        self.assertIn(resp_records.status_code, [200, 206])

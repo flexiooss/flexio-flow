@@ -4,6 +4,9 @@ import abc
 
 class FlexioRessource(abc.ABC):
     RESOURCE_ID: str
+    SLUG: str
+    BASE_URL: str = 'https://my.flexio.io/informations'
+    id: str = None
 
     @abc.abstractmethod
     def __dict__(self):

@@ -2,31 +2,34 @@ from __future__ import annotations
 from typing import List, Dict, Type
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
+from VersionControlProvider.Flexio.FlexioIssue import FlexioIssue
+from VersionControlProvider.Flexio.FlexioRequestApiError import FlexioRequestApiError
+from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
-
+# TODO finish class
 
 class Create:
-    issue: Issue
+    topic: FlexioTopic
 
     def __init__(self, config_handler: ConfigHandler):
         self.__config_handler: ConfigHandler = config_handler
 
-    def with_issue(self, issue: Issue) -> Create:
-        self.issue = issue
+    def with_topic(self, topic: FlexioTopic) -> Create:
+        self.topic = topic
         return self
 
-    def __would_attach_issue(self) -> bool:
-        issue: str = input('Have already an issue y/(n) : ')
-        issue = issue if issue else 'n'
-        return issue == 'y'
+    def __would_attach_topic(self) -> bool:
+        topic: str = input('Have already a topic y/(n) : ')
+        topic = topic if topic else 'n'
+        return topic == 'y'
 
-    def __number_issue(self) -> int:
-        issue: str = input('Issue number : ')
-        return int(issue)
+    def __number_topic(self) -> int:
+        topic: str = input('Topic number : ')
+        return int(topic)
 
     def __start_message(self) -> Create:
         print(
@@ -36,10 +39,10 @@ class Create:
 """)
         return self
 
-    def __start_message_issue(self) -> Create:
+    def __start_message_topic(self) -> Create:
         print(
             """###############################################
-#############    Create Issue     #############
+#############    Create Flexio Topic     #############
 """)
         return self
 
@@ -175,7 +178,7 @@ Choose label :
             issue.labels = labels_lst
         return self
 
-    def __input_issue(self):
+    def __input_topic(self):
         issue: IssueGithub = IssueGithub()
         title: str = ''
 
@@ -191,22 +194,22 @@ Choose label :
 
         return issue
 
-    def __post_issue(self, issue: IssueGithub) -> Response:
+    def __post_topic(self, issue: FlexioTopic) -> Response:
         return self.__github.create_issue(issue)
 
-    def __resume_issue(self, issue: Dict[str, str]) -> Create:
+    def __resume_topic(self, topic: FlexioTopic) -> Create:
         print(
             """###############################################
-################ Issue created ################
+################ Topic created ################
 ###############################################
 title : {title!s}
 number : {number!s}
 url : {url!s}
 ###############################################
 """.format(
-                title=issue.get('title'),
-                number=issue.get('number'),
-                url=issue.get('html_url')
+                title=topic.title,
+                number=topic.number,
+                url=topic.url()
             )
         )
         return self
@@ -215,23 +218,22 @@ url : {url!s}
         self.__start_message()
 
 
-        issue_number: int
-        if self.__would_attach_issue():
-            issue_number = self.__number_issue()
-            issue: IssueGithub = IssueGithub()
+        topic_number: int
+        if self.__would_attach_topic():
+            topic_number = self.__number_topic()
+            topic: FlexioTopic = FlexioTopic()
 
         else:
-            self.__start_message_issue()
+            self.__start_message_topic()
 
-            issue: IssueGithub = self.__input_issue()
+            topic: FlexioTopic = self.__input_topic()
 
-            r: Response = self.__post_issue(issue)
+            r: Response = self.__post_topic(topic)
 
-            if r.status_code is 201:
-                issue_created: Dict[str, str] = r.json()
-                issue_number = issue_created.get('number')
-                self.__resume_issue(issue_created)
+            if r.status_code is 200:
+                topic_created:FlexioTopic = FlexioTopic.build_from_api(r.json()[0])
+                self.__resume_topic(topic_created)
             else:
-                raise GithubRequestApiError(r)
+                raise FlexioRequestApiError(r)
 
-        return issue.with_number(issue_number)
+        return topic.with_number(topic_number)

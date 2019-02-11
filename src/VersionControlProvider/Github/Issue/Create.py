@@ -184,7 +184,7 @@ Choose label :
         if body:
             issue.body = body
 
-        self.__input_assignees(issue).__input_milestone(issue).__input_labels(issue)
+        self.__input_assignees(issue).__input_labels(issue)
 
         return issue
 
