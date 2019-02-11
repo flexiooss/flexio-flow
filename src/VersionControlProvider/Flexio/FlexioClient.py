@@ -51,17 +51,17 @@ class FlexioClient:
         return headers
 
     def post_record(self, record: FlexioRessource) -> Response:
-        url: str = '/'.join([self.BASE_URL, 'record', record.RESSOURCE_ID])
+        url: str = '/'.join([self.BASE_URL, 'record', record.RESOURCE_ID])
         return requests.post(url, json=record.to_api_dict(), headers=self.__auth({}))
 
     def get_records(self, record: FlexioRessource, range: Range) -> Response:
-        url: str = '/'.join([self.BASE_URL, 'record', record.RESSOURCE_ID, 'paginate'])
+        url: str = '/'.join([self.BASE_URL, 'record', record.RESOURCE_ID, 'paginate'])
         return requests.get(url, headers=self.__auth(self.__with_content_range({}, range)))
 
     # def get_user(self)->Response:
 
     def get_total(self, ressource: FlexioRessource) -> Range:
-        url: str = '/'.join([self.BASE_URL, 'ressource', ressource.RESSOURCE_ID, 'paginate'])
+        url: str = '/'.join([self.BASE_URL, 'record', ressource.RESOURCE_ID, 'paginate'])
         range_min: Range = Range()
         range_min.offset = 0
         range_min.limit = 1
@@ -70,7 +70,7 @@ class FlexioClient:
         print(resp.status_code)
         print(resp.headers)
         print(resp.json())
-        if not resp.status_code == 200:
+        if not resp.status_code in [200, 206]:
             raise ConnectionError
 
         headers: dict = resp.headers

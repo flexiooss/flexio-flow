@@ -6,7 +6,7 @@ from VersionControlProvider.Issue import Issue
 
 
 class FlexioIssue(Issue, FlexioRessource):
-    RESSOURCE_ID: str = '5c336d47f3bb2517583dac84'
+    RESOURCE_ID: str = '5c336d47f3bb2517583dac84'
     TOPIC_ID: str = '5c336d65f3bb251c3d227327'
     GITHUB_NUMBER_ID: str = '5c336de1f3bb251c3d227329'
     GITHUB_TITLE_ID: str = '5c336d4ff3bb2560bf1c964f'

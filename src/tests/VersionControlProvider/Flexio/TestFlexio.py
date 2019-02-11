@@ -17,10 +17,11 @@ CONFIG_DIR: Path = Path('/tmp/')
 class TestFlexio(unittest.TestCase):
     def setUp(self):
         self.config_handler = ConfigHandler(CONFIG_DIR)
-        self.config_handler.config = Config().with_flexio(ConfigFlexio(
-            activate=True,
-            user_token=USER_TOKEN
-        ))
+        self.config_handler.config = Config().with_flexio(
+            ConfigFlexio(
+                activate=True,
+                user_token=USER_TOKEN
+            ))
 
     def test_post_record(self):
         topic: FlexioTopic = FlexioTopic()
@@ -48,20 +49,45 @@ class TestFlexio(unittest.TestCase):
         r: Response = FlexioClient(falsy_config_handler).post_record(record=topic)
         self.assertIsNot(r.status_code, 200)
 
-    def test_get_records(self):
+    def test_get_last_record(self):
         topic: FlexioTopic = FlexioTopic()
+        # topic.number = 2
 
-        r: Response = FlexioClient(self.config_handler).get_records(record=topic)
+        r: Response = FlexioClient(self.config_handler).get_records(record=topic, range=Range())
 
         print(r.headers)
         print(r.json())
 
-        self.assertIs(r.status_code, 200)
+        self.assertIn(r.status_code, [200, 206])
+
+        expected_record_from_api: FlexioTopic = FlexioTopic.build_from_api(r.json()[0])
+
+        r2: Response = FlexioClient(self.config_handler).get_records(record=expected_record_from_api, range=Range())
+
+        record_from_api: FlexioTopic = FlexioTopic.build_from_api(r2.json()[0])
+
+        self.assertDictEqual(record_from_api.to_api_dict(), expected_record_from_api.to_api_dict())
 
     def test_get_total(self):
         topic: FlexioTopic = FlexioTopic()
         r: Range = FlexioClient(self.config_handler).get_total(ressource=topic)
-        print(r.accept_range)
-        print(r.offset)
-        print(r.limit)
-        print(r.total)
+        print('accept_range : ' + str(r.accept_range))
+        print('offset : ' + str(r.offset))
+        print('limit : ' + str(r.limit))
+        print('total : ' + str(r.total))
+
+    def test_get_last_100_records(self):
+        topic: FlexioTopic = FlexioTopic()
+        r: Range = FlexioClient(self.config_handler).get_total(ressource=topic)
+
+        range: Range = Range()
+        range.limit = r.total
+        range.offset = 0 if r.total < r.accept_range else r.total - r.accept_range
+
+        resp_records: Response = FlexioClient(self.config_handler).get_records(topic,range)
+
+        print(resp_records.headers)
+        print(resp_records.json())
+
+        self.assertIn(resp_records.status_code, [200, 206])
+

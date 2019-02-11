@@ -6,7 +6,7 @@ from VersionControlProvider.Topic import Topic
 
 
 class FlexioTopic(Topic, FlexioRessource):
-    RESSOURCE_ID: str = '5c336c70f3bb2517591449ab'
+    RESOURCE_ID: str = '5c336c70f3bb2517591449ab'
     NUMBER_ID: str = '5c336cebf3bb2517583dac83'
     TITLE_ID: str = '5c336c7ff3bb2517583dac61'
     BODY_ID: str = '5c337a75f3bb251c3d227691'
@@ -34,6 +34,7 @@ class FlexioTopic(Topic, FlexioRessource):
 
     @classmethod
     def build_from_api(cls, json: dict) -> FlexioTopic:
+        print(json)
         topic: FlexioTopic = FlexioTopic()
         topic.number = json.get(cls.NUMBER_ID)
         topic.title = json.get(cls.TITLE_ID)
