@@ -70,7 +70,7 @@ class TestFlexio(unittest.TestCase):
 
     def test_get_total(self):
         topic: FlexioTopic = FlexioTopic()
-        r: Range = FlexioClient(self.config_handler).get_total(ressource=topic)
+        r: Range = FlexioClient(self.config_handler).get_total(resource=topic)
         print('accept_range : ' + str(r.accept_range))
         print('offset : ' + str(r.offset))
         print('limit : ' + str(r.limit))
@@ -78,7 +78,7 @@ class TestFlexio(unittest.TestCase):
 
     def test_get_last_100_records(self):
         topic: FlexioTopic = FlexioTopic()
-        r: Range = FlexioClient(self.config_handler).get_total(ressource=topic)
+        r: Range = FlexioClient(self.config_handler).get_total(resource=topic)
 
         range: Range = Range()
         range.limit = r.total
@@ -96,3 +96,15 @@ class TestFlexio(unittest.TestCase):
                 topic_number=t.number, topic_title=t.title))
 
         self.assertIn(resp_records.status_code, [200, 206])
+
+    def test_get_topic_by_number(self):
+        topic: FlexioTopic = FlexioTopic().with_number(2)
+        r: dict = FlexioClient(self.config_handler).get_record(record=topic)
+
+        self.assertIsNotNone(r)
+        record: FlexioTopic = FlexioTopic.build_from_api(r)
+        self.assertEqual(topic.number, record.number)
+
+        topic2: FlexioTopic = FlexioTopic().with_number(-5)
+        r2: dict = FlexioClient(self.config_handler).get_record(record=topic2)
+        self.assertIsNone(r2)

@@ -32,11 +32,13 @@ class FlexioTopic(Topic, FlexioRessource):
         )
 
     def __dict__(self):
-        ret: dict = {
-            self.TITLE_ID: self.title,
-            self.STATE_ID: self.__state_to_value(),
-            self.BODY_ID: self.__body_to_value()
-        }
+        ret: dict = {}
+        if self.body is not None:
+            ret[self.BODY_ID] = self.__body_to_value()
+        if self.state is not None:
+            ret[self.STATE_ID] = self.__state_to_value
+        if self.title is not None:
+            ret[self.TITLE_ID] = self.title
         if self.number is not None:
             ret[self.NUMBER_ID] = self.number
         if self.id is not None:
@@ -47,7 +49,7 @@ class FlexioTopic(Topic, FlexioRessource):
     def build_from_api(cls, json: dict) -> FlexioTopic:
         print(json)
         topic: FlexioTopic = FlexioTopic()
-        topic._id = json.get(cls.RECORD_ID)
+        topic.id = json.get(cls.RECORD_ID)
         topic.number = json.get(cls.NUMBER_ID)
         topic.title = json.get(cls.TITLE_ID)
         topic.body = json.get(cls.BODY_ID)

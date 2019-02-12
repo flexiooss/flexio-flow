@@ -16,3 +16,12 @@ class FlexioRessource(abc.ABC):
         ret: dict = self.__dict__()
         # ret['type_id'] = self.RESOURCE_ID
         return ret
+
+    def with_id(self, id: str) -> FlexioRessource:
+        self.id = id
+        return self
+
+    @classmethod
+    @abc.abstractmethod
+    def build_from_api(cls, json: dict) -> FlexioRessource:
+        pass
