@@ -111,7 +111,7 @@ def main(argv) -> None:
     subject = Subject.BRANCH if subject is None else subject
 
     FlexioFlow(subject=subject).set_environment(
-        version_controller=VersionController.GITFLOW,
+        version_controller=VersionController.GIT,
         branch_action=branch_action,
         core_action=core_action,
         issue_action=issue_action,

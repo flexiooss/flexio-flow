@@ -7,7 +7,7 @@ from FlexioFlow.StateHandler import StateHandler
 class VersionControlFactory:
     @staticmethod
     def build(version_controller: VersionController, state_handler:StateHandler) -> VersionControl:
-        if version_controller is VersionController.GITFLOW:
+        if version_controller is VersionController.GIT:
             return Git(state_handler)
 
         raise NotImplementedError

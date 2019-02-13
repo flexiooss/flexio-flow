@@ -137,6 +137,7 @@ url : {url!s}{fg_gray}
 
             if r.status_code is 200:
                 topic_created: FlexioTopic = FlexioTopic.build_from_api(r.json())
+                print(topic_created.to_api_dict())
                 self.__resume_topic(topic_created)
                 topic = topic_created
             else:
