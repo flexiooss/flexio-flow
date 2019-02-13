@@ -13,23 +13,24 @@ class Init(Action):
 
     def __start_message(self) -> Init:
         print(
-            """{fg_yellow}######################################################
+            """{fg_gray}######################################################{fg_yellow}
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
  |  _|| |/ -_)\ \ /| |/ _ \|___||  _|| |/ _ \\ V  V /
  |_|  |_|\___|/_\_\|_|\___/     |_|  |_|\___/ \_/\_/
 
-######################################################
-#####################    Init     ####################{reset_fg}
+{fg_gray}######################################################
+#####################    {fg_yellow}Init{fg_gray}     ####################{reset_fg}
 """.format(
 
                 fg_yellow=fg.yellow,
-                reset_fg=fg.rs
+                reset_fg=fg.rs,
+                fg_gray=fg(240)
             ))
         return self
 
     def __input_version(self) -> Init:
-        version: str = input('Version (0.0.0) : ')
+        version: str = input('Version ' + fg.green + '0.0.0' + fg.rs + ' : ')
         self.state_handler.state.version = Version.from_str(version if version else '0.0.0')
         return self
 
@@ -50,9 +51,15 @@ class Init(Action):
 
     def __write_file(self) -> Init:
         yml: str = self.state_handler.write_file()
-        print("""#################################################
-Write file : {0!s} 
-#################################################""".format(self.state_handler.file_path()))
+        print("""{fg_gray}#################################################
+{fg_green}Write file : {path!s} 
+{fg_gray}#################################################{reset_fg}""".format(
+            path=self.state_handler.file_path(),
+            fg_gray=fg(240),
+            reset_fg=fg.rs,
+            fg_green=fg.green
+        )
+        )
         print(yml)
         return self
 
@@ -60,11 +67,12 @@ Write file : {0!s}
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
             print(
-                """{fg_yellow}###############################################
-Flexio Flow already initialized 
-###############################################{reset_fg}
+                """{fg_gray}###############################################
+{fg_yellow}Flexio Flow already initialized 
+{fg_gray}###############################################{reset_fg}
 """.format(
                     fg_yellow=fg.yellow,
+                    fg_gray=fg(240),
                     reset_fg=fg.rs
                 ))
             print(fg.yellow + 'at : ' + self.state_handler.file_path().as_posix() + fg.rs)
@@ -83,11 +91,12 @@ Flexio Flow already initialized
 
     def __final_message(self) -> Init:
         print(
-            """{fg_yellow}###############################################
-Enjoy with Flexio FLow 
-###############################################{reset_fg}
+            """{fg_gray}###############################################
+{fg_yellow}Enjoy with Flexio FLow 
+{fg_gray}###############################################{reset_fg}
 """.format(
                 fg_yellow=fg.yellow,
+                fg_gray=fg(240),
                 reset_fg=fg.rs
             ))
         return self
