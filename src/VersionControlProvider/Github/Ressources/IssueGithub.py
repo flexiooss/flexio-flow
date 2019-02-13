@@ -29,7 +29,8 @@ class IssueGithub(Issue):
         inst.state = IssueState.CLOSED if data.get('state') == 'closed' else IssueState.OPEN
         inst.milestone = data.get('milestone')
         inst.assignees = data.get('assignees')
-        inst.url = data.get('url')
+        inst.url = data.get('html_url')
+        inst.title = data.get('title')
         return inst
 
     def __dict__(self):
@@ -40,10 +41,13 @@ class IssueGithub(Issue):
             issue['body'] = self.body
         if self.milestone is not None:
             issue['milestone'] = self.milestone
+        if self.url is not None:
+            issue['url'] = self.url
         if self.state is not None:
             issue['state'] = self.state.value
         if len(self.labels):
             issue['labels'] = self.labels
         if len(self.assignees):
             issue['assignees'] = self.assignees
+
         return issue

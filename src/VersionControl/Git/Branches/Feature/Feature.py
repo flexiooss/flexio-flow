@@ -17,6 +17,7 @@ class Feature(Branch):
 
     def process(self):
         if self.action is Actions.START:
+
             if self.__name is None:
                 default_name: str = slugify(self.issue.title) if self.issue is not None else ''
                 name: str = input(fg.red + '[required]' + fg.rs + ' Name :' + fg.green + default_name + fg.rs + ' ')
@@ -25,11 +26,13 @@ class Feature(Branch):
                 name = self.__name
 
             self.start_message('Feature start : ' + name)
+
             Start(
                 state_handler=self.state_handler,
                 issue=self.issue,
                 name=name
             ).process()
+
         elif self.action is Actions.FINISH:
             self.start_message('Feature finish')
             Finish(self.state_handler, self.issue).process()
