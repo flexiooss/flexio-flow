@@ -106,5 +106,5 @@ class TestFlexio(unittest.TestCase):
         self.assertEqual(topic.number, record.number)
 
         topic2: FlexioTopic = FlexioTopic().with_number(-5)
-        r2: dict = FlexioClient(self.config_handler).get_record(record=topic2)
-        self.assertIsNone(r2)
+        with self.assertRaises(FileNotFoundError):
+            FlexioClient(self.config_handler).get_record(record=topic2)

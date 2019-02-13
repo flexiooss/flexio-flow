@@ -106,4 +106,6 @@ class FlexioClient:
                         break
                 resquestRange.offset = resquestRange.limit
                 resquestRange.limit = resquestRange.limit + resquestRange.accept_range
+            if findedRecord is None:
+                raise FileNotFoundError
             return findedRecord
