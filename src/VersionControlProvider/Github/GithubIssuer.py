@@ -34,8 +34,13 @@ class GithubIssuer(Issuer):
         resp: Response = Github(self.config_handler).with_repo(repo).read_issue(IssueGithub().with_number(number))
         return IssueGithub.from_api_dict(resp.json())
 
-    def comment(self):
-        pass
+    def comment(self, issue: IssueGithub, text: str) -> Issue:
+        repo: Repo = GitCmd(self.state_handler).get_repo()
+        resp: Response = Github(self.config_handler).with_repo(repo).create_comment(
+            issue=issue,
+            body=text
+        )
+        return IssueGithub.from_api_dict(resp.json())
 
     def has_repo(self) -> bool:
         has_repo: bool = False

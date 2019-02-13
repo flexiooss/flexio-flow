@@ -8,6 +8,7 @@ from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
+from sty import fg, bg
 
 
 class Create:
@@ -17,7 +18,10 @@ class Create:
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
 
     def __would_attach_issue(self) -> bool:
-        issue: str = input('Have already an issue y/(n) : ')
+        issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
+            green=fg.green,
+            reset_fg=fg.rs,
+        ))
         issue = issue if issue else 'n'
         return issue == 'y'
 
@@ -27,17 +31,17 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """###############################################
+            """{yellow}###############################################
 ################# Flexio FLow #################
-###############################################
-""")
+###############################################{reset}
+""".format(yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __start_message_issue(self) -> Create:
         print(
-            """###############################################
-#############    Create Issue     #############
-""")
+            """{yellow}###############################################
+#############    Create Github Issue     #############{reset}
+""".format(yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __sanitize_list_input(self, v: List[str]) -> List[str]:
@@ -82,7 +86,7 @@ Choose pseudo :
         title: str = ''
 
         while not len(title) > 0:
-            title = input('[required] Title : ')
+            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
             milestone.title = title
 
         description: str = input('Description : ')
@@ -177,7 +181,7 @@ Choose label :
         title: str = ''
 
         while not len(title) > 0:
-            title = input('[required] Title : ')
+            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
         issue.title = title
 
         body: str = input('Description : ')
@@ -193,19 +197,22 @@ Choose label :
 
     def __resume_issue(self, issue: Dict[str, str]) -> Create:
         print(
-            """###############################################
+            """{green}###############################################
 ################ Issue created ################
 ###############################################
 title : {title!s}
 number : {number!s}
 url : {url!s}
-###############################################
+###############################################{reset}
 """.format(
+                green=fg.green,
                 title=issue.get('title'),
                 number=issue.get('number'),
-                url=issue.get('html_url')
+                url=issue.get('html_url'),
+                reset=fg.rs
             )
         )
+
         return self
 
     def process(self) -> Issue:

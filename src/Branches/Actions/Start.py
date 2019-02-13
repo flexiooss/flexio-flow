@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
 from Branches.Actions.IssuerRecipe.RelatedIssueTopicRecipe import RelatedIssueTopicRecipe
-from Core.IssuerHandler import IssuerHandler
-from Core.TopicerHandler import TopicerHandler
 from VersionControlProvider.Issue import Issue
-from VersionControlProvider.Issuer import Issuer
-from VersionControlProvider.Topic import Topic
-from VersionControlProvider.Topicer import Topicer
 
 
 class Start(Action):
