@@ -10,6 +10,7 @@ from VersionControlProvider.Flexio.FlexioClient import FlexioClient, Range
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.IssueState import IssueState
 from tests.VersionControlProvider.Flexio.api___secret import USER_TOKEN
+from sty import fg, bg
 
 CONFIG_DIR: Path = Path('/tmp/')
 
@@ -108,3 +109,17 @@ class TestFlexio(unittest.TestCase):
         topic2: FlexioTopic = FlexioTopic().with_number(-5)
         with self.assertRaises(FileNotFoundError):
             FlexioClient(self.config_handler).get_record(record=topic2)
+
+    def test_color(self):
+
+        print(fg.red + 'bibi' + fg.rs)
+        print('{color1!s} bibi {color_end!s}'.format(
+            color1=bg.cyan, color_end=fg.rs))
+        print('{color1!s} bibi {color_end!s}'.format(
+            color1=bg.li_black, color_end=fg.rs))
+
+        print(
+            """{yellow}###############################################
+################# Flexio FLow #################
+###############################################{reset}
+""".format(yellow=fg.yellow, reset=fg.rs))
