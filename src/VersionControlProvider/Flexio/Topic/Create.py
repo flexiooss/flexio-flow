@@ -65,17 +65,17 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """{yellow}###############################################
-################# Flexio FLow #################
+            """{fg_gray}###############################################
+################# {yellow}Flexio FLow{fg_gray} #################
 ###############################################{reset}
-""".format(yellow=fg.yellow, reset=fg.rs))
+""".format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
         return self
 
     def __start_message_topic(self) -> Create:
         print(
-            """{yellow}###############################################
-#############    Create Flexio Topic     #############{reset}
-""".format(yellow=fg.yellow, reset=fg.rs))
+            """{fg_gray}###############################################
+#############    {yellow}Create Flexio Topic{fg_gray}     #############{reset}
+""".format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
         return self
 
     def __input_topic(self):
@@ -97,19 +97,20 @@ class Create:
 
     def __resume_topic(self, topic: FlexioTopic) -> Create:
         print(
-            """{green}###############################################
-################ Topic created ################
-###############################################
+            """{fg_gray}###############################################
+################ {green}Topic created{fg_gray} ################
+###############################################{green}
 title : {title!s}
 number : {number!s}
-url : {url!s}
+url : {url!s}{fg_gray}
 ###############################################{reset}
 """.format(
                 green=fg.green,
                 title=topic.title,
                 number=topic.number,
                 url=topic.url(),
-                reset=fg.rs
+                reset=fg.rs,
+                fg_gray=fg(240)
             )
         )
         return self
@@ -135,7 +136,7 @@ url : {url!s}
             r: Response = self.__post_topic(topic)
 
             if r.status_code is 200:
-                topic_created: FlexioTopic = FlexioTopic.build_from_api(r.json()[0])
+                topic_created: FlexioTopic = FlexioTopic.build_from_api(r.json())
                 self.__resume_topic(topic_created)
                 topic = topic_created
             else:

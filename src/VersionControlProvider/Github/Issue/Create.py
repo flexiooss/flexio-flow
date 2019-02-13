@@ -31,17 +31,17 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """{yellow}###############################################
-################# Flexio FLow #################
+            """{fg_gray}###############################################
+################# {yellow}Flexio FLow{fg_gray} #################
 ###############################################{reset}
-""".format(yellow=fg.yellow, reset=fg.rs))
+""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __start_message_issue(self) -> Create:
         print(
-            """{yellow}###############################################
-#############    Create Github Issue     #############{reset}
-""".format(yellow=fg.yellow, reset=fg.rs))
+            """{fg_gray}###############################################
+##########     {yellow}Create Github Issue{fg_gray}     ##########{reset}
+""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __sanitize_list_input(self, v: List[str]) -> List[str]:
@@ -105,19 +105,20 @@ Choose pseudo :
 
     def __resume_milestone(self, milestone: Dict[str, str]) -> Create:
         print(
-            """{green}###############################################
-################ Milestone created ################
-###############################################
+            """{fg_gray}###############################################
+################ {green}Milestone created{fg_gray} ################
+###############################################{green}
 title : {title!s}
 number : {number!s}
 url : {url!s}
-###############################################{reset}
+{fg_gray}###############################################{reset}
 """.format(
                 green=fg.green,
                 title=milestone.get('title'),
                 number=milestone.get('number'),
                 url=milestone.get('html_url'),
-                reset=fg.rs
+                reset=fg.rs,
+                fg_gray=fg(240)
             )
         )
         return self
@@ -225,19 +226,20 @@ Choose label :
 
     def __resume_issue(self, issue: Dict[str, str]) -> Create:
         print(
-            """{green}###############################################
-################ Issue created ################
-###############################################
+            """{fg_gray}###############################################
+################ {green}Issue created {fg_gray}################
+###############################################{green}
 title : {title!s}
 number : {number!s}
-url : {url!s}
+url : {url!s}{fg_gray}
 ###############################################{reset}
 """.format(
                 green=fg.green,
                 title=issue.get('title'),
                 number=issue.get('number'),
                 url=issue.get('html_url'),
-                reset=fg.rs
+                reset=fg.rs,
+                fg_gray=fg(240)
             )
         )
 

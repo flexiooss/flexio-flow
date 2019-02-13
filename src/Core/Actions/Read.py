@@ -15,18 +15,19 @@ class Read:
         if self.__config_handler().file_exists():
             self.__config_handler().load_file_config()
             print(
-                """{fg_yellow}###############################################
+                """{fg_gray}###############################################{fg_yellow}
 Flexio Flow 
 Core configuration
 {path!s}
-###############################################
+{fg_gray}###############################################{fg_yellow}
 
 {config!s}{reset_fg}
 """.format(
                     path=self.__config_handler().file_path().as_posix(),
                     config=str(self.__config_handler().config.to_dict()),
                     fg_yellow=fg.yellow,
-                    reset_fg=fg.rs
+                    reset_fg=fg.rs,
+                    fg_gray=fg(240)
                 )
             )
 
