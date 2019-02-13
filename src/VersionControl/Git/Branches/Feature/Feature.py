@@ -20,7 +20,7 @@ class Feature(Branch):
 
             if self.__name is None:
                 default_name: str = slugify(self.issue.title) if self.issue is not None else ''
-                name: str = input(fg.red + '[required]' + fg.rs + ' Name :' + fg.green + default_name + fg.rs + ' ')
+                name: str = input(fg.red + '[required]' + fg.rs + ' Feature branch name : ' + fg.green + default_name + fg.rs + ' ')
                 name = name if name else default_name
             else:
                 name = self.__name

@@ -68,9 +68,9 @@ class FlexioClient:
         range_min.limit = 1
 
         resp: Response = requests.get(url, headers=self.__auth(self.__with_content_range({}, range_min)))
-        print(resp.status_code)
-        print(resp.headers)
-        print(resp.json())
+        # print(resp.status_code)
+        # print(resp.headers)
+        # print(resp.json())
         if not resp.status_code in [200, 206]:
             raise ConnectionError
 

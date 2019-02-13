@@ -53,7 +53,11 @@ class Github:
 
     def read_issue(self, issue: IssueGithub) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'issues', str(issue.number)])
-        return requests.get(url, headers=self.__auth({}))
+        r: Response = requests.get(url, headers=self.__auth({}))
+        if r.status_code == 200:
+            return r
+        else:
+            raise FileNotFoundError
 
     def create_milestone(self, milestone: Milestone) -> Response:
         url: str = '/'.join([self.__repo_base_url(), 'milestones'])

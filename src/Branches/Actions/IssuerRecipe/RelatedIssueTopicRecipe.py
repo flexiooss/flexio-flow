@@ -49,7 +49,7 @@ class RelatedIssueTopicRecipe:
 
     def __comment_issue_with_topic(self) -> RelatedIssueTopicRecipe:
         if self.__issue is not None and self.__topic is not None:
-            self.__issuer.comment(self.__issue, self.__topic.url())
+            self.__issuer.comment(self.__issue, 'Topic : ' + self.__topic.url())
         return self
 
     def process(self) -> Optional[Issue]:

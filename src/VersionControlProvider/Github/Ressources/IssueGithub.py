@@ -25,7 +25,6 @@ class IssueGithub(Issue):
     def from_api_dict(data: dict) -> IssueGithub:
         inst: IssueGithub = IssueGithub()
         inst.number = data.get('number')
-        print(data.get('state'))
         inst.state = IssueState.CLOSED if data.get('state') == 'closed' else IssueState.OPEN
         inst.milestone = data.get('milestone')
         inst.assignees = data.get('assignees')

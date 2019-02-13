@@ -185,7 +185,8 @@ Choose number :
                 labels_repo.append(l.get('name'))
 
         if len(labels_repo):
-            message += """{fg_cyan}{labels!s}{fg_reset}
+            message += """
+{fg_cyan}{labels!s}{fg_reset}
 
 Choose label : 
 {bg_help}separator `;` {reset_bg}
@@ -224,7 +225,30 @@ Choose label :
     def __post_issue(self, issue: IssueGithub) -> Response:
         return self.__github.create_issue(issue)
 
+    def __read_issue(self, issue: IssueGithub) -> Response:
+        return self.__github.read_issue(issue)
+
     def __resume_issue(self, issue: IssueGithub) -> Create:
+        print(
+            """{fg_gray}###############################################
+################ {green}    Issue     {fg_gray}################
+###############################################{green}
+title : {title!s}
+number : {number!s}
+url : {url!s}{fg_gray}
+###############################################{reset}
+""".format(
+                green=fg.green,
+                title=issue.title,
+                number=issue.number,
+                url=issue.url,
+                reset=fg.rs,
+                fg_gray=fg(240)
+            )
+        )
+
+        return self
+    def __resume_issue_created(self, issue: IssueGithub) -> Create:
         print(
             """{fg_gray}###############################################
 ################ {green}Issue created {fg_gray}################
@@ -247,11 +271,16 @@ url : {url!s}{fg_gray}
 
     def process(self) -> Issue:
         self.__start_message()
-        issue_number: int
-        issue_url: str
         if self.__would_attach_issue():
             issue_number = self.__number_issue()
             issue: IssueGithub = IssueGithub().with_number(issue_number)
+            try:
+                r: Response = self.__read_issue(issue)
+                issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
+                self.__resume_issue(issue_created)
+            except FileNotFoundError:
+                print(fg.red + 'Issue not found : retry' + fg.rs)
+                return self.process()
 
         else:
             self.__start_message_issue()
@@ -263,9 +292,8 @@ url : {url!s}{fg_gray}
             if r.status_code is 201:
                 issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
 
-                self.__resume_issue(issue_created)
-                issue = issue_created
+                self.__resume_issue_created(issue_created)
             else:
                 raise GithubRequestApiError(r)
 
-        return issue
+        return issue_created

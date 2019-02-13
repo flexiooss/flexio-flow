@@ -33,9 +33,10 @@ class Create:
 
     def __number_topic(self) -> int:
         topic: str = input("""Topic number :
-         {bg_help}`-l` for list existing Topics{reset_bg}""".format(
+{bg_help}`-l` for list existing Topics{reset_bg} 
+""".format(
             reset_bg=bg.rs,
-            bg_help=bg.li_black
+            bg_help=bg(8)
         ))
 
         if topic == '-l':
@@ -43,10 +44,14 @@ class Create:
             for t_d in records:
                 t: FlexioTopic
                 t = FlexioTopic.build_from_api(t_d)
-                print('{topic_number!s} : {topic_title!s}'.format(
-                    topic_number=t.number, topic_title=t.title))
+                print('{fg_cyan}{topic_number!s} : {topic_title!s}{reset_fg}'.format(
+                    fg_cyan=fg.cyan,
+                    reset_fg=fg.rs,
+                    topic_number=t.number,
+                    topic_title=t.title
+                ))
 
-                topic: str = input('Topic number : ')
+            topic: str = input('Topic number : ')
 
         return int(topic)
 
@@ -76,7 +81,7 @@ class Create:
     def __start_message_topic(self) -> Create:
         print(
             """{fg_gray}###############################################
-#############    {yellow}Create Flexio Topic{fg_gray}     #############{reset}
+#########    {yellow}Create Flexio Topic{fg_gray}     ##########{reset}
 """.format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
         return self
 

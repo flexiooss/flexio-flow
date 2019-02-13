@@ -47,7 +47,6 @@ class FlexioTopic(Topic, FlexioRessource):
 
     @classmethod
     def build_from_api(cls, json: dict) -> FlexioTopic:
-        print(json)
         topic: FlexioTopic = FlexioTopic()
         topic.id = json.get(cls.RECORD_ID)
         topic.number = json.get(cls.NUMBER_ID)
