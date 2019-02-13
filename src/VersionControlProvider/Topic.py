@@ -25,3 +25,7 @@ class Topic(abc.ABC):
     def __dict__(self):
         pass
 
+    @abc.abstractmethod
+    def url(self) -> str:
+        pass
+

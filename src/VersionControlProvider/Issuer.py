@@ -41,7 +41,7 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def comment(self):
+    def comment(self, issue: Issue, text: str) -> Issue:
         pass
 
     @abc.abstractmethod
