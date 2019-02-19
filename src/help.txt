@@ -1,6 +1,5 @@
 #######################################################################################
 #######################################################################################
-#######################################################################################
 
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
@@ -11,15 +10,13 @@ https://github.com/flexiooss/flexio-flow
 
 #######################################################################################
 
-HELP
-#############
 
 flexio-flow
               --help, -h
               -V, --version-dir               Directory of repository with flexio-flow.yml at the root
 
 
-              <core>
+   --------   <core>
 
               core
                         config
@@ -27,7 +24,7 @@ flexio-flow
                                     -r, --read
 
 
-              <branch>
+   --------   <branch>
 
               init
 
@@ -45,32 +42,32 @@ flexio-flow
                         finish
 
 
-              <commit>
+   --------  <commit>
 
               commit
 
 
-              <issue>
+   --------  <issue>
 
               issue
                         read
                         comment
 
 
-              <scheme>
+   --------  <scheme>
 
               scheme
                         update
                                 -S, --scheme          maven|package|composer|docker
                                 -s, --scheme-dir      Directory with scheme configuration file
-              <version>
+   --------  <version>
 
               version
                                 -S, --scheme          maven|package|composer|docker
 
 
 
-#######################################################################################
+#############
 
 Main purpose
 #############
