@@ -23,10 +23,17 @@ class MavenPreCheck:
         reportpath: str = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
 
         status = Popen(
-            ['mvn', 'clean', 'io.flexio.maven:flexio-flow-maven-plugin:1.0.0-SNAPSHOT:check-deps', '--fail-at-end',
+            ['mvn', 'clean', 'io.flexio.maven:flexio-flow-maven-plugin:1.0.0-SNAPSHOT:check-parent', '--fail-at-end',
              '-Dreport.to=/tmp/' + reportpath],
             cwd=self.__state_handler.dir_path.as_posix()
         ).wait()
+
+        if status is 0:
+            status = Popen(
+                ['mvn', 'clean', 'io.flexio.maven:flexio-flow-maven-plugin:1.0.0-SNAPSHOT:check-deps', '--fail-at-end',
+                 '-Dreport.to=/tmp/' + reportpath],
+                cwd=self.__state_handler.dir_path.as_posix()
+            ).wait()
 
         if status is 0:
             deps = Dependencies()

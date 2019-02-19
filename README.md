@@ -70,5 +70,5 @@ pip freeze > requirements.txt
 #### Update pip dependencies
 `with virtual environement activated`
 ```bash
-pip install -r requirements.txt
+python3.7 -m pip install -r requirements.txt
 ````
