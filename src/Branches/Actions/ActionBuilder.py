@@ -14,7 +14,7 @@ from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
 
 
-class ActionFactory:
+class ActionBuilder:
 
     @staticmethod
     def build(

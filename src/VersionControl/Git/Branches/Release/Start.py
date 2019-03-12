@@ -33,6 +33,7 @@ class Start:
     def __start_release(self):
         if self.__gitflow.has_release(True) or self.__gitflow.has_release(False):
             raise BranchAlreadyExist(Branches.RELEASE)
+
         if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
             raise BranchAlreadyExist(Branches.HOTFIX)
 

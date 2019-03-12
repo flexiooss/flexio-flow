@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.Scheme import Scheme
-from Schemes.SchemeFactory import SchemeFactory
+from Schemes.SchemeBuilder import SchemeBuilder
 from Schemes.Schemes import Schemes
 from typing import Optional, Type, Dict
 
@@ -27,7 +27,7 @@ class Version:
         schemes: Optional[Schemes] = self.__get_scheme_option_or_default()
 
         if schemes:
-            scheme: Type[Scheme] = SchemeFactory.create(
+            scheme: Type[Scheme] = SchemeBuilder.create(
                 scheme=schemes,
                 state_handler=self.state_handler
             )

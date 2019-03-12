@@ -6,8 +6,8 @@ from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
 from typing import Type
 from VersionControl.VersionControl import VersionControl
-from VersionControl.VersionControlFactory import VersionControlFactory
-from Branches.Actions.ActionFactory import ActionFactory
+from VersionControl.VersionControlBuilder import VersionControlBuilder
+from Branches.Actions.ActionBuilder import ActionBuilder
 from Branches.Actions.Action import Action
 from Exceptions.HaveDevDependencyException import HaveDevDependencyException
 

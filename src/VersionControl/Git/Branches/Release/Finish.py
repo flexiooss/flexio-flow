@@ -49,7 +49,7 @@ class Finish:
                 self.__state_handler.version_as_str(),
                 "'"])
         ).try_to_push_tag(self.__state_handler.version_as_str()).try_to_push()
-        if (self.__git.has_conflict()):
+        if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
         return self
 
