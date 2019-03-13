@@ -6,6 +6,7 @@ from Branches.Actions.IssuerRecipe.RelatedIssueTopicRecipe import RelatedIssueTo
 from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
 from VersionControl.Branch import Branch
+from VersionControl.Release import Release
 from VersionControlProvider.Issue import Issue
 from slugify import slugify
 
@@ -26,6 +27,15 @@ class Start(Action):
             name = name if name else default_name
 
             branch.with_name(name=name)
+        return branch
+
+    def __ensure_is_major(self, branch: Release) -> Release:
+        if self.branch is Branches.RELEASE:
+            is_major: str = input(
+                ' Is major Release Y/N : ' + Fg.NOTICE.value + 'N' + Fg.RESET.value + ' ')
+            is_major_b: bool = True if is_major == 'Y' else False
+
+            branch.with_major(is_major=is_major_b)
         return branch
 
     def process(self):

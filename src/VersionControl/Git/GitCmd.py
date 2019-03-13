@@ -262,6 +262,7 @@ class GitCmd:
             repo: Repo = self.get_repo()
             return True
         except ValueError:
+            print('No remote configured for this repository')
             return False
 
     def last_tag(self) -> str:
