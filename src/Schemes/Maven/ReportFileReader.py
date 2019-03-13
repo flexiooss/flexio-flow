@@ -3,8 +3,8 @@ from __future__ import annotations
 from Schemes.Dependencies import Dependencies
 from Exceptions.ParseFailureException import ParseFailureException
 
-class ReportFileReader:
 
+class ReportFileReader:
     report_file_path: str
 
     def __init__(self, reportFile: str):

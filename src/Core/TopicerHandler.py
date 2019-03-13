@@ -4,7 +4,7 @@ from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 
 from VersionControlProvider.Topicer import Topicer
-from VersionControlProvider.TopicerFactory import TopicerFactory
+from VersionControlProvider.TopicerBuilder import TopicerBuilder
 from VersionControlProvider.Topicers import Topicers
 
 
@@ -15,5 +15,5 @@ class TopicerHandler:
 
     def topicer(self) -> Optional[Topicer]:
         topicers: Topicers = Topicers.FLEXIO
-        topicer: Topicer = TopicerFactory.build(self.state_handler, self.config_handler, topicers)
+        topicer: Topicer = TopicerBuilder.build(self.state_handler, self.config_handler, topicers)
         return topicer
