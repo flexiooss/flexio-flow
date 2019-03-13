@@ -2,7 +2,7 @@ from Branches.Branches import Branches
 
 
 class BranchNotExist(Exception):
-    def __init__(self, branch: Branches, message: str = ''):
+    def __init__(self, branch: str, message: str = ''):
         self.branch: Branches = branch
         self.message: str = message
 
@@ -10,4 +10,4 @@ class BranchNotExist(Exception):
         return """
 No git Branch Exist for : {0!s}
 {1!s}
-""".format(self.branch.value, self.message)
+""".format(self.branch, self.message)

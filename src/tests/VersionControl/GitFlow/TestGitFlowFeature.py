@@ -18,7 +18,7 @@ from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
 
 INIT_VERSION: str = '0.0.0'
 ISSUE_NUMBER: int = 14
-FEATURE_NAME: int = 'Ma super nouvelle feature accentué'
+FEATURE_NAME: str = 'Ma super nouvelle feature accentué'
 
 
 class TestGitFlowFeature(unittest.TestCase):
@@ -230,6 +230,7 @@ class TestGitFlowFeature(unittest.TestCase):
         self.assertFalse(
             self.git.remote_branch_exists(
                 'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref())
+        )
 
         state_dev: State = self.__get_dev_state()
 

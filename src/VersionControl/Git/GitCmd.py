@@ -3,6 +3,8 @@ import re
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
+
+from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from VersionControl.Git.GitConfig import GitConfig
@@ -15,8 +17,10 @@ class GitCmd:
     def __init__(self, state_handler: StateHandler):
         self.__state_handler = state_handler
 
-    def __exec(self, args: List[str]):
-        Popen(args, cwd=self.__state_handler.dir_path.as_posix()).communicate()
+    def __exec(self, args: List[str]) -> Popen:
+        child: Popen = Popen(args, cwd=self.__state_handler.dir_path.as_posix())
+        child.communicate()
+        return child
 
     def __exec_for_stdout(self, args: List[str]) -> str:
         stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__state_handler.dir_path.as_posix()).communicate()
@@ -34,11 +38,11 @@ class GitCmd:
 
     def local_branch_exists_from_branches(self, branch: Branches) -> bool:
         branch_name: str = self.get_branch_name_from_git(branch)
-        return self.branch_exists(branch_name, False)
+        return self.local_branch_exists(branch_name)
 
     def remote_branch_exists_from_branches(self, branch: Branches) -> bool:
         branch_name: str = self.get_branch_name_from_git(branch)
-        return self.branch_exists(branch_name, True)
+        return self.remote_branch_exists(branch_name)
 
     def branch_exists(self, branch: str) -> bool:
         return self.local_branch_exists(branch) or self.remote_branch_exists(branch)
@@ -173,31 +177,71 @@ class GitCmd:
     def has_head(self) -> bool:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
-    def is_local_remote_equal(self) -> bool {
-        local
+    def is_local_remote_equal(self, branch: str) -> bool:
+        if self.branch_exists(branch):
+            raise BranchNotExist(branch)
 
-    compare_refs_result
+        local_branch: str = self.local_branch_name(branch)
+        remote_branch: str = self.remote_branch_name(branch)
+        compare_refs: int = self.compare_refs(local_branch, remote_branch)
 
-    require_local_branch
-    "$1"
-    require_remote_branch
-    "$2"
-    git_compare_refs
-    "$1" "$2"
-    compare_refs_result =$?
+        if compare_refs > 0:
+            print("Branches '{local_branch!s}' and '{remote_branch!s}' have diverged.".format(local_branch=local_branch,
+                                                                                              remote_branch=remote_branch))
+            if compare_refs == 1:
+                print("And branch '{local_branch!s}' may be fast-forwarded.".format(local_branch=local_branch))
+            elif compare_refs == 2:
+                print("And local branch '{local_branch!s}' is ahead of '{remote_branch!s}'.".format(
+                    local_branch=local_branch, remote_branch=remote_branch))
+            else:
+                print("Branches need merging first.")
+            return False
+        return True
 
-    if [ $compare_refs_result -gt 0]; then
-    warn "Branches '$1' and '$2' have diverged."
-    if[$compare_refs_result -eq 1]; then
-    die "And branch '$1' may be fast-forwarded."
-    elif[$compare_refs_result -eq 2]; then
-    # Warn here, since there is no harm in being ahead
-    warn "And local branch '$1' is ahead of '$2'."
-    else
-    die "Branches need merging first."
-    fi
-    fi
-    }
+    def is_clean_working_tree(self) -> bool:
+        verify: str = self.__exec_for_stdout(['git', 'rev-parse', '--verify', 'HEAD'])
+        if len(verify) == 0:
+            return False
+        self.__exec(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
+
+        diff_files: str = self.__exec_for_stdout(['git', 'diff-files', '--ignore-submodules'])
+        if len(diff_files) > 0:
+            print("Working tree contains unstaged changes. Aborting.")
+            return False
+
+        diff_index: str = self.__exec_for_stdout(
+            ['git', 'diff-index', '--cached', '--ignore-submodules', 'HEAD'])
+        if len(diff_index) > 0:
+            print("Index contains uncommited changes. Aborting.")
+            return False
+
+        return True
+
+    def compare_refs(self, branch1: str, branch2: str) -> int:
+
+        commit1: str = self.__exec_for_stdout(['git', 'rev-parse ', branch1 + '^{}'])
+        commit2: str = self.__exec_for_stdout(['git', 'rev-parse ', branch2 + '^{}'])
+
+        if not commit1 == commit2:
+            child: Popen = Popen(
+                ['git', 'merge-base ', '"{c!s}"'.format(c=commit1), '"{c!s}"'.format(c=commit2)],
+                stdout=PIPE,
+                cwd=self.__state_handler.dir_path.as_posix()
+            )
+
+            stdout, stderr = child.communicate()
+            base: str = stdout.strip().decode('utf-8')
+
+            if not child.returncode == 0:
+                return 4
+            elif commit1 == base:
+                return 1
+            elif commit2 == base:
+                return 2
+            else:
+                return 3
+        else:
+            return 0
 
     def init_head(self) -> GitCmd:
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
@@ -316,3 +360,9 @@ class GitCmd:
         msg = msg if msg else tag
         self.__exec(["git", "tag", "-a", tag, "-m", "'" + msg + "'"])
         return self
+
+    def local_branch_name(self, branch: str) -> str:
+        return 'refs/heads/{branch!s}'.format(branch=branch)
+
+    def remote_branch_name(self, branch: str) -> str:
+        return 'refs/remotes/{branch!s}'.format(branch=branch)
