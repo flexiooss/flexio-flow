@@ -24,7 +24,7 @@ class GitCmd:
 
     def __exec_for_stdout(self, args: List[str]) -> str:
         stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__state_handler.dir_path.as_posix()).communicate()
-        return stdout.strip().decode('utf-8')
+        return self.__decode_stdout(stdout)
 
     def __decode_stdout(self, stdout) -> str:
         return stdout.strip().decode('utf-8')
@@ -156,6 +156,17 @@ class GitCmd:
     def get_conflict(self) -> str:
         return self.__exec_for_stdout(['git', 'ls-files', '-u'])
 
+    def get_branches(self) -> List[str]:
+        return self.get_local_branches() + self.get_remote_branches()
+
+    def get_local_branches(self) -> List[str]:
+        return self.__exec_for_stdout(['git', 'for-each-ref', '--sort', 'refname', '--format="%(refname:short)"',
+                                       self.local_branch_name()]).splitlines()
+
+    def get_remote_branches(self) -> List[str]:
+        return self.__exec_for_stdout(['git', 'for-each-ref', '--sort', 'refname', '--format="%(refname:short)"',
+                                       self.remote_branch_name()]).splitlines()
+
     def get_repo(self) -> Repo:
         url: str = self.__exec_for_stdout(['git', 'config', '--local', '--get', 'remote.origin.url'])
         regexp: Pattern[str] = re.compile(
@@ -192,26 +203,25 @@ class GitCmd:
                 print("And branch '{local_branch!s}' may be fast-forwarded.".format(local_branch=local_branch))
             elif compare_refs == 2:
                 print("And local branch '{local_branch!s}' is ahead of '{remote_branch!s}'.".format(
-                    local_branch=local_branch, remote_branch=remote_branch))
+                    local_branch=local_branch,
+                    remote_branch=remote_branch
+                ))
             else:
                 print("Branches need merging first.")
             return False
         return True
 
     def is_clean_working_tree(self) -> bool:
-        verify: str = self.__exec_for_stdout(['git', 'rev-parse', '--verify', 'HEAD'])
-        if len(verify) == 0:
+        if len(self.__exec_for_stdout(['git', 'rev-parse', '--verify', 'HEAD'])) == 0:
             return False
         self.__exec(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
 
-        diff_files: str = self.__exec_for_stdout(['git', 'diff-files', '--ignore-submodules'])
-        if len(diff_files) > 0:
+        if len(self.__exec_for_stdout(['git', 'diff-files', '--ignore-submodules'])) > 0:
             print("Working tree contains unstaged changes. Aborting.")
             return False
 
-        diff_index: str = self.__exec_for_stdout(
-            ['git', 'diff-index', '--cached', '--ignore-submodules', 'HEAD'])
-        if len(diff_index) > 0:
+        if len(self.__exec_for_stdout(
+                ['git', 'diff-index', '--cached', '--ignore-submodules', 'HEAD'])) > 0:
             print("Index contains uncommited changes. Aborting.")
             return False
 
@@ -230,7 +240,7 @@ class GitCmd:
             )
 
             stdout, stderr = child.communicate()
-            base: str = stdout.strip().decode('utf-8')
+            base: str = self.__decode_stdout(stdout)
 
             if not child.returncode == 0:
                 return 4
@@ -361,8 +371,16 @@ class GitCmd:
         self.__exec(["git", "tag", "-a", tag, "-m", "'" + msg + "'"])
         return self
 
-    def local_branch_name(self, branch: str) -> str:
-        return 'refs/heads/{branch!s}'.format(branch=branch)
+    def local_branch_name(self, branch: Optional[str] = None) -> str:
+        base: str = 'refs/heads'
+        if branch is not None:
+            return base + '/{branch!s}'.format(branch=branch)
+        else:
+            return base
 
-    def remote_branch_name(self, branch: str) -> str:
-        return 'refs/remotes/{branch!s}'.format(branch=branch)
+    def remote_branch_name(self, branch: Optional[str] = None) -> str:
+        base: str = 'refs/remotes'
+        if branch is not None:
+            return base + '/{branch!s}'.format(branch=branch)
+        else:
+            return base
