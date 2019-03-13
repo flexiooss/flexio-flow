@@ -41,8 +41,7 @@ class Start:
             name=self.__name
         )
 
-        if self.__git.branch_exists_from_name(branch_name, True) or self.__git.branch_exists_from_name(branch_name,
-                                                                                                       False):
+        if self.__git.branch_exists(branch_name):
             raise BranchAlreadyExist(Branches.FEATURE, branch_name)
 
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)

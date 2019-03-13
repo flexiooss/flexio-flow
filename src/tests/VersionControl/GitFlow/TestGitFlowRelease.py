@@ -73,13 +73,13 @@ class TestGitFlowRelease(unittest.TestCase):
         pass
 
     def test_should_start_release(self):
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=True), False)
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=False), False)
+        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), False)
+        self.assertIs(self.git.local_branch_exists('release/0.1.0'), False)
 
         self.__release_start()
 
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=False), True)
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=True), True)
+        self.assertIs(self.git.local_branch_exists('release/0.1.0'), True)
+        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -117,20 +117,16 @@ class TestGitFlowRelease(unittest.TestCase):
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
 
         self.assertIs(
-            self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                                             remote=True), False)
+            self.git.remote_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), False)
         self.assertIs(
-            self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                                             remote=False), False)
+            self.git.local_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), False)
 
         self.__release_start(issue_created)
 
         self.assertIs(
-            self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                                             remote=False), True)
+            self.git.local_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), True)
         self.assertIs(
-            self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                                             remote=True), True)
+            self.git.remote_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -180,7 +176,7 @@ class TestGitFlowRelease(unittest.TestCase):
             Level.STABLE,
             state_master.level
         )
-        self.assertIs(self.git.branch_exists_from_name('release/0.1.0', remote=True), False)
+        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), False)
 
         self.assertIs(self.git.tag_exists('0.1.0', remote=False), True, 'Tag local should be 0.1.0')
         self.assertIs(self.git.tag_exists('0.1.0', remote=True), True, 'Tag remote should be 0.1.0')
@@ -213,8 +209,7 @@ class TestGitFlowRelease(unittest.TestCase):
             state_master.level
         )
         self.assertIs(
-            self.git.branch_exists_from_name('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                                             remote=True), False)
+            self.git.remote_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), False)
 
         self.assertIs(self.git.tag_exists('0.1.0', remote=False), True, 'Tag local should be 0.1.0')
         self.assertIs(self.git.tag_exists('0.1.0', remote=True), True, 'Tag remote should be 0.1.0')

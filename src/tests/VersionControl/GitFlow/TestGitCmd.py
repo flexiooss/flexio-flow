@@ -26,7 +26,7 @@ class TestGitCmd(unittest.TestCase):
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
 
     def test_has_branch(self):
-        has_branch: bool = self.git.branch_exists_from_name('hotfix', False)
+        has_branch: bool = self.git.local_branch_exists('hotfix')
         self.assertTrue(has_branch)
 
     def test_current_branch(self):

@@ -81,16 +81,16 @@ class TestGitFlowFeature(unittest.TestCase):
         pass
 
     def test_should_start_feature(self):
-        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True),
+        self.assertIs(self.git.remote_branch_exists('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev'),
                       False)
-        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=False),
+        self.assertIs(self.git.local_branch_exists('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev'),
                       False)
 
         self.__feature_start()
 
-        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=False),
+        self.assertIs(self.git.local_branch_exists('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev'),
                       True)
-        self.assertIs(self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True),
+        self.assertIs(self.git.remote_branch_exists('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev'),
                       True)
 
         state_master: State = self.__get_master_state()
@@ -128,24 +128,20 @@ class TestGitFlowFeature(unittest.TestCase):
     def test_should_start_feature_with_issue(self):
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
 
-        self.assertIs(self.git.branch_exists_from_name(
-            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            remote=True),
+        self.assertIs(self.git.remote_branch_exists(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()),
             False)
-        self.assertIs(self.git.branch_exists_from_name(
-            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            remote=False),
+        self.assertIs(self.git.local_branch_exists(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()),
             False)
 
         self.__feature_start(issue_created)
 
-        self.assertIs(self.git.branch_exists_from_name(
-            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            remote=True),
+        self.assertIs(self.git.remote_branch_exists(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()),
             True)
-        self.assertIs(self.git.branch_exists_from_name(
-            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            remote=False),
+        self.assertIs(self.git.local_branch_exists(
+            'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()),
             True)
 
         state_master: State = self.__get_master_state()
@@ -198,7 +194,7 @@ class TestGitFlowFeature(unittest.TestCase):
             state_master.level
         )
         self.assertFalse(
-            self.git.branch_exists_from_name('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev', remote=True))
+            self.git.remote_branch_exists('feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev'))
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
@@ -232,11 +228,11 @@ class TestGitFlowFeature(unittest.TestCase):
             state_master.level
         )
         self.assertFalse(
-            self.git.branch_exists_from_name(
-                'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-                remote=True))
+            self.git.remote_branch_exists(
+                'feature/' + slugify(FEATURE_NAME) + '-0.1.0-dev' + IssueGithub().with_number(ISSUE_NUMBER).get_ref())
 
         state_dev: State = self.__get_dev_state()
+
         self.assertEqual(
             '0.1.0',
             str(state_dev.version)

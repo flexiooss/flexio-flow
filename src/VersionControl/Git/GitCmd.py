@@ -29,19 +29,29 @@ class GitCmd:
         self.__exec(['git', 'add', '.'])
         return self
 
-    def branch_exists(self, branch: Branches, remote: bool) -> bool:
-        branch_name: str = self.get_branch_name_from_git(branch)
-        return self.branch_exists_from_name(branch_name, remote)
+    def branch_exists_from_branches(self, branch: Branches) -> bool:
+        return self.local_branch_exists_from_branches(branch) or self.remote_branch_exists_from_branches(branch)
 
-    def branch_exists_from_name(self, branch: str, remote: bool) -> bool:
-        if remote:
-            resp: str = self.__exec_for_stdout(
-                ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
-            return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
-        else:
-            resp: str = self.__get_branch_name_from_git_list(branch)
-            print(resp)
-            return len(resp) > 0
+    def local_branch_exists_from_branches(self, branch: Branches) -> bool:
+        branch_name: str = self.get_branch_name_from_git(branch)
+        return self.branch_exists(branch_name, False)
+
+    def remote_branch_exists_from_branches(self, branch: Branches) -> bool:
+        branch_name: str = self.get_branch_name_from_git(branch)
+        return self.branch_exists(branch_name, True)
+
+    def branch_exists(self, branch: str) -> bool:
+        return self.local_branch_exists(branch) or self.remote_branch_exists(branch)
+
+    def local_branch_exists(self, branch: str) -> bool:
+        resp: str = self.__get_branch_name_from_git_list(branch)
+        print(resp)
+        return len(resp) > 0
+
+    def remote_branch_exists(self, branch: str) -> bool:
+        resp: str = self.__exec_for_stdout(
+            ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
+        return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
 
     def can_commit(self) -> bool:
         stdout: str = self.__exec_for_stdout(['git', 'status', '-s'])
@@ -61,13 +71,12 @@ class GitCmd:
         self.__exec(['git', 'checkout', branch, *options])
         return self
 
-    def reload_state(self)-> GitCmd:
+    def reload_state(self) -> GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
             print(e)
         return self
-
 
     def checkout_file_with_branch_name(self, branch: str, file: Path) -> GitCmd:
         if not file.is_file():
@@ -164,6 +173,32 @@ class GitCmd:
     def has_head(self) -> bool:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
+    def is_local_remote_equal(self) -> bool {
+        local
+
+    compare_refs_result
+
+    require_local_branch
+    "$1"
+    require_remote_branch
+    "$2"
+    git_compare_refs
+    "$1" "$2"
+    compare_refs_result =$?
+
+    if [ $compare_refs_result -gt 0]; then
+    warn "Branches '$1' and '$2' have diverged."
+    if[$compare_refs_result -eq 1]; then
+    die "And branch '$1' may be fast-forwarded."
+    elif[$compare_refs_result -eq 2]; then
+    # Warn here, since there is no harm in being ahead
+    warn "And local branch '$1' is ahead of '$2'."
+    else
+    die "Branches need merging first."
+    fi
+    fi
+    }
+
     def init_head(self) -> GitCmd:
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
         return self
@@ -186,7 +221,7 @@ class GitCmd:
 
     def merge_with_version_message(self, branch: Branches, message: str = '', options: List[str] = []) -> GitCmd:
         commit_message: str = """merge : {branch_name!s}
-{message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
+    {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
             branch,
             options=['--commit', '-m', commit_message, *options]
