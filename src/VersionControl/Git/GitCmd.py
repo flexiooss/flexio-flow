@@ -301,7 +301,7 @@ class GitCmd:
         return self
 
     def push_force(self) -> GitCmd:
-        self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
+        self.__exec(['git', 'push', '-u', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
         return self
 
     def tag_exists(self, tag: str, remote: bool) -> bool:

@@ -8,7 +8,7 @@ from VersionControl.Branch import Branch
 from FlexioFlow.StateHandler import StateHandler
 
 
-class BranchFactory:
+class BranchBuilder:
     @staticmethod
     def create(branch: Branches, state_handler: StateHandler) -> Branch:
         if branch is Branches.FEATURE:
