@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Type, Optional
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
+from Exceptions.RemoteDivergence import RemoteDivergence
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.BranchHandler import BranchHandler
@@ -12,9 +14,10 @@ from VersionControlProvider.Issue import Issue
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], is_major: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
+        self.__is_major: bool = is_major
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 
@@ -30,22 +33,39 @@ class Start:
         self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
-    def __start_release(self):
+    def __set_version(self):
+        if self.__is_major:
+            self.__state_handler.next_major().reset_minor().reset_patch()
+
+    def __start_check(self):
+        if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
+            raise RemoteDivergence(Branches.DEVELOP.value)
+
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree('Stash or commit your changes !!!')
+
         if self.__gitflow.has_release(True) or self.__gitflow.has_release(False):
             raise BranchAlreadyExist(Branches.RELEASE)
 
         if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
             raise BranchAlreadyExist(Branches.HOTFIX)
 
+    def __start_release(self):
+        self.__start_check()
+
         self.__git.checkout(Branches.DEVELOP)
+        self.__set_version()
+
         branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).branch_name_from_version(
             self.__state_handler.state.version
         )
 
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
 
+        self.__set_version()
         self.__state_handler.set_stable()
         self.__state_handler.write_file()
+
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
 
         self.__git.commit(

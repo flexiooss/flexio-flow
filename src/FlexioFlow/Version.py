@@ -52,6 +52,12 @@ class Version:
     def reset_patch(self) -> Version:
         return Version(self.major, self.minor, 0)
 
+    def reset_minor(self) -> Version:
+        return Version(self.major, 0, self.patch)
+
+    def reset_major(self) -> Version:
+        return Version(0, self.minor, self.patch)
+
     def to_dict(self) -> Dict[str, int]:
         return {
             'major': self.major,
