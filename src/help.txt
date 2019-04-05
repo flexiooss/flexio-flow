@@ -39,6 +39,8 @@ flexio-flow
               release
                         precheck
                         start
+                                    -M, --major
+                                    -N, --no-cli
                         finish
 
 

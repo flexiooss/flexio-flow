@@ -35,7 +35,10 @@ class Start:
 
     def __set_version(self):
         if self.__is_major:
-            self.__state_handler.next_major().reset_minor().reset_patch()
+            self.__state_handler.next_major()
+            self.__state_handler.reset_minor()
+            self.__state_handler.reset_patch()
+
 
     def __start_check(self):
         if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
@@ -49,6 +52,7 @@ class Start:
 
         if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
             raise BranchAlreadyExist(Branches.HOTFIX)
+
 
     def __start_release(self):
         self.__start_check()
@@ -74,6 +78,7 @@ class Start:
                 issue=self.__issue
             ).with_ref()
         ).try_to_set_upstream()
+
 
     def process(self):
         self.__init_gitflow().__pull_develop().__pull_master().__start_release()

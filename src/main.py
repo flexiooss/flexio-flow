@@ -23,8 +23,8 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
     options: Dict[str, Union[str, Schemes, bool]] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rc",
-                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read"])
+        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMN",
+                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major", 'no-cli'])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
@@ -33,20 +33,29 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
     for opt, arg in opts:
         arg = re.sub('[\s+]', '', arg)
+
         if opt in ("-h", "--help"):
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
             print(file.read())
             sys.exit()
+
         if opt in ("-V", "--version-dir"):
             options.update({'version-dir': arg})
+
         if opt in ("-s", "--scheme-dir"):
             options.update({'scheme-dir': arg})
         if opt in ("-S", "--scheme"):
             options.update({'scheme': Schemes[arg.upper()]})
+
         if opt in ("-r", "--read"):
             options.update({'read': True})
         if opt in ("-c", "--create"):
             options.update({'create': True})
+
+        if opt in ("-M", "--major"):
+            options.update({'major': True})
+        if opt in ("-N", "--no-cli"):
+            options.update({'no-cli': True})
 
     return args, options
 
@@ -104,7 +113,7 @@ def main(argv) -> None:
     version_dir: Path
     issue_action: Optional[IssueActions]
 
-    branch_action, branch, subject, core_action, options, version_dir,issue_action = command_orders(argv)
+    branch_action, branch, subject, core_action, options, version_dir, issue_action = command_orders(argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
