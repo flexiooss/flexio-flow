@@ -99,7 +99,7 @@ class Init(Action):
         return self
 
     def __ensure_version_control_initialized(self):
-        self.version_control.build_branch(Branches.MASTER).with_action(Actions.INIT).process()
+        self.version_control.build_branch(Branches.DEVELOP).with_action(Actions.INIT).process()
 
     def process(self):
         if not self.__ensure_have_state():

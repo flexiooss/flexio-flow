@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+import logging
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
@@ -255,6 +256,8 @@ class GitCmd:
 
     def init_head(self) -> GitCmd:
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
+        print('init HEAD : ' + '"refs/heads/' + Branches.MASTER.value + '"')
+        logging.info(msg='my log')
         return self
 
     def has_remote(self) -> bool:

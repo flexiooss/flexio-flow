@@ -23,7 +23,6 @@ class GitFlowCmd:
         return stdout.strip().decode('utf-8')
 
     def init_config(self) -> GitFlowCmd:
-        # self.__exec(["git", "flow", "init", "-f", "-d"])
         return self.ensure_head().ensure_master_branch().ensure_develop_branch()
 
     def ensure_head(self) -> GitFlowCmd:

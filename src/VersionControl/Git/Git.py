@@ -7,7 +7,7 @@ from VersionControl.CommitHandler import CommitHandler as AbstractCommitHandler
 from VersionControl.Git.IssueHandler import IssueHandler
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
-from VersionControl.Git.Branches.BranchFactory import BranchFactory
+from VersionControl.Git.Branches.BranchBuilder import BranchBuilder
 from Branches.Branches import Branches
 from VersionControl.Commit import Commit as CommitValueObject
 
@@ -15,23 +15,23 @@ from VersionControl.Commit import Commit as CommitValueObject
 class Git(VersionControl):
 
     def build_branch(self, branch: Branches) -> Branch:
-        branch_inst: Branch = BranchFactory.create(branch, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(branch, self.state_handler)
         return branch_inst
 
     def feature(self) -> Branch:
-        branch_inst: Branch = BranchFactory.create(Branches.FEATURE, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.FEATURE, self.state_handler)
         return branch_inst
 
     def hotfix(self) -> Branch:
-        branch_inst: Branch = BranchFactory.create(Branches.HOTFIX, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.HOTFIX, self.state_handler)
         return branch_inst
 
     def master(self) -> Branch:
-        branch_inst: Branch = BranchFactory.create(Branches.MASTER, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.MASTER, self.state_handler)
         return branch_inst
 
     def release(self) -> Branch:
-        branch_inst: Branch = BranchFactory.create(Branches.RELEASE, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.RELEASE, self.state_handler)
         return branch_inst
 
     def get_issue_number(self) -> Optional[int]:
