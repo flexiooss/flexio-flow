@@ -47,7 +47,7 @@ class TestGitFlowHelper:
         state: State = State()
         state.version = Version.from_str(version)
         state.schemes = [Schemes.PACKAGE]
-        state.level = Level.STABLE
+        state.level = Level.DEV
         return state
 
     @classmethod
@@ -56,17 +56,19 @@ class TestGitFlowHelper:
         cls.mount_workdir_and_clone()
         state_handler: StateHandler = StateHandler(cls.DIR_PATH_TEST)
         state_handler.state = cls.fake_state(version)
-        Git(state_handler).build_branch(Branches.MASTER).with_action(Actions.INIT).process()
+        Git(state_handler).build_branch(Branches.DEVELOP).with_action(Actions.INIT).process()
         return state_handler
 
     @classmethod
     def setup_config_handler(cls) -> ConfigHandler:
         config_handler: ConfigHandler = ConfigHandler(cls.DIR_PATH_TEST)
-        config_handler.config = Config(ConfigGithub(
-            activate=True,
-            user=USER,
-            token=TOKEN_TEST
-        ))
+        config_handler.config = Config().with_github(
+            github=ConfigGithub(
+                activate=True,
+                user=USER,
+                token=TOKEN_TEST
+            )
+        )
         return config_handler
 
     @classmethod
