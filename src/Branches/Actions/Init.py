@@ -6,43 +6,42 @@ from typing import List
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
-from sty import fg, bg
+from ConsoleColors.Fg import Fg
+from ConsoleColors.PrintColor import PrintColor
 
 
 class Init(Action):
 
     def __start_message(self) -> Init:
         print(
-            """{fg_gray}######################################################{fg_yellow}
+            """######################################################{fg_yellow}
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
  |  _|| |/ -_)\ \ /| |/ _ \|___||  _|| |/ _ \\ V  V /
  |_|  |_|\___|/_\_\|_|\___/     |_|  |_|\___/ \_/\_/
 
-{fg_gray}######################################################
-#####################    {fg_yellow}Init{fg_gray}     ####################{reset_fg}
+{reset_fg}######################################################
+#####################    {fg_yellow}Init{reset_fg}     ####################
 """.format(
 
-                fg_yellow=fg.yellow,
-                reset_fg=fg.rs,
-                fg_gray=fg(240)
+                fg_yellow=Fg.FOCUS.value,
+                reset_fg=Fg.RESET.value,
             ))
         return self
 
     def __input_version(self) -> Init:
-        version: str = input('Version ' + fg.green + '0.0.0' + fg.rs + ' : ')
+        version: str = input('Develop version ' + Fg.SUCCESS.value + '0.0.0' + Fg.RESET.value + ' : ')
         self.state_handler.state.version = Version.from_str(version if version else '0.0.0')
         return self
 
     def __input_level(self) -> Init:
-        level: str = input('Level <' + fg.green + 'stable' + fg.rs + '|dev> : ')
-        self.state_handler.state.level = Level[level.upper()] if level else Level.STABLE
+        self.state_handler.state.level = Level.DEV
         return self
 
     def __input_schemes(self) -> Init:
         schemes: List[Schemes] = []
         for scheme in Schemes:
-            add: str = input('With ' + scheme.value + ' y/' + fg.green + 'n' + fg.rs + ' : ')
+            add: str = input('With ' + scheme.value + ' y/' + Fg.SUCCESS.value + 'n' + Fg.RESET.value + ' : ')
             if add is 'y':
                 schemes.append(scheme)
 
@@ -51,13 +50,12 @@ class Init(Action):
 
     def __write_file(self) -> Init:
         yml: str = self.state_handler.write_file()
-        print("""{fg_gray}#################################################
+        print("""#################################################
 {fg_green}Write file : {path!s} 
-{fg_gray}#################################################{reset_fg}""".format(
+{reset_fg}#################################################""".format(
             path=self.state_handler.file_path(),
-            fg_gray=fg(240),
-            reset_fg=fg.rs,
-            fg_green=fg.green
+            reset_fg=Fg.RESET.value,
+            fg_green=Fg.SUCCESS.value
         )
         )
         print(yml)
@@ -67,18 +65,18 @@ class Init(Action):
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
             print(
-                """{fg_gray}###############################################
+                """###############################################
 {fg_yellow}Flexio Flow already initialized 
-{fg_gray}###############################################{reset_fg}
+{reset_fg}###############################################
 """.format(
-                    fg_yellow=fg.yellow,
-                    fg_gray=fg(240),
-                    reset_fg=fg.rs
+                    fg_yellow=Fg.FOCUS.value,
+                    reset_fg=Fg.RESET.value
                 ))
-            print(fg.yellow + 'at : ' + self.state_handler.file_path().as_posix() + fg.rs)
-            print(fg.yellow + 'with : ' + str(self.state_handler.state.to_dict()) + fg.rs)
-            use: str = input('Use this file ' + fg.green + 'y' + fg.rs + '/n : ')
+            PrintColor.log(Fg.FOCUS.value + 'at : ' + self.state_handler.file_path().as_posix())
+            PrintColor.log(Fg.FOCUS.value + 'with : ' + str(self.state_handler.state.to_dict()))
+            use: str = input('Use this file ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
             use = use if use else 'y'
+
             if use is 'y':
                 return True
             else:
@@ -91,13 +89,12 @@ class Init(Action):
 
     def __final_message(self) -> Init:
         print(
-            """{fg_gray}###############################################
+            """###############################################
 {fg_yellow}Enjoy with Flexio FLow 
-{fg_gray}###############################################{reset_fg}
+{reset_fg}###############################################
 """.format(
-                fg_yellow=fg.yellow,
-                fg_gray=fg(240),
-                reset_fg=fg.rs
+                fg_yellow=Fg.FOCUS.value,
+                reset_fg=Fg.RESET.value
             ))
         return self
 
