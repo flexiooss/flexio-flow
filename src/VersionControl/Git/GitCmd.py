@@ -1,6 +1,5 @@
 from __future__ import annotations
 import re
-import logging
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
@@ -8,6 +7,7 @@ from typing import List, Optional, Pattern, Match
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
+from Log.Log import Log
 from VersionControl.Git.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
 
@@ -50,7 +50,6 @@ class GitCmd:
 
     def local_branch_exists(self, branch: str) -> bool:
         resp: str = self.__get_branch_name_from_git_list(branch)
-        print(resp)
         return len(resp) > 0
 
     def remote_branch_exists(self, branch: str) -> bool:
@@ -71,8 +70,6 @@ class GitCmd:
         return self
 
     def checkout_with_branch_name(self, branch: str, options: List[str] = []) -> GitCmd:
-        print('branch')
-        print(branch)
         self.__exec(['git', 'checkout', branch, *options])
         return self
 
@@ -80,7 +77,7 @@ class GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
-            print(e)
+            Log.error(str(e))
         return self
 
     def checkout_file_with_branch_name(self, branch: str, file: Path) -> GitCmd:
@@ -96,7 +93,7 @@ class GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
-            print(e)
+            Log.error(str(e))
         return self
 
     def commit(self, msg: str, options: List[str] = []) -> GitCmd:
@@ -256,8 +253,7 @@ class GitCmd:
 
     def init_head(self) -> GitCmd:
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
-        print('init HEAD : ' + '"refs/heads/' + Branches.MASTER.value + '"')
-        logging.info(msg='my log')
+        Log.info('init HEAD : ' + '"refs/heads/' + Branches.MASTER.value + '"')
         return self
 
     def has_remote(self) -> bool:
@@ -333,38 +329,41 @@ class GitCmd:
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
+        Log.info('Reset to tag ' + tag)
         return self
 
     def set_upstream(self) -> GitCmd:
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.get_current_branch_name()])
+        Log.info('Set upstream for ' + self.get_current_branch_name())
         return self
 
     def try_to_pull(self) -> GitCmd:
-        print('Try to pull')
+        Log.info('Try to pull from remote')
         if self.has_remote():
             return self.pull()
         return self
 
     def try_to_push(self) -> GitCmd:
-        print('Try to push')
+        Log.info('Try to push to remote')
         if self.has_remote():
             return self.push()
         return self
 
     def try_to_push_force(self) -> GitCmd:
-        print('Try to push')
+        Log.info('Try to push forced to remote')
         if self.has_remote():
             return self.push_force()
         return self
 
     def try_to_push_tag(self, tag: str) -> GitCmd:
-        print('Try to push tag')
+        Log.info('Try to push tag to remote : ' + tag)
+
         if self.has_remote():
             return self.push_tag(tag)
         return self
 
     def try_to_set_upstream(self) -> GitCmd:
-        print('Try to set upstream')
+        Log.info('Try to set upstream')
         if self.has_remote():
             return self.set_upstream()
         return self

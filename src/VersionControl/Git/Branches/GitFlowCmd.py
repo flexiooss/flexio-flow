@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 from typing import List
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
+from Log.Log import Log
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControl.Git.GitConfig import GitConfig
 
@@ -32,13 +33,13 @@ class GitFlowCmd:
         return self
 
     def ensure_master_branch(self) -> GitFlowCmd:
-        print('Ensure have Master branch')
+        Log.info('Ensure have Master branch')
         if not self.__git.local_branch_exists(Branches.MASTER.value):
             self.ensure_head()
         return self
 
     def ensure_develop_branch(self) -> GitFlowCmd:
-        print('Ensure have Develop branch')
+        Log.info('Ensure have Develop branch')
         if not self.__git.local_branch_exists(Branches.DEVELOP.value):
             self.__git.checkout(Branches.MASTER).create_branch_from(
                 Branches.DEVELOP.value,
