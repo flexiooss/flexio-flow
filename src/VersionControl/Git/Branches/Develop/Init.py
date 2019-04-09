@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.Level import Level
 from FlexioFlow.StateHandler import StateHandler
 from Log.Log import Log
@@ -17,7 +19,6 @@ class Init:
         return self
 
     def __init_develop(self) -> Init:
-        # self.__state_handler.state.next_dev_minor()
         version: str = '-'.join([str(self.__state_handler.state.version), Level.DEV.value])
 
         git: GitCmd = GitCmd(self.__state_handler)

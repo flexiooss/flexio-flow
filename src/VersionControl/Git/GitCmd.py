@@ -187,7 +187,7 @@ class GitCmd:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
     def is_local_remote_equal(self, branch: str) -> bool:
-        if self.branch_exists(branch):
+        if not self.branch_exists(branch):
             raise BranchNotExist(branch)
 
         local_branch: str = self.local_branch_name(branch)
@@ -205,7 +205,7 @@ class GitCmd:
                     remote_branch=remote_branch
                 ))
             else:
-                print("Branches need merging first.")
+                Log.error("Branches need merging first.")
             return False
         return True
 
@@ -215,12 +215,12 @@ class GitCmd:
         self.__exec(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
 
         if len(self.__exec_for_stdout(['git', 'diff-files', '--ignore-submodules'])) > 0:
-            print("Working tree contains unstaged changes. Aborting.")
+            Log.error("Working tree contains unstaged changes. Aborting.")
             return False
 
         if len(self.__exec_for_stdout(
                 ['git', 'diff-index', '--cached', '--ignore-submodules', 'HEAD'])) > 0:
-            print("Index contains uncommited changes. Aborting.")
+            Log.error("Index contains uncommited changes. Aborting.")
             return False
 
         return True
@@ -261,8 +261,8 @@ class GitCmd:
             repo: Repo = self.get_repo()
             return True
         except ValueError:
-            print('No remote configured for this repository')
-            return False
+            Log.error('No remote configured for this repository')
+        return False
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
@@ -275,7 +275,7 @@ class GitCmd:
 
     def merge_with_version_message(self, branch: Branches, message: str = '', options: List[str] = []) -> GitCmd:
         commit_message: str = """merge : {branch_name!s}
-    {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
+        {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
             branch,
             options=['--commit', '-m', commit_message, *options]
@@ -304,29 +304,35 @@ class GitCmd:
         self.__exec(['git', 'push', '-u', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
         return self
 
-    def tag_exists(self, tag: str, remote: bool) -> bool:
-        if remote:
-            resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
-            return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
-        else:
-            p1 = Popen(
-                ['git', 'tag', '-l'],
-                stdout=PIPE,
-                cwd=self.__state_handler.dir_path.as_posix()
-            )
+    def tag_exists(self, tag: str) -> bool:
+        if self.has_remote():
+            return self.local_tag_exists(tag) and self.remote_tag_exists(tag)
 
-            p2 = Popen(
-                ['grep', '-E', tag],
-                stdin=p1.stdout,
-                stdout=PIPE,
-                cwd=self.__state_handler.dir_path.as_posix())
-            p1.stdout.close()
-            result = p2.communicate()[0]
-            p1.wait()
+        return self.local_tag_exists(tag)
 
-            resp = self.__decode_stdout(result)
+    def remote_tag_exists(self, tag: str) -> bool:
+        resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
+        return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
 
-            return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
+    def local_tag_exists(self, tag: str) -> bool:
+        p1 = Popen(
+            ['git', 'tag', '-l'],
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix()
+        )
+
+        p2 = Popen(
+            ['grep', '-E', tag],
+            stdin=p1.stdout,
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix())
+        p1.stdout.close()
+        result = p2.communicate()[0]
+        p1.wait()
+
+        resp = self.__decode_stdout(result)
+
+        return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])

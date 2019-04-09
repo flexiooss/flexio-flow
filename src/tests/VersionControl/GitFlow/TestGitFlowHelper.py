@@ -8,6 +8,7 @@ from FlexioFlow.Level import Level
 from FlexioFlow.State import State
 from FlexioFlow.StateHandler import StateHandler
 from FlexioFlow.Version import Version
+from Log.Log import Log
 from Schemes.Schemes import Schemes
 from VersionControl.Git.GitCmd import GitCmd
 from Branches.Branches import Branches
@@ -32,6 +33,7 @@ class TestGitFlowHelper:
     @classmethod
     def clean_workdir(cls):
         shutil.rmtree(cls.DIR_PATH_TEST, True)
+        Log.info('clean workdir : ' + cls.DIR_PATH_TEST.as_posix())
 
     @classmethod
     def clean_remote_repo(cls, version: Version = Version(0, 0, 0)):
@@ -41,6 +43,7 @@ class TestGitFlowHelper:
             .delete_branch_from_name(Branches.DEVELOP.value, remote=True) \
             .delete_tag(str(version), remote=True) \
             .delete_tag('-'.join([str(version.next_minor()), Level.DEV.value]), remote=True)
+        Log.info('clean remote repo : ' + str(version))
 
     @staticmethod
     def fake_state(version: str = '0.0.0') -> State:
@@ -57,6 +60,7 @@ class TestGitFlowHelper:
         state_handler: StateHandler = StateHandler(cls.DIR_PATH_TEST)
         state_handler.state = cls.fake_state(version)
         Git(state_handler).build_branch(Branches.DEVELOP).with_action(Actions.INIT).process()
+        Log.info('init repo : ' + str(version))
         return state_handler
 
     @classmethod

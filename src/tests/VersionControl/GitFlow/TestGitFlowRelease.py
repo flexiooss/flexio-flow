@@ -13,8 +13,10 @@ from Branches.Branches import Branches
 from VersionControl.Git.Git import Git
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from tests.VersionControl.GitFlow.TestGitFlowHelper import TestGitFlowHelper
+from FlexioFlow.Version import Version
 
-INIT_VERSION: str = '0.0.0'
+INIT_VERSION: str = '1.2.0'
+NEXT_RELEASE_VERSION: str = '1.3.0'
 ISSUE_NUMBER: int = 14
 
 
@@ -49,21 +51,23 @@ class TestGitFlowRelease(unittest.TestCase):
         return self.state_handler.state
 
     def tearDown(self):
+        print('tearDown')
         TestGitFlowHelper.clean_workdir()
         TestGitFlowHelper.init_repo(INIT_VERSION)
 
         self.git.delete_branch_from_name(
-            'release/0.1.0',
+            'release/' + INIT_VERSION,
             True
         ).delete_branch_from_name(
-            'release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
+            'release/' + INIT_VERSION + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
             True
-        ).delete_tag('0.2.0', remote=True)
+        ).delete_tag(INIT_VERSION, remote=True)
 
-        TestGitFlowHelper.clean_remote_repo()
+        TestGitFlowHelper.clean_remote_repo(Version.from_str(INIT_VERSION))
         TestGitFlowHelper.clean_workdir()
 
     def setUp(self):
+        print('setUp')
         self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
 
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
@@ -73,27 +77,22 @@ class TestGitFlowRelease(unittest.TestCase):
         pass
 
     def test_should_start_release(self):
-        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), False)
-        self.assertIs(self.git.local_branch_exists('release/0.1.0'), False)
+
+        self.assertIs(self.git.remote_branch_exists('release/' + INIT_VERSION), False,
+                      'Remote release branch should not exists')
+        self.assertIs(self.git.local_branch_exists('release/' + INIT_VERSION), False,
+                      'Local release branch should not exists')
 
         self.__release_start()
 
-        self.assertIs(self.git.local_branch_exists('release/0.1.0'), True)
-        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), True)
-
-        state_master: State = self.__get_master_state()
-        self.assertEqual(
-            '0.0.0',
-            INIT_VERSION
-        )
-        self.assertEqual(
-            Level.STABLE,
-            state_master.level
-        )
+        self.assertIs(self.git.local_branch_exists('release/' + INIT_VERSION), True,
+                      'Local release branch should  exists')
+        self.assertIs(self.git.remote_branch_exists('release/' + INIT_VERSION), True,
+                      'Remote release branch should exists')
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
-            '0.1.0',
+            INIT_VERSION,
             str(state_dev.version)
         )
         self.assertEqual(
@@ -103,7 +102,7 @@ class TestGitFlowRelease(unittest.TestCase):
 
         state_release: State = self.__get_release_state()
         self.assertEqual(
-            '0.1.0',
+            INIT_VERSION,
             str(state_release.version)
         )
         self.assertEqual(
@@ -169,21 +168,20 @@ class TestGitFlowRelease(unittest.TestCase):
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
-            '0.1.0',
+            INIT_VERSION,
             str(state_master.version)
         )
         self.assertEqual(
             Level.STABLE,
             state_master.level
         )
-        self.assertIs(self.git.remote_branch_exists('release/0.1.0'), False)
+        self.assertIs(self.git.remote_branch_exists('release/' + INIT_VERSION), False)
 
-        self.assertIs(self.git.tag_exists('0.1.0', remote=False), True, 'Tag local should be 0.1.0')
-        self.assertIs(self.git.tag_exists('0.1.0', remote=True), True, 'Tag remote should be 0.1.0')
+        self.assertIs(self.git.tag_exists(INIT_VERSION), True, 'Tag should be ' + INIT_VERSION)
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
-            '0.2.0',
+            NEXT_RELEASE_VERSION,
             str(state_dev.version)
         )
         self.assertEqual(
@@ -211,8 +209,7 @@ class TestGitFlowRelease(unittest.TestCase):
         self.assertIs(
             self.git.remote_branch_exists('release/0.1.0' + IssueGithub().with_number(ISSUE_NUMBER).get_ref()), False)
 
-        self.assertIs(self.git.tag_exists('0.1.0', remote=False), True, 'Tag local should be 0.1.0')
-        self.assertIs(self.git.tag_exists('0.1.0', remote=True), True, 'Tag remote should be 0.1.0')
+        self.assertIs(self.git.tag_exists('0.1.0'), True, 'Tag should be 0.1.0')
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(

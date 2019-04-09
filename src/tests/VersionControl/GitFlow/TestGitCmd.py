@@ -34,9 +34,9 @@ class TestGitCmd(unittest.TestCase):
         print(branch_name)
 
     def test_has_tag(self):
-        has_tag: bool = self.git.tag_exists('0.0.0', False)
+        has_tag: bool = self.git.tag_exists('0.0.0')
         self.assertTrue(has_tag)
 
     def test_has_not_tag(self):
-        has_tag: bool = self.git.tag_exists('0.1.0', False)
+        has_tag: bool = self.git.tag_exists('0.1.0')
         self.assertFalse(has_tag)

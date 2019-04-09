@@ -4,6 +4,7 @@ class NotCleanWorkingTree(Exception):
 
     def __str__(self):
         return """
-Your working tree is not clean : 
+        
+Your working tree is not clean
 {0!s}
 """.format(self.message)

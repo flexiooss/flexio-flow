@@ -28,13 +28,11 @@ class TestGitFlow(unittest.TestCase):
         TestGitFlowHelper.clean_workdir()
         TestGitFlowHelper.mount_workdir_and_clone()
 
-        self.assertIs(git.tag_exists(tag_test, remote=True), False)
-        self.assertIs(git.tag_exists(tag_test, remote=False), False)
+        self.assertIs(git.tag_exists(tag_test), False)
 
         git.checkout(Branches.MASTER).tag(tag_test).push_tag(tag_test)
 
-        self.assertIs(git.tag_exists(tag_test, remote=True), True)
-        self.assertIs(git.tag_exists(tag_test, remote=False), True)
+        self.assertIs(git.tag_exists(tag_test), True)
 
     def tearDown(self):
         TestGitFlowHelper.clean_remote_repo()

@@ -81,4 +81,6 @@ class Start:
 
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         self.__init_gitflow().__pull_develop().__pull_master().__start_release()

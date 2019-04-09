@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Type, Optional
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
@@ -67,6 +68,8 @@ class Finish:
         self.__merge_develop().__delete_feature()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         if not self.__gitflow.is_feature():
-            raise BranchNotExist(Branches.FEATURE)
+            raise BranchNotExist(Branches.FEATURE.value)
         self.__pull_develop().__pull_master().__finish_feature()

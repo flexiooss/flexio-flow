@@ -204,8 +204,8 @@ class TestGitFlowHotfix(unittest.TestCase):
         )
         self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev'), False)
 
-        self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
-        self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
+        self.assertIs(self.git.tag_exists('0.0.1'), True, 'Tag should be 0.0.1')
+
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
@@ -240,8 +240,7 @@ class TestGitFlowHotfix(unittest.TestCase):
             False
         )
 
-        self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
-        self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
+        self.assertIs(self.git.tag_exists('0.0.1'), True, 'Tag should be 0.0.1')
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(

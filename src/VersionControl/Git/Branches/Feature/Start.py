@@ -4,6 +4,7 @@ from typing import Type, Optional
 from slugify import slugify
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
@@ -54,4 +55,6 @@ class Start:
         ).try_to_set_upstream()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         self.__init_gitflow().__pull_develop().__pull_master().__start_feature()

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Type, Optional
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.BranchHandler import BranchHandler
@@ -55,4 +56,6 @@ class Start:
         ).try_to_set_upstream()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         self.__init_gitflow().__pull_develop().__pull_master().__start_hotfix()
