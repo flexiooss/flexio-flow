@@ -227,12 +227,12 @@ class GitCmd:
 
     def compare_refs(self, branch1: str, branch2: str) -> int:
 
-        commit1: str = self.__exec_for_stdout(['git', 'rev-parse ', branch1 + '^{}'])
-        commit2: str = self.__exec_for_stdout(['git', 'rev-parse ', branch2 + '^{}'])
+        commit1: str = self.__exec_for_stdout(['git', 'rev-parse', branch1 + '^{}'])
+        commit2: str = self.__exec_for_stdout(['git', 'rev-parse', branch2 + '^{}'])
 
         if not commit1 == commit2:
             child: Popen = Popen(
-                ['git', 'merge-base ', '"{c!s}"'.format(c=commit1), '"{c!s}"'.format(c=commit2)],
+                ['git', 'merge-base', '"{c!s}"'.format(c=commit1), '"{c!s}"'.format(c=commit2)],
                 stdout=PIPE,
                 cwd=self.__state_handler.dir_path.as_posix()
             )
@@ -241,12 +241,20 @@ class GitCmd:
             base: str = self.__decode_stdout(stdout)
 
             if not child.returncode == 0:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('Branches need merging first')
                 return 4
-            elif commit1 == base:
+            if commit1 == base:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('And branch ' + branch1 + ' may be fast-forwarded')
                 return 1
             elif commit2 == base:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('And branch ' + branch1 + ' is ahead from ' + branch2)
                 return 2
             else:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('Branches need merging first')
                 return 3
         else:
             return 0

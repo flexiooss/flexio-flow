@@ -10,4 +10,4 @@ class PreCheck:
         self.__issue: Optional[Type[Issue]] = issue
 
     def process(self):
-        print('Not implemented yet')
+        print('PreCheck Not implemented yet')

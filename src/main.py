@@ -23,8 +23,8 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
     options: Dict[str, Union[str, Schemes, bool]] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMN",
-                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major", 'no-cli'])
+        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMNK",
+                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major", 'no-cli', 'keep-branch'])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('flexio-flow -h')
@@ -56,6 +56,9 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
             options.update({'major': True})
         if opt in ("-N", "--no-cli"):
             options.update({'no-cli': True})
+
+        if opt in ("-K", "--keep-branch"):
+            options.update({'keep-branch': True})
 
     return args, options
 

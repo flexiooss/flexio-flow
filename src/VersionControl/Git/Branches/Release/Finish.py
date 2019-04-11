@@ -15,11 +15,13 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
+        self.__keep_branch: bool = keep_branch
+        self.__name: str = self.__git.get_branch_name_from_git(Branches.RELEASE)
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -87,9 +89,18 @@ class Finish:
     def __finish_release(self):
         if not self.__gitflow.has_release(False):
             raise BranchNotExist(Branches.RELEASE.value)
-        self.__merge_master().__merge_develop().__delete_release()
+        self.__merge_master().__merge_develop()
+
+        if not self.__keep_branch:
+            self.__delete_release()
 
     def process(self):
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
-        self.__pull_develop().__pull_master().__finish_release()
+        # TODO finish compare
+
+        print(self.__git.get_branch_name_from_git(Branches.RELEASE))
+        a = self.__git.compare_refs(self.__name, Branches.MASTER.value)
+        print(a)
+
+        # self.__pull_develop().__pull_master().__finish_release()

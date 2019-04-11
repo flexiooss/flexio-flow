@@ -15,11 +15,13 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]],keep_branch:bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
+        self.__keep_branch: bool = keep_branch
+
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -98,7 +100,9 @@ class Finish:
     def __finish_hotfix(self):
         if not self.__gitflow.has_hotfix(False):
             raise BranchNotExist(Branches.HOTFIX.value)
-        self.__merge_master().__merge_develop().__delete_hotfix()
+        self.__merge_master().__merge_develop()
+        if not self.__keep_branch:
+            self.__delete_hotfix()
 
     def process(self):
         if not self.__git.is_clean_working_tree():

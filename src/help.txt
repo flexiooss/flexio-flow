@@ -31,10 +31,12 @@ flexio-flow
               feature
                         start
                         finish
+                                    -K, --keep-branch
 
               hotfix
                         start
                         finish
+                                    -K, --keep-branch
 
               release
                         precheck
@@ -42,6 +44,7 @@ flexio-flow
                                     -M, --major
                                     -N, --no-cli
                         finish
+                                    -K, --keep-branch
 
 
    --------  <commit>
