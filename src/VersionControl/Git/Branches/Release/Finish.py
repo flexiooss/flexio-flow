@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing import Type, Optional
 
+from Exceptions.BranchHaveDiverged import BranchHaveDiverged
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
+from Exceptions.RemoteDivergence import RemoteDivergence
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
@@ -28,11 +30,15 @@ class Finish:
         return self
 
     def __pull_develop(self) -> Finish:
-        self.__git.checkout(Branches.DEVELOP).try_to_pull()
+        if self.__git.has_remote() and not self.is_local_remote_equal(Branches.DEVELOP.value):
+            raise RemoteDivergence(Branches.DEVELOP.value + 'should be merged with remote')
+        # self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
-        self.__git.checkout(Branches.MASTER).try_to_pull()
+        if self.__git.has_remote() and not self.is_local_remote_equal(Branches.MASTER.value):
+            raise RemoteDivergence(Branches.MASTER.value + 'should be merged with remote')
+        # self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
 
     def __merge_master(self) -> Finish:
@@ -43,7 +49,12 @@ class Finish:
                 issue=self.__issue
             ).with_ref(),
             options=['--no-ff', '--strategy-option', 'theirs']
-        ).tag(
+        )
+
+        if self.__git.has_conflict():
+            raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
+
+        self.__git.tag(
             self.__state_handler.version_as_str(),
             ' '.join([
                 "'From Finished release : ",
@@ -52,8 +63,7 @@ class Finish:
                 self.__state_handler.version_as_str(),
                 "'"])
         ).try_to_push_tag(self.__state_handler.version_as_str()).try_to_push()
-        if self.__git.has_conflict():
-            raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
+
         return self
 
     def __merge_develop(self) -> Finish:
@@ -75,10 +85,13 @@ class Finish:
                 message='',
                 issue=self.__issue
             ).with_ref()
-        ).try_to_push()
+        )
 
         if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
+
+        self.__git.try_to_push()
+
         return self
 
     def __delete_release(self) -> Finish:
@@ -97,10 +110,9 @@ class Finish:
     def process(self):
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
-        # TODO finish compare
 
-        print(self.__git.get_branch_name_from_git(Branches.RELEASE))
-        a = self.__git.compare_refs(self.__name, Branches.MASTER.value)
-        print(a)
+        if self.__git.is_branch_ahead(Branches.MASTER.value, self.__name):
+            print(self.__git.list_commit_diff(Branches.MASTER.value, self.__name))
+            raise BranchHaveDiverged('Oups !!! Master have commit ahead ' + self.__name + ' merge before')
 
-        # self.__pull_develop().__pull_master().__finish_release()
+        self.__pull_develop().__pull_master().__finish_release()

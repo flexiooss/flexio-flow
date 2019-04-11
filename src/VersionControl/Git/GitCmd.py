@@ -186,6 +186,14 @@ class GitCmd:
     def has_head(self) -> bool:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
+    def is_branch_ahead(self, branch: str, compare_to: str) -> bool:
+        return int(self.__exec_for_stdout(['git', 'rev-list', compare_to + '..' + branch, '--count'])) > 0
+
+    def list_commit_diff(self, branch: str, compare_to: str) -> str:
+        print(branch + ' <-> ' + compare_to)
+
+        return self.__exec_for_stdout(['git', 'rev-list', '--left-right', compare_to + '...' + branch, '--'])
+
     def is_local_remote_equal(self, branch: str) -> bool:
         if not self.branch_exists(branch):
             raise BranchNotExist(branch)
@@ -205,7 +213,7 @@ class GitCmd:
                     remote_branch=remote_branch
                 ))
             else:
-                Log.error("Branches need merging first.")
+                Log.warning("Branches need merging first.")
             return False
         return True
 
@@ -242,6 +250,7 @@ class GitCmd:
 
             if not child.returncode == 0:
                 Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('No common ancestors')
                 Log.info('Branches need merging first')
                 return 4
             if commit1 == base:
@@ -269,7 +278,7 @@ class GitCmd:
             repo: Repo = self.get_repo()
             return True
         except ValueError:
-            Log.error('No remote configured for this repository')
+            Log.warning('No remote configured for this repository')
         return False
 
     def last_tag(self) -> str:
