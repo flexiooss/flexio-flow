@@ -30,13 +30,13 @@ class Finish:
         return self
 
     def __pull_develop(self) -> Finish:
-        if self.__git.has_remote() and not self.is_local_remote_equal(Branches.DEVELOP.value):
+        if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
             raise RemoteDivergence(Branches.DEVELOP.value + 'should be merged with remote')
         # self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
-        if self.__git.has_remote() and not self.is_local_remote_equal(Branches.MASTER.value):
+        if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.MASTER.value):
             raise RemoteDivergence(Branches.MASTER.value + 'should be merged with remote')
         # self.__git.checkout(Branches.MASTER).try_to_pull()
         return self
