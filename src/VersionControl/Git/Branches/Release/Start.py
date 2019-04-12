@@ -41,8 +41,9 @@ class Start:
 
 
     def __start_check(self):
-        if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
-            raise RemoteDivergence(Branches.DEVELOP.value)
+        #  TODO recheck local vs remote
+        # if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
+        #     raise RemoteDivergence(Branches.DEVELOP.value)
 
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree('Stash or commit your changes !!!')
