@@ -109,7 +109,8 @@ class Finish:
         return self
 
     def __delete_release(self) -> Finish:
-        self.__git.delete_local_branch_from_name(self.__name)
+        if not self.__keep_branch:
+            self.__git.delete_local_branch_from_name(self.__name)
         self.__git.try_delete_remote_branch_from_name(self.__name)
         return self
 
@@ -118,8 +119,7 @@ class Finish:
             raise BranchNotExist(Branches.RELEASE.value)
         self.__merge_master().__merge_develop()
 
-        if not self.__keep_branch:
-            self.__delete_release()
+        self.__delete_release()
 
     def process(self):
         if not self.__git.is_clean_working_tree():
