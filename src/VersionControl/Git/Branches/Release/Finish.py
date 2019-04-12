@@ -45,7 +45,7 @@ class Finish:
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
             branch=Branches.RELEASE,
             message=Message(
-                message='',
+                message='Merge ' + self.__name + 'into ' + Branches.MASTER.value,
                 issue=self.__issue
             ).with_ref(),
             options=['--no-ff', '--strategy-option', 'theirs']
@@ -54,15 +54,26 @@ class Finish:
         if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
 
+        tag: str = self.__state_handler.version_as_str()
+
         self.__git.tag(
-            self.__state_handler.version_as_str(),
+            tag,
             ' '.join([
                 "'From Finished release : ",
-                self.__git.get_branch_name_from_git(Branches.RELEASE),
+                self.__name,
                 'tag : ',
-                self.__state_handler.version_as_str(),
+                tag,
                 "'"])
-        ).try_to_push_tag(self.__state_handler.version_as_str()).try_to_push()
+        ).try_to_push_tag(tag).try_to_push()
+
+        self.__git.checkout(Branches.RELEASE).merge_with_version_message_from_branch_name(
+            branch=tag,
+            message=Message(
+                message='Merge ' + tag + ' tag into ' + self.__name,
+                issue=self.__issue
+            ).with_ref(),
+            options=['--no-ff']
+        )
 
         return self
 
@@ -72,12 +83,13 @@ class Finish:
         self.__state_handler.set_dev()
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
+
         self.__git.commit(
             Message(
                 message=''.join(["'Finish release for dev: ", self.__state_handler.version_as_str()]),
                 issue=self.__issue
             ).with_ref()
-        ).try_to_push()
+        )
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
             branch=Branches.RELEASE,
@@ -90,13 +102,14 @@ class Finish:
         if self.__git.has_conflict():
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
 
-        self.__git.try_to_push()
+        self.__git.checkout(Branches.RELEASE).undo_last_commit()
+
+        self.__git.checkout(Branches.DEVELOP).try_to_push()
 
         return self
 
     def __delete_release(self) -> Finish:
-        self.__git.delete_branch(Branches.RELEASE, True)
-        self.__git.delete_branch(Branches.RELEASE, False)
+        self.__git.delete_local_branch_from_name(self.__name)
         return self
 
     def __finish_release(self):

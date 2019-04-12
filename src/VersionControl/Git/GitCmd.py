@@ -104,6 +104,10 @@ class GitCmd:
         self.__exec(['git', 'clone', url, '.'])
         return self
 
+    def undo_last_commit(self) -> GitCmd:
+        self.__exec(['git', 'reset', '--hard', 'HEAD~1'])
+        return self
+
     def delete_tag(self, tag: str, remote: bool) -> GitCmd:
         if remote:
             self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
@@ -115,11 +119,19 @@ class GitCmd:
         branch_name: str = self.__get_branch_name_from_git_list(branch.value)
         return self.delete_branch_from_name(branch_name, remote)
 
-    def delete_branch_from_name(self, branch: str, remote: bool) -> GitCmd:
-        if remote:
-            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
-        else:
-            self.__exec(['git', 'branch', '-d', branch])
+    def delete_local_branch_from_name(self, branch: str) -> GitCmd:
+        self.__exec(['git', 'branch', '-d', branch])
+        return self
+
+    def delete_remote_branch_from_name(self, branch: str) -> GitCmd:
+        self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
+        return self
+
+    def try_delete_remote_branch_from_name(self, branch: str) -> GitCmd:
+        Log.info('Try to delete remote branch : ' + branch)
+
+        if self.has_remote():
+            return self.delete_remote_branch_from_name(branch)
         return self
 
     def get_branch_name_from_git(self, branch: Branches) -> str:
@@ -286,7 +298,10 @@ class GitCmd:
 
     def merge(self, branch: Branches, options: List[str] = []) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge', target_branch_name, *options])
+        return self.merge_from_branch_name(target_branch_name, options)
+
+    def merge_from_branch_name(self, branch: str, options: List[str] = []) -> GitCmd:
+        self.__exec(['git', 'merge', branch, *options])
         self.__state_handler.load_file_config()
         return self
 
@@ -294,6 +309,14 @@ class GitCmd:
         commit_message: str = """merge : {branch_name!s}
         {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
+            branch,
+            options=['--commit', '-m', commit_message, *options]
+        )
+
+    def merge_with_version_message_from_branch_name(self, branch: str, message: str = '', options: List[str] = []) -> GitCmd:
+        commit_message: str = """merge : {branch_name!s}
+        {message!s}""".format(branch_name=branch, message=message)
+        return self.merge_from_branch_name(
             branch,
             options=['--commit', '-m', commit_message, *options]
         )

@@ -20,6 +20,8 @@ class Version:
         schemes: Optional[Schemes] = self.options.get('scheme')
         if schemes is None:
             schemes = self.state_handler.first_scheme()
+        if schemes is None:
+            schemes = Schemes.PACKAGE
         return schemes
 
 

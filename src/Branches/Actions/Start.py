@@ -7,6 +7,7 @@ from Branches.Actions.Actions import Actions
 from Branches.Actions.IssuerRecipe.RelatedIssueTopicRecipe import RelatedIssueTopicRecipe
 from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
+from Log.Log import Log
 from VersionControl.Branch import Branch
 from VersionControl.Release import Release
 from VersionControlProvider.Issue import Issue
@@ -35,7 +36,6 @@ class Start(Action):
     def __ensure_is_major(self, branch: Branch) -> Branch:
         if self.branch is Branches.RELEASE:
             is_major_b: bool = False
-            print(self.options.get('major'))
 
             if self.options.get('major') is None:
                 if self.options.get('no-cli') is not True:
@@ -44,6 +44,8 @@ class Start(Action):
                     is_major_b = True if is_major.capitalize() == 'Y' else False
             else:
                 is_major_b = self.options.get('major') is True
+                if is_major_b:
+                    Log.info('Release option Major set from options')
 
             branch.with_major(is_major=is_major_b)
         return branch
