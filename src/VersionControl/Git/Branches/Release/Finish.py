@@ -110,6 +110,7 @@ class Finish:
 
     def __delete_release(self) -> Finish:
         self.__git.delete_local_branch_from_name(self.__name)
+        self.__git.try_delete_remote_branch_from_name(self.__name)
         return self
 
     def __finish_release(self):
