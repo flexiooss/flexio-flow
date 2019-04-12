@@ -120,7 +120,7 @@ class GitCmd:
         return self.delete_branch_from_name(branch_name, remote)
 
     def delete_local_branch_from_name(self, branch: str) -> GitCmd:
-        self.__exec(['git', 'branch', '-d', branch])
+        self.__exec(['git', 'branch', '-D', branch])
         return self
 
     def delete_remote_branch_from_name(self, branch: str) -> GitCmd:
