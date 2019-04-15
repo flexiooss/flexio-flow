@@ -42,5 +42,5 @@ class TestGitCmd(unittest.TestCase):
         self.assertFalse(has_tag)
 
     def test_has_remote(self):
-        has_tag: bool = self.git.tag_exists('0.1.0')
-        self.assertFalse(has_tag)
+        has_remote: bool = self.git.has_remote()
+        print(has_remote)

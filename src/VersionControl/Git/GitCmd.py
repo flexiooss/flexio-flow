@@ -290,11 +290,8 @@ class GitCmd:
         return self
 
     def has_remote(self) -> bool:
-        resp: Popen = self.__exec(['git', 'remote', 'get-url', '--all', self.get_current_branch_name()])
-        print(self.get_current_branch_name())
-        print(resp.returncode)
-        # resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
-        # return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
+        resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
+        return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
