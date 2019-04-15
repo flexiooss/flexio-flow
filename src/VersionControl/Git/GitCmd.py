@@ -192,7 +192,8 @@ class GitCmd:
         return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
 
     def get_current_branch_name(self) -> str:
-        # git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g'
+        if not self.has_head():
+            raise BranchNotExist('no HEAD for this branch')
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
 
     def has_conflict(self) -> bool:
@@ -289,8 +290,11 @@ class GitCmd:
         return self
 
     def has_remote(self) -> bool:
-        resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
-        return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
+        resp: Popen = self.__exec(['git', 'remote', 'get-url', '--all', self.get_current_branch_name()])
+        print(self.get_current_branch_name())
+        print(resp.returncode)
+        # resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
+        # return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])

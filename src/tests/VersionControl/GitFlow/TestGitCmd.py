@@ -20,7 +20,7 @@ class TestGitCmd(unittest.TestCase):
     def setUp(self):
         # self.state_handler = TestGitFlowHelper.init_repo(INIT_VERSION)
         # # self.state_handler: StateHandler = StateHandler(TestGitFlowHelper.DIR_PATH_TEST).load_file_config()
-        self.state_handler: StateHandler = StateHandler(Path('/tmp/test')).load_file_config()
+        self.state_handler: StateHandler = StateHandler(Path('/tmp/test'))
 
         self.git: GitCmd = GitCmd(state_handler=self.state_handler)
         self.git_flow: GitFlowCmd = GitFlowCmd(state_handler=self.state_handler)
@@ -38,5 +38,9 @@ class TestGitCmd(unittest.TestCase):
         self.assertTrue(has_tag)
 
     def test_has_not_tag(self):
+        has_tag: bool = self.git.tag_exists('0.1.0')
+        self.assertFalse(has_tag)
+
+    def test_has_remote(self):
         has_tag: bool = self.git.tag_exists('0.1.0')
         self.assertFalse(has_tag)
