@@ -53,9 +53,11 @@ class GitCmd:
         return len(resp) > 0
 
     def remote_branch_exists(self, branch: str) -> bool:
-        resp: str = self.__exec_for_stdout(
-            ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
-        return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
+        if self.has_remote():
+            resp: str = self.__exec_for_stdout(
+                ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
+            return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
+        return False
 
     def can_commit(self) -> bool:
         stdout: str = self.__exec_for_stdout(['git', 'status', '-s'])
@@ -115,9 +117,10 @@ class GitCmd:
             self.__exec(['git', 'tag', '-d', tag])
         return self
 
-    def delete_branch(self, branch: Branches, remote: bool) -> GitCmd:
+    def delete_branch(self, branch: Branches) -> GitCmd:
         branch_name: str = self.__get_branch_name_from_git_list(branch.value)
-        return self.delete_branch_from_name(branch_name, remote)
+        self.delete_remote_branch_from_name(branch_name)
+        return self.delete_local_branch_from_name(branch_name)
 
     def delete_local_branch_from_name(self, branch: str) -> GitCmd:
         self.__exec(['git', 'branch', '-D', branch])
@@ -286,12 +289,8 @@ class GitCmd:
         return self
 
     def has_remote(self) -> bool:
-        try:
-            repo: Repo = self.get_repo()
-            return True
-        except ValueError:
-            Log.warning('No remote configured for this repository')
-        return False
+        resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
+        return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
@@ -313,7 +312,8 @@ class GitCmd:
             options=['--commit', '-m', commit_message, *options]
         )
 
-    def merge_with_version_message_from_branch_name(self, branch: str, message: str = '', options: List[str] = []) -> GitCmd:
+    def merge_with_version_message_from_branch_name(self, branch: str, message: str = '',
+                                                    options: List[str] = []) -> GitCmd:
         commit_message: str = """merge : {branch_name!s}
         {message!s}""".format(branch_name=branch, message=message)
         return self.merge_from_branch_name(

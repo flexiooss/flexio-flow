@@ -93,8 +93,7 @@ class Finish:
         return self
 
     def __delete_hotfix(self) -> Finish:
-        self.__git.delete_branch(Branches.HOTFIX, True)
-        self.__git.delete_branch(Branches.HOTFIX, False)
+        self.__git.delete_branch(Branches.HOTFIX)
         return self
 
     def __finish_hotfix(self):

@@ -55,12 +55,10 @@ class TestGitFlowRelease(unittest.TestCase):
         TestGitFlowHelper.clean_workdir()
         TestGitFlowHelper.init_repo(INIT_VERSION)
 
-        self.git.delete_branch_from_name(
-            'release/' + INIT_VERSION,
-            True
-        ).delete_branch_from_name(
-            'release/' + INIT_VERSION + IssueGithub().with_number(ISSUE_NUMBER).get_ref(),
-            True
+        self.git.delete_remote_branch_from_name(
+            'release/' + INIT_VERSION
+        ).delete_remote_branch_from_name(
+            'release/' + INIT_VERSION + IssueGithub().with_number(ISSUE_NUMBER).get_ref()
         ).delete_tag(INIT_VERSION, remote=True)
 
         TestGitFlowHelper.clean_remote_repo(Version.from_str(INIT_VERSION))

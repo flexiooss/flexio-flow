@@ -40,7 +40,7 @@ class GitFlowCmd:
 
     def ensure_develop_branch(self) -> GitFlowCmd:
         Log.info('Ensure have Develop branch')
-        if not self.__git.local_branch_exists(Branches.DEVELOP.value):
+        if not self.__git.branch_exists(Branches.DEVELOP.value):
             self.__git.checkout(Branches.MASTER).create_branch_from(
                 Branches.DEVELOP.value,
                 Branches.MASTER
