@@ -23,7 +23,8 @@ class ReportFileReader:
                         raise ParseFailureException('failed parsing report line :' + line)
 
             report.closed
-        except FileNotFoundError:
+        except FileNotFoundError as error:
+            print(error)
             print('WARN :: no report file : ' + self.report_file_path)
             pass
 
