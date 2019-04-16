@@ -20,4 +20,4 @@ class PreCheck(Action):
             dev_dependencies: Dependencies = sc.release_precheck()
             if len(dev_dependencies):
                 raise HaveDevDependencyException(dev_dependencies)
-            # print(dev_dependencies.__dict__())
+            print(dev_dependencies.__dict__())
