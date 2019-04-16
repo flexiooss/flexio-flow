@@ -18,6 +18,6 @@ class PreCheck(Action):
             Log.info('Precheck for : ' + scheme.value)
             sc: Type[Scheme] = SchemeBuilder.create(scheme, self.state_handler)
             dev_dependencies: Dependencies = sc.release_precheck()
+            print(dev_dependencies.__dict__())
             if len(dev_dependencies):
                 raise HaveDevDependencyException(dev_dependencies)
-            print(dev_dependencies.__dict__())
