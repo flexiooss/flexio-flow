@@ -11,12 +11,12 @@ from FlexioFlow.StateHandler import StateHandler
 from Branches.Actions.Actions import Actions as BranchActions
 from Branches.Actions.Action import Action
 from Branches.Branches import Branches
-from Branches.Actions.ActionFactory import ActionFactory
+from Branches.Actions.ActionBuilder import ActionBuilder
 from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
-from VersionControl.VersionControlFactory import VersionControlFactory
+from VersionControl.VersionControlBuilder import VersionControlBuilder
 from pathlib import Path
 from FlexioFlow.Actions.Version import Version
 from Core.Actions.Actions import Actions as ActionsCore
@@ -72,7 +72,7 @@ class FlexioFlow:
     def __ensure_version_control(self):
         self.__ensure_state_handler()
         if self.__version_control is None:
-            self.__version_control: VersionControl = VersionControlFactory.build(
+            self.__version_control: VersionControl = VersionControlBuilder.build(
                 self.__version_controller,
                 self.__state_handler
             )
@@ -125,7 +125,9 @@ class FlexioFlow:
         self.__ensure_version_control()
         self.__ensure_config_handler()
 
-        ActionFactory.build(
+        self.__ensure_precheck()
+
+        ActionBuilder.build(
             action=self.__branch_action,
             version_control=self.__version_control,
             branch=self.__branch,
@@ -134,14 +136,29 @@ class FlexioFlow:
             config_handler=self.__config_handler
         ).process()
 
+    def __ensure_precheck(self):
+        if self.__branch_action == BranchActions.FINISH and self.__branch == Branches.RELEASE:
+            ActionBuilder.build(
+                action=BranchActions.PRECHECK,
+                version_control=self.__version_control,
+                branch=self.__branch,
+                state_handler=self.__state_handler,
+                options=self.__options,
+                config_handler=self.__config_handler
+            ).process()
+
     def process(self):
         if self.subject is Subject.CORE:
             self.__process_subject_core()
+
         elif self.subject is Subject.VERSION:
             self.__process_subject_version()
+
         elif self.subject is Subject.ISSUE:
             self.__process_subject_issue()
+
         elif self.subject is Subject.BRANCH:
             self.__process_branch_action()
+
         else:
             raise NotImplementedError()

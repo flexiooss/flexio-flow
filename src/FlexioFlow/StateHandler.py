@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from typing import Optional
+
 import yaml
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
@@ -69,6 +72,14 @@ class StateHandler:
         self.__state.version = self.__state.version.reset_patch()
         return self.__state.version
 
+    def reset_minor(self) -> Version:
+        self.__state.version = self.__state.version.reset_minor()
+        return self.__state.version
+
+    def reset_major(self) -> Version:
+        self.__state.version = self.__state.version.reset_major()
+        return self.__state.version
+
     def is_dev(self) -> bool:
         return self.__state.level is Level.DEV
 
@@ -94,5 +105,8 @@ class StateHandler:
         self.__state = self.__state.set_stable()
         return self
 
-    def first_scheme(self) -> Schemes:
-        return self.state.schemes[0]
+    def first_scheme(self) -> Optional[Schemes]:
+        if len(self.state.schemes) > 0:
+            return self.state.schemes[0]
+        else:
+            return None

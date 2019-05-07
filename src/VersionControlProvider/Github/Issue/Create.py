@@ -8,6 +8,7 @@ from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
+from sty import fg, bg
 
 
 class Create:
@@ -17,7 +18,10 @@ class Create:
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
 
     def __would_attach_issue(self) -> bool:
-        issue: str = input('Have already an issue y/(n) : ')
+        issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
+            green=fg.green,
+            reset_fg=fg.rs,
+        ))
         issue = issue if issue else 'n'
         return issue == 'y'
 
@@ -27,27 +31,32 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """###############################################
-################# Flexio FLow #################
-###############################################
-""")
+            """{fg_gray}###############################################
+################# {yellow}Flexio FLow{fg_gray} #################
+###############################################{reset}
+""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __start_message_issue(self) -> Create:
         print(
-            """###############################################
-#############    Create Issue     #############
-""")
+            """{fg_gray}###############################################
+##########     {yellow}Create Github Issue{fg_gray}     ##########{reset}
+""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
         return self
 
     def __sanitize_list_input(self, v: List[str]) -> List[str]:
         return list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), v)))
 
     def __input_assignees(self, issue: IssueGithub) -> Create:
-        message: str = '[separator `;`] Assignees'
-        message += ' (' + self.__config_handler.config.github.user + ') :' if len(
-            self.__config_handler.config.github.user) else ''
-        message += ' < pseudo | `-l` to list users > : '
+        message: str = """ Assignees {default}
+{bg_help}separator `;`{reset_bg}
+{bg_help}`-l` to list users{reset_bg}
+""".format(
+            default=fg.green + self.__config_handler.config.github.user + fg.rs + ' :' if len(
+                self.__config_handler.config.github.user) else '',
+            reset_bg=bg.rs,
+            bg_help=bg.li_black
+        )
 
         assignees: str = input(message)
         assignees = assignees if assignees else self.__config_handler.config.github.user
@@ -62,12 +71,15 @@ class Create:
                         login=l.get('login')
                     ))
             if len(members):
-                message: str = """{0!s} 
+                message: str = """{fg_cyan}{members!s} {reset_fg}
 
 Choose pseudo :
-""".format(' | '.join(members))
+""".format(fg_cyan=fg.cyan,
+           members=' | '.join(members),
+           reset_fg=fg.rs
+           )
             else:
-                message: str = 'No member, type `abort`'
+                message: str = fg.red + 'No member, type `abort`' + fg.rs
             assignees: str = input(message)
 
         assignees: List[str] = assignees.split(';')
@@ -82,7 +94,7 @@ Choose pseudo :
         title: str = ''
 
         while not len(title) > 0:
-            title = input('[required] Title : ')
+            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
             milestone.title = title
 
         description: str = input('Description : ')
@@ -93,24 +105,34 @@ Choose pseudo :
 
     def __resume_milestone(self, milestone: Dict[str, str]) -> Create:
         print(
-            """###############################################
-################ Milestone created ################
-###############################################
+            """{fg_gray}###############################################
+################ {green}Milestone created{fg_gray} ################
+###############################################{green}
 title : {title!s}
 number : {number!s}
 url : {url!s}
-###############################################
+{fg_gray}###############################################{reset}
 """.format(
+                green=fg.green,
                 title=milestone.get('title'),
                 number=milestone.get('number'),
-                url=milestone.get('html_url')
+                url=milestone.get('html_url'),
+                reset=fg.rs,
+                fg_gray=fg(240)
             )
         )
         return self
 
     def __input_milestone(self, issue: IssueGithub) -> Create:
+
         milestone: str = input(
-            'Milestone number < number | `-l` to list the existing | `-c` to create milestone > ')
+            """Milestone number : 
+{bg_help}`-l` to list the existing 
+`-c` to create milestone{reset_bg}""".format(
+                reset_bg=bg.rs,
+                bg_help=bg.li_black
+            ))
+
         if milestone == '-c':
             r1: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []
@@ -124,12 +146,16 @@ url : {url!s}
                     ))
 
             if len(milestones_repo):
-                message: str = """{0!s}
+                message: str = """{fg_cyan}{milestones!s}{fg_reset}
 
 Choose number : 
-""".format(' | '.join(milestones_repo))
+""".format(
+                    fg_cyan=fg.cyan,
+                    milestones=' | '.join(milestones_repo),
+                    fg_reset=fg.rs
+                )
             else:
-                message: str = 'No milestone, type `-c` to create milestone or `-a` for abort'
+                message: str = fg.red + 'No milestone, type `-c` to create milestone or `-a` for abort' + fg.rs
 
             milestone: str = input(message)
 
@@ -148,7 +174,7 @@ Choose number :
         return self
 
     def __input_labels(self, issue: IssueGithub) -> Create:
-        message: str = '[separator `;`] Labels : '
+        message: str = 'Labels '
         r: Response = self.__github.get_labels()
 
         labels_repo: List[str] = []
@@ -159,10 +185,18 @@ Choose number :
                 labels_repo.append(l.get('name'))
 
         if len(labels_repo):
-            message += """{0!s}
+            message += """
+{fg_cyan}{labels!s}{fg_reset}
 
 Choose label : 
-""".format(' | '.join(labels_repo))
+{bg_help}separator `;` {reset_bg}
+""".format(
+                fg_cyan=fg.cyan,
+                labels=' | '.join(labels_repo),
+                fg_reset=fg.rs,
+                reset_bg=bg.rs,
+                bg_help=bg.li_black
+            )
 
         labels: str = input(message)
         labels_lst: List[str] = labels.split(';')
@@ -177,44 +211,76 @@ Choose label :
         title: str = ''
 
         while not len(title) > 0:
-            title = input('[required] Title : ')
+            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
         issue.title = title
 
         body: str = input('Description : ')
         if body:
             issue.body = body
 
-        self.__input_assignees(issue).__input_milestone(issue).__input_labels(issue)
+        self.__input_assignees(issue).__input_labels(issue)
 
         return issue
 
     def __post_issue(self, issue: IssueGithub) -> Response:
         return self.__github.create_issue(issue)
 
-    def __resume_issue(self, issue: Dict[str, str]) -> Create:
+    def __read_issue(self, issue: IssueGithub) -> Response:
+        return self.__github.read_issue(issue)
+
+    def __resume_issue(self, issue: IssueGithub) -> Create:
         print(
-            """###############################################
-################ Issue created ################
-###############################################
+            """{fg_gray}###############################################
+################ {green}    Issue     {fg_gray}################
+###############################################{green}
 title : {title!s}
 number : {number!s}
-url : {url!s}
-###############################################
+url : {url!s}{fg_gray}
+###############################################{reset}
 """.format(
-                title=issue.get('title'),
-                number=issue.get('number'),
-                url=issue.get('html_url')
+                green=fg.green,
+                title=issue.title,
+                number=issue.number,
+                url=issue.url,
+                reset=fg.rs,
+                fg_gray=fg(240)
             )
         )
+
+        return self
+    def __resume_issue_created(self, issue: IssueGithub) -> Create:
+        print(
+            """{fg_gray}###############################################
+################ {green}Issue created {fg_gray}################
+###############################################{green}
+title : {title!s}
+number : {number!s}
+url : {url!s}{fg_gray}
+###############################################{reset}
+""".format(
+                green=fg.green,
+                title=issue.title,
+                number=issue.number,
+                url=issue.url,
+                reset=fg.rs,
+                fg_gray=fg(240)
+            )
+        )
+
         return self
 
     def process(self) -> Issue:
         self.__start_message()
-        issue_number: int
-        issue_url: str
         if self.__would_attach_issue():
             issue_number = self.__number_issue()
-            issue: IssueGithub = IssueGithub()
+            issue: IssueGithub = IssueGithub().with_number(issue_number)
+            try:
+                r: Response = self.__read_issue(issue)
+                issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
+                self.__resume_issue(issue_created)
+            except FileNotFoundError:
+                print(fg.red + 'Issue not found : retry' + fg.rs)
+                return self.process()
 
         else:
             self.__start_message_issue()
@@ -224,11 +290,10 @@ url : {url!s}
             r: Response = self.__post_issue(issue)
 
             if r.status_code is 201:
-                issue_created: Dict[str, str] = r.json()
-                issue_number = issue_created.get('number')
-                issue_url = issue_created.get('url')
-                self.__resume_issue(issue_created)
+                issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
+
+                self.__resume_issue_created(issue_created)
             else:
                 raise GithubRequestApiError(r)
 
-        return issue.with_number(issue_number).with_url(issue_url)
+        return issue_created

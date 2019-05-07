@@ -4,6 +4,7 @@ from typing import Type, Optional
 
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
@@ -14,11 +15,13 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]],keep_branch:bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
+        self.__keep_branch: bool = keep_branch
+
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -90,14 +93,17 @@ class Finish:
         return self
 
     def __delete_hotfix(self) -> Finish:
-        self.__git.delete_branch(Branches.HOTFIX, True)
-        self.__git.delete_branch(Branches.HOTFIX, False)
+        self.__git.delete_branch(Branches.HOTFIX)
         return self
 
     def __finish_hotfix(self):
         if not self.__gitflow.has_hotfix(False):
-            raise BranchNotExist(Branches.HOTFIX)
-        self.__merge_master().__merge_develop().__delete_hotfix()
+            raise BranchNotExist(Branches.HOTFIX.value)
+        self.__merge_master().__merge_develop()
+        if not self.__keep_branch:
+            self.__delete_hotfix()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         self.__pull_develop().__pull_master().__finish_hotfix()

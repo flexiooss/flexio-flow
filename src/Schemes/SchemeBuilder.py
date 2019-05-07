@@ -5,7 +5,7 @@ from Schemes.Package.PackageScheme import PackageScheme
 from FlexioFlow.StateHandler import StateHandler
 
 
-class SchemeFactory:
+class SchemeBuilder:
     @staticmethod
     def create(scheme: Schemes, state_handler: StateHandler) -> Scheme:
         if scheme is Schemes.PACKAGE:

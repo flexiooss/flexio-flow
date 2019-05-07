@@ -1,5 +1,5 @@
 from FlexioFlow.StateHandler import StateHandler
-from Schemes.SchemeFactory import SchemeFactory
+from Schemes.SchemeBuilder import SchemeBuilder
 from Schemes.Schemes import Schemes
 
 
@@ -9,7 +9,7 @@ class UpdateSchemeVersion:
     def from_state_handler(state_handler: StateHandler) -> StateHandler:
         scheme: Schemes
         for scheme in state_handler.state.schemes:
-            SchemeFactory.create(scheme, state_handler).set_version()
+            SchemeBuilder.create(scheme, state_handler).set_version()
 
             print("""
 New version : {0!s}

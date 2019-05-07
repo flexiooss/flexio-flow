@@ -3,8 +3,8 @@ from __future__ import annotations
 from Schemes.Dependencies import Dependencies
 from Exceptions.ParseFailureException import ParseFailureException
 
-class ReportFileReader:
 
+class ReportFileReader:
     report_file_path: str
 
     def __init__(self, reportFile: str):
@@ -23,7 +23,8 @@ class ReportFileReader:
                         raise ParseFailureException('failed parsing report line :' + line)
 
             report.closed
-        except FileNotFoundError:
+        except FileNotFoundError as error:
+            print(error)
             print('WARN :: no report file : ' + self.report_file_path)
             pass
 

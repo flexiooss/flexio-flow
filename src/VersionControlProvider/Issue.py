@@ -23,6 +23,7 @@ class Issue(abc.ABC):
         self.body = None
         self.milestone = None
         self.state = None
+        self.url = None
         self.assignees = []
         self.labels = []
 

@@ -90,6 +90,18 @@ class TestGithub(unittest.TestCase):
         print(r.json())
         self.assertIs(r.status_code, 201)
 
+    def test_read_issue(self):
+        issue: IssueGithub = IssueGithub().with_number(5)
+
+        r: Response = self.github_repo.read_issue(issue)
+        print(r.status_code)
+        print(r.content)
+        print(r.json())
+        self.assertIs(r.status_code, 200)
+
+        issue_read: IssueGithub = IssueGithub.from_api_dict(r.json())
+        print(issue_read.__dict__())
+
     def test_create_issue_comment(self):
         issue: IssueGithub = IssueGithub()
         issue.title = 'issue test ' + str(int(time.time()))

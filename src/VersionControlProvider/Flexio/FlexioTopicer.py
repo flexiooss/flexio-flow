@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from VersionControlProvider.Flexio.Create import Create
+from VersionControlProvider.Flexio.Topic.Create import Create
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic

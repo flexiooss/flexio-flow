@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 from typing import List
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
+from Log.Log import Log
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControl.Git.GitConfig import GitConfig
 
@@ -23,7 +24,6 @@ class GitFlowCmd:
         return stdout.strip().decode('utf-8')
 
     def init_config(self) -> GitFlowCmd:
-        # self.__exec(["git", "flow", "init", "-f", "-d"])
         return self.ensure_head().ensure_master_branch().ensure_develop_branch()
 
     def ensure_head(self) -> GitFlowCmd:
@@ -33,18 +33,18 @@ class GitFlowCmd:
         return self
 
     def ensure_master_branch(self) -> GitFlowCmd:
-        print('Ensure have Master branch')
-        if not self.__git.branch_exists_from_name(Branches.MASTER.value, remote=False):
+        Log.info('Ensure have Master branch')
+        if not self.__git.local_branch_exists(Branches.MASTER.value):
             self.ensure_head()
         return self
 
     def ensure_develop_branch(self) -> GitFlowCmd:
-        print('Ensure have Develop branch')
-        if not self.__git.branch_exists_from_name(Branches.DEVELOP.value, remote=False):
+        Log.info('Ensure have Develop branch')
+        if not self.__git.branch_exists(Branches.DEVELOP.value):
             self.__git.checkout(Branches.MASTER).create_branch_from(
                 Branches.DEVELOP.value,
                 Branches.MASTER
-            ).try_to_set_upstream().try_to_push_force()
+            ).try_to_set_upstream().try_to_push()
         return self
 
     def has_hotfix(self, remote: bool) -> bool:

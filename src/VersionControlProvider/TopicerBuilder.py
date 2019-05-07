@@ -7,7 +7,7 @@ from VersionControlProvider.Topicer import Topicer
 from VersionControlProvider.Topicers import Topicers
 
 
-class TopicerFactory:
+class TopicerBuilder:
 
     @staticmethod
     def build(

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Type, Optional
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
@@ -12,12 +13,13 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
         self.__current_branch_name: str = self.__git.get_current_branch_name()
+        self.__keep_branch: bool = keep_branch
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -64,9 +66,13 @@ class Finish:
 
     def __finish_feature(self):
         self.__git.checkout_file_with_branch_name(Branches.DEVELOP.value, self.__state_handler.file_path())
-        self.__merge_develop().__delete_feature()
+        self.__merge_develop()
+        if not self.__keep_branch:
+            self.__delete_feature()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         if not self.__gitflow.is_feature():
-            raise BranchNotExist(Branches.FEATURE)
+            raise BranchNotExist(Branches.FEATURE.value)
         self.__pull_develop().__pull_master().__finish_feature()

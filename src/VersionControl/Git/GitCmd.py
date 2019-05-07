@@ -3,8 +3,11 @@ import re
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Optional, Pattern, Match
+
+from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
+from Log.Log import Log
 from VersionControl.Git.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
 
@@ -15,12 +18,14 @@ class GitCmd:
     def __init__(self, state_handler: StateHandler):
         self.__state_handler = state_handler
 
-    def __exec(self, args: List[str]):
-        Popen(args, cwd=self.__state_handler.dir_path.as_posix()).communicate()
+    def __exec(self, args: List[str]) -> Popen:
+        child: Popen = Popen(args, cwd=self.__state_handler.dir_path.as_posix())
+        child.communicate()
+        return child
 
     def __exec_for_stdout(self, args: List[str]) -> str:
         stdout, stderr = Popen(args, stdout=PIPE, cwd=self.__state_handler.dir_path.as_posix()).communicate()
-        return stdout.strip().decode('utf-8')
+        return self.__decode_stdout(stdout)
 
     def __decode_stdout(self, stdout) -> str:
         return stdout.strip().decode('utf-8')
@@ -29,19 +34,30 @@ class GitCmd:
         self.__exec(['git', 'add', '.'])
         return self
 
-    def branch_exists(self, branch: Branches, remote: bool) -> bool:
-        branch_name: str = self.get_branch_name_from_git(branch)
-        return self.branch_exists_from_name(branch_name, remote)
+    def branch_exists_from_branches(self, branch: Branches) -> bool:
+        return self.local_branch_exists_from_branches(branch) or self.remote_branch_exists_from_branches(branch)
 
-    def branch_exists_from_name(self, branch: str, remote: bool) -> bool:
-        if remote:
+    def local_branch_exists_from_branches(self, branch: Branches) -> bool:
+        branch_name: str = self.get_branch_name_from_git(branch)
+        return self.local_branch_exists(branch_name)
+
+    def remote_branch_exists_from_branches(self, branch: Branches) -> bool:
+        branch_name: str = self.get_branch_name_from_git(branch)
+        return self.remote_branch_exists(branch_name)
+
+    def branch_exists(self, branch: str) -> bool:
+        return self.local_branch_exists(branch) or self.remote_branch_exists(branch)
+
+    def local_branch_exists(self, branch: str) -> bool:
+        resp: str = self.__get_branch_name_from_git_list(branch)
+        return len(resp) > 0
+
+    def remote_branch_exists(self, branch: str) -> bool:
+        if self.has_remote():
             resp: str = self.__exec_for_stdout(
                 ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
             return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
-        else:
-            resp: str = self.__get_branch_name_from_git_list(branch)
-            print(resp)
-            return len(resp) > 0
+        return False
 
     def can_commit(self) -> bool:
         stdout: str = self.__exec_for_stdout(['git', 'status', '-s'])
@@ -56,18 +72,15 @@ class GitCmd:
         return self
 
     def checkout_with_branch_name(self, branch: str, options: List[str] = []) -> GitCmd:
-        print('branch')
-        print(branch)
         self.__exec(['git', 'checkout', branch, *options])
         return self
 
-    def reload_state(self)-> GitCmd:
+    def reload_state(self) -> GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
-            print(e)
+            Log.error(str(e))
         return self
-
 
     def checkout_file_with_branch_name(self, branch: str, file: Path) -> GitCmd:
         if not file.is_file():
@@ -82,7 +95,7 @@ class GitCmd:
         try:
             self.__state_handler.load_file_config()
         except FileNotFoundError as e:
-            print(e)
+            Log.error(str(e))
         return self
 
     def commit(self, msg: str, options: List[str] = []) -> GitCmd:
@@ -93,6 +106,10 @@ class GitCmd:
         self.__exec(['git', 'clone', url, '.'])
         return self
 
+    def undo_last_commit(self) -> GitCmd:
+        self.__exec(['git', 'reset', '--hard', 'HEAD~1'])
+        return self
+
     def delete_tag(self, tag: str, remote: bool) -> GitCmd:
         if remote:
             self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', tag])
@@ -100,15 +117,24 @@ class GitCmd:
             self.__exec(['git', 'tag', '-d', tag])
         return self
 
-    def delete_branch(self, branch: Branches, remote: bool) -> GitCmd:
+    def delete_branch(self, branch: Branches) -> GitCmd:
         branch_name: str = self.__get_branch_name_from_git_list(branch.value)
-        return self.delete_branch_from_name(branch_name, remote)
+        self.delete_remote_branch_from_name(branch_name)
+        return self.delete_local_branch_from_name(branch_name)
 
-    def delete_branch_from_name(self, branch: str, remote: bool) -> GitCmd:
-        if remote:
-            self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
-        else:
-            self.__exec(['git', 'branch', '-d', branch])
+    def delete_local_branch_from_name(self, branch: str) -> GitCmd:
+        self.__exec(['git', 'branch', '-D', branch])
+        return self
+
+    def delete_remote_branch_from_name(self, branch: str) -> GitCmd:
+        self.__exec(['git', 'push', GitConfig.REMOTE.value, '--delete', branch])
+        return self
+
+    def try_delete_remote_branch_from_name(self, branch: str) -> GitCmd:
+        Log.info('Try to delete remote branch : ' + branch)
+
+        if self.has_remote():
+            return self.delete_remote_branch_from_name(branch)
         return self
 
     def get_branch_name_from_git(self, branch: Branches) -> str:
@@ -143,6 +169,17 @@ class GitCmd:
     def get_conflict(self) -> str:
         return self.__exec_for_stdout(['git', 'ls-files', '-u'])
 
+    def get_branches(self) -> List[str]:
+        return self.get_local_branches() + self.get_remote_branches()
+
+    def get_local_branches(self) -> List[str]:
+        return self.__exec_for_stdout(['git', 'for-each-ref', '--sort', 'refname', '--format="%(refname:short)"',
+                                       self.local_branch_name()]).splitlines()
+
+    def get_remote_branches(self) -> List[str]:
+        return self.__exec_for_stdout(['git', 'for-each-ref', '--sort', 'refname', '--format="%(refname:short)"',
+                                       self.remote_branch_name()]).splitlines()
+
     def get_repo(self) -> Repo:
         url: str = self.__exec_for_stdout(['git', 'config', '--local', '--get', 'remote.origin.url'])
         regexp: Pattern[str] = re.compile(
@@ -155,7 +192,8 @@ class GitCmd:
         return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
 
     def get_current_branch_name(self) -> str:
-        # git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g'
+        if not self.has_head():
+            raise BranchNotExist('no HEAD for this branch')
         return self.__exec_for_stdout(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
 
     def has_conflict(self) -> bool:
@@ -164,30 +202,122 @@ class GitCmd:
     def has_head(self) -> bool:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
 
+    def is_branch_ahead(self, branch: str, compare_to: str) -> bool:
+        return int(self.__exec_for_stdout(['git', 'rev-list', compare_to + '..' + branch, '--count'])) > 0
+
+    def list_commit_diff(self, branch: str, compare_to: str) -> str:
+        print(branch + ' <-> ' + compare_to)
+
+        return self.__exec_for_stdout(['git', 'rev-list', '--left-right', compare_to + '...' + branch, '--'])
+
+    def is_local_remote_equal(self, branch: str) -> bool:
+        if not self.branch_exists(branch):
+            raise BranchNotExist(branch)
+
+        local_branch: str = self.local_branch_name(branch)
+        remote_branch: str = self.remote_branch_name(branch)
+        compare_refs: int = self.compare_refs(local_branch, remote_branch)
+
+        if compare_refs > 0:
+            print("Branches '{local_branch!s}' and '{remote_branch!s}' have diverged.".format(local_branch=local_branch,
+                                                                                              remote_branch=remote_branch))
+            if compare_refs == 1:
+                print("And branch '{local_branch!s}' may be fast-forwarded.".format(local_branch=local_branch))
+            elif compare_refs == 2:
+                print("And local branch '{local_branch!s}' is ahead of '{remote_branch!s}'.".format(
+                    local_branch=local_branch,
+                    remote_branch=remote_branch
+                ))
+            else:
+                Log.warning("Branches need merging first.")
+            return False
+        return True
+
+    def is_clean_working_tree(self) -> bool:
+        if len(self.__exec_for_stdout(['git', 'rev-parse', '--verify', 'HEAD'])) == 0:
+            return False
+        self.__exec(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
+
+        if len(self.__exec_for_stdout(['git', 'diff-files', '--ignore-submodules'])) > 0:
+            Log.error("Working tree contains unstaged changes. Aborting.")
+            return False
+
+        if len(self.__exec_for_stdout(
+                ['git', 'diff-index', '--cached', '--ignore-submodules', 'HEAD'])) > 0:
+            Log.error("Index contains uncommited changes. Aborting.")
+            return False
+
+        return True
+
+    def compare_refs(self, branch1: str, branch2: str) -> int:
+
+        commit1: str = self.__exec_for_stdout(['git', 'rev-parse', branch1 + '^{}'])
+        commit2: str = self.__exec_for_stdout(['git', 'rev-parse', branch2 + '^{}'])
+
+        if not commit1 == commit2:
+            child: Popen = Popen(
+                ['git', 'merge-base', '"{c!s}"'.format(c=commit1), '"{c!s}"'.format(c=commit2)],
+                stdout=PIPE,
+                cwd=self.__state_handler.dir_path.as_posix()
+            )
+
+            stdout, stderr = child.communicate()
+            base: str = self.__decode_stdout(stdout)
+
+            if not child.returncode == 0:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('No common ancestors')
+                Log.info('Branches need merging first')
+                return 4
+            if commit1 == base:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('And branch ' + branch1 + ' may be fast-forwarded')
+                return 1
+            elif commit2 == base:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('And branch ' + branch1 + ' is ahead from ' + branch2)
+                return 2
+            else:
+                Log.info('Branches ' + branch1 + ' and ' + branch2 + ' have diverged')
+                Log.info('Branches need merging first')
+                return 3
+        else:
+            return 0
+
     def init_head(self) -> GitCmd:
         self.__exec(['git', 'symbolic-ref', 'HEAD', '"refs/heads/' + Branches.MASTER.value + '"'])
+        Log.info('init HEAD : ' + '"refs/heads/' + Branches.MASTER.value + '"')
         return self
 
     def has_remote(self) -> bool:
-        try:
-            repo: Repo = self.get_repo()
-            return True
-        except ValueError:
-            return False
+        resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
+        return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
 
     def merge(self, branch: Branches, options: List[str] = []) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
-        self.__exec(['git', 'merge', target_branch_name, *options])
+        return self.merge_from_branch_name(target_branch_name, options)
+
+    def merge_from_branch_name(self, branch: str, options: List[str] = []) -> GitCmd:
+        self.__exec(['git', 'merge', branch, *options])
         self.__state_handler.load_file_config()
         return self
 
     def merge_with_version_message(self, branch: Branches, message: str = '', options: List[str] = []) -> GitCmd:
         commit_message: str = """merge : {branch_name!s}
-{message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
+        {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
+            branch,
+            options=['--commit', '-m', commit_message, *options]
+        )
+
+    def merge_with_version_message_from_branch_name(self, branch: str, message: str = '',
+                                                    options: List[str] = []) -> GitCmd:
+        commit_message: str = """merge : {branch_name!s}
+        {message!s}""".format(branch_name=branch, message=message)
+        return self.merge_from_branch_name(
             branch,
             options=['--commit', '-m', commit_message, *options]
         )
@@ -212,67 +342,76 @@ class GitCmd:
         return self
 
     def push_force(self) -> GitCmd:
-        self.__exec(['git', 'push', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
+        self.__exec(['git', 'push', '-u', '--force', GitConfig.REMOTE.value, self.get_current_branch_name()])
         return self
 
-    def tag_exists(self, tag: str, remote: bool) -> bool:
-        if remote:
-            resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
-            return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
-        else:
-            p1 = Popen(
-                ['git', 'tag', '-l'],
-                stdout=PIPE,
-                cwd=self.__state_handler.dir_path.as_posix()
-            )
+    def tag_exists(self, tag: str) -> bool:
+        if self.has_remote():
+            return self.local_tag_exists(tag) and self.remote_tag_exists(tag)
 
-            p2 = Popen(
-                ['grep', '-E', tag],
-                stdin=p1.stdout,
-                stdout=PIPE,
-                cwd=self.__state_handler.dir_path.as_posix())
-            p1.stdout.close()
-            result = p2.communicate()[0]
-            p1.wait()
+        return self.local_tag_exists(tag)
 
-            resp = self.__decode_stdout(result)
+    def remote_tag_exists(self, tag: str) -> bool:
+        resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
+        return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
 
-            return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
+    def local_tag_exists(self, tag: str) -> bool:
+        p1 = Popen(
+            ['git', 'tag', '-l'],
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix()
+        )
+
+        p2 = Popen(
+            ['grep', '-E', tag],
+            stdin=p1.stdout,
+            stdout=PIPE,
+            cwd=self.__state_handler.dir_path.as_posix())
+        p1.stdout.close()
+        result = p2.communicate()[0]
+        p1.wait()
+
+        resp = self.__decode_stdout(result)
+
+        return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
+        Log.info('Reset to tag ' + tag)
         return self
 
     def set_upstream(self) -> GitCmd:
         self.__exec(["git", "push", "--set-upstream", GitConfig.REMOTE.value, self.get_current_branch_name()])
+        Log.info('Set upstream for ' + self.get_current_branch_name())
         return self
 
     def try_to_pull(self) -> GitCmd:
-        print('Try to pull')
+        Log.info('Try to pull from remote')
         if self.has_remote():
             return self.pull()
         return self
 
     def try_to_push(self) -> GitCmd:
-        print('Try to push')
+        Log.info('Try to push to remote')
         if self.has_remote():
             return self.push()
         return self
 
     def try_to_push_force(self) -> GitCmd:
-        print('Try to push')
+        Log.info('Try to push forced to remote')
         if self.has_remote():
             return self.push_force()
         return self
 
     def try_to_push_tag(self, tag: str) -> GitCmd:
-        print('Try to push tag')
+        Log.info('Try to push tag to remote : ' + tag)
+
         if self.has_remote():
             return self.push_tag(tag)
         return self
 
     def try_to_set_upstream(self) -> GitCmd:
-        print('Try to set upstream')
+        Log.info('Try to set upstream')
         if self.has_remote():
             return self.set_upstream()
         return self
@@ -281,3 +420,17 @@ class GitCmd:
         msg = msg if msg else tag
         self.__exec(["git", "tag", "-a", tag, "-m", "'" + msg + "'"])
         return self
+
+    def local_branch_name(self, branch: Optional[str] = None) -> str:
+        base: str = 'refs/heads'
+        if branch is not None:
+            return base + '/{branch!s}'.format(branch=branch)
+        else:
+            return base
+
+    def remote_branch_name(self, branch: Optional[str] = None) -> str:
+        base: str = 'refs/remotes'
+        if branch is not None:
+            return base + '/{branch!s}'.format(branch=branch)
+        else:
+            return base

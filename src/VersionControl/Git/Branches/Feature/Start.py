@@ -4,6 +4,7 @@ from typing import Type, Optional
 from slugify import slugify
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
+from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Branches.BranchHandler import BranchHandler
 from Branches.Branches import Branches
@@ -41,8 +42,7 @@ class Start:
             name=self.__name
         )
 
-        if self.__git.branch_exists_from_name(branch_name, True) or self.__git.branch_exists_from_name(branch_name,
-                                                                                                       False):
+        if self.__git.branch_exists(branch_name):
             raise BranchAlreadyExist(Branches.FEATURE, branch_name)
 
         self.__git.create_branch_from(branch_name, Branches.DEVELOP)
@@ -55,4 +55,6 @@ class Start:
         ).try_to_set_upstream()
 
     def process(self):
+        if not self.__git.is_clean_working_tree():
+            raise NotCleanWorkingTree()
         self.__init_gitflow().__pull_develop().__pull_master().__start_feature()

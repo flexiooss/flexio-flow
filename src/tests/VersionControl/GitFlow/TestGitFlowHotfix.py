@@ -100,13 +100,13 @@ class TestGitFlowHotfix(unittest.TestCase):
         self.github = TestGitFlowHelper.setup_github_repo(self.config_handler)
 
     def test_should_start_hotfix(self):
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), False)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=False), False)
+        self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev'), False)
+        self.assertIs(self.git.local_branch_exists('hotfix/0.0.1-dev'), False)
 
         self.__hotfix_start()
 
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=False), True)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), True)
+        self.assertIs(self.git.local_branch_exists('hotfix/0.0.1-dev'), True)
+        self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev'), True)
 
         state_master: State = self.__get_master_state()
         self.assertEqual(
@@ -143,15 +143,15 @@ class TestGitFlowHotfix(unittest.TestCase):
     def test_should_start_hotfix_with_issue(self):
         issue_created: IssueGithub = IssueGithub().with_number(ISSUE_NUMBER)
 
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True),
+        self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev' + issue_created.get_ref()),
                       False)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=False),
+        self.assertIs(self.git.local_branch_exists('hotfix/0.0.1-dev' + issue_created.get_ref()),
                       False)
 
         self.__hotfix_start(issue_created)
 
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True), True)
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=False),
+        self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev' + issue_created.get_ref()), True)
+        self.assertIs(self.git.local_branch_exists('hotfix/0.0.1-dev' + issue_created.get_ref()),
                       True)
 
         state_master: State = self.__get_master_state()
@@ -202,10 +202,10 @@ class TestGitFlowHotfix(unittest.TestCase):
             Level.STABLE,
             state_master.level
         )
-        self.assertIs(self.git.branch_exists_from_name('hotfix/0.0.1-dev', remote=True), False)
+        self.assertIs(self.git.remote_branch_exists('hotfix/0.0.1-dev'), False)
 
-        self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
-        self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
+        self.assertIs(self.git.tag_exists('0.0.1'), True, 'Tag should be 0.0.1')
+
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
@@ -236,12 +236,11 @@ class TestGitFlowHotfix(unittest.TestCase):
             state_master.level
         )
         self.assertIs(
-            self.git.branch_exists_from_name('hotfix/0.0.1-dev' + issue_created.get_ref(), remote=True),
+            self.git.remote_branch_exists('hotfix/0.0.1-dev' + issue_created.get_ref()),
             False
         )
 
-        self.assertIs(self.git.tag_exists('0.0.1', remote=False), True, 'Tag local should be 0.0.1')
-        self.assertIs(self.git.tag_exists('0.0.1', remote=True), True, 'Tag remote should be 0.0.1')
+        self.assertIs(self.git.tag_exists('0.0.1'), True, 'Tag should be 0.0.1')
 
         state_dev: State = self.__get_dev_state()
         self.assertEqual(
