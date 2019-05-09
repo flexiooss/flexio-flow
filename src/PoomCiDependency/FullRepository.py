@@ -31,12 +31,3 @@ class FullRepository:
     def append_produce(self, produce: Module) -> FullRepository:
         self.produces.append(produce)
         return self
-
-    # def __dict__(self):
-    #     return {
-    #         'id': self.id,
-    #         'name': self.name,
-    #         'checkout_spec': self.checkout_spec,
-    #         'dependencies': self.dependencies.__dict__,
-    #         'produces': self.produces.__dict__
-    #     }
