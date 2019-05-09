@@ -17,15 +17,26 @@ class FullRepository:
         self.id = id
         self.name = name
         self.checkout_spec = checkout_spec
+        self.dependencies = []
+        self.produces = []
 
     @staticmethod
     def from_repository(repository: Repository) -> FullRepository:
         return FullRepository(repository.id, repository.name, repository.checkout_spec)
 
-    def append_dependency(self, dependency:Module)->FullRepository:
+    def append_dependency(self, dependency: Module) -> FullRepository:
         self.dependencies.append(dependency)
         return self
 
     def append_produce(self, produce: Module) -> FullRepository:
         self.produces.append(produce)
         return self
+
+    # def __dict__(self):
+    #     return {
+    #         'id': self.id,
+    #         'name': self.name,
+    #         'checkout_spec': self.checkout_spec,
+    #         'dependencies': self.dependencies.__dict__,
+    #         'produces': self.produces.__dict__
+    #     }

@@ -5,3 +5,9 @@ class Module:
     def __init__(self, spec: str, version: str):
         self.spec = spec
         self.version = version
+
+    # def __dict__(self):
+    #     return {
+    #         'spec': self.spec,
+    #         'version': self.version
+    #     }

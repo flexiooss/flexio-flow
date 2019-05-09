@@ -8,6 +8,7 @@ class Subject(Enum):
     ISSUE: str = 'issue'
     SCHEME: str = 'scheme'
     VERSION: str = 'version'
+    POOM_CI: str = 'poom-ci'
 
     @classmethod
     def has_value(cls, value) -> bool:

@@ -70,6 +70,16 @@ flexio-flow
               version
                                 -S, --scheme          maven|package|composer|docker
 
+   --------  <poom ci>
+
+              poom-ci
+                        full-repository-json
+
+                                              -S, --scheme                maven|package|composer|docker
+                                              --repository-id             [required]
+                                              --repository-name           [required]
+                                              --repository-checkout-spec  [required]
+
 
 
 #############

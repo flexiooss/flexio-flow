@@ -13,6 +13,7 @@ from Branches.Actions.Action import Action
 from Branches.Branches import Branches
 from Branches.Actions.ActionBuilder import ActionBuilder
 from FlexioFlow.Subject import Subject
+from PoomCiDependency.PoomCiDependency import PoomCiDependency
 from Schemes.Schemes import Schemes
 from VersionControl.VersionController import VersionController
 from VersionControl.VersionControl import VersionControl
@@ -20,6 +21,7 @@ from VersionControl.VersionControlBuilder import VersionControlBuilder
 from pathlib import Path
 from FlexioFlow.Actions.Version import Version
 from Core.Actions.Actions import Actions as ActionsCore
+from PoomCiDependency.Actions.Actions import Actions as PoomCiActions
 
 
 class FlexioFlow:
@@ -27,6 +29,7 @@ class FlexioFlow:
     __branch_action: Optional[BranchActions] = None
     __config_handler: ConfigHandler
     __core_action: Optional[ActionsCore] = None
+    __poom_ci_actions: Optional[PoomCiActions] = None
     __dir_path: Path
     __issue_action: Optional[IssueActions] = None
     __options: Dict[str, Union[str, Schemes, bool]]
@@ -42,6 +45,7 @@ class FlexioFlow:
                         branch_action: Optional[BranchActions],
                         core_action: Optional[ActionsCore],
                         issue_action: Optional[IssueActions],
+                        poom_ci_actions: Optional[PoomCiActions],
                         branch: Optional[Branches],
                         options: Dict[str, Union[str, Schemes, bool]],
                         dir_path: Path,
@@ -53,6 +57,7 @@ class FlexioFlow:
         self.__branch_action: Optional[BranchActions] = branch_action
         self.__issue_action: Optional[IssueActions] = issue_action
         self.__core_action: Optional[ActionsCore] = core_action
+        self.__poom_ci_actions: Optional[PoomCiActions] = poom_ci_actions
         self.__branch: Optional[Branches] = branch
         self.__options: Dict[str, Union[str, Schemes, bool]] = options
 
@@ -136,6 +141,18 @@ class FlexioFlow:
             config_handler=self.__config_handler
         ).process()
 
+    def __process_poom_ci(self):
+        if self.__poom_ci_actions is None:
+            raise ValueError('should have Action')
+
+        self.__ensure_state_handler()
+
+        PoomCiDependency(
+            action=self.__poom_ci_actions,
+            state_handler=self.__state_handler,
+            options=self.__options
+        ).process()
+
     def __ensure_precheck(self):
         if self.__branch_action == BranchActions.FINISH and self.__branch == Branches.RELEASE:
             ActionBuilder.build(
@@ -159,6 +176,9 @@ class FlexioFlow:
 
         elif self.subject is Subject.BRANCH:
             self.__process_branch_action()
+
+        elif self.subject is Subject.POOM_CI:
+            self.__process_poom_ci()
 
         else:
             raise NotImplementedError()

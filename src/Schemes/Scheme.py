@@ -26,3 +26,11 @@ class Scheme(abc.ABC):
     @abc.abstractmethod
     def get_version(self) -> str:
         pass
+
+    @abc.abstractmethod
+    def get_poom_ci_dependencies(self) -> List[Module]:
+        pass
+
+    @abc.abstractmethod
+    def get_poom_ci_produces(self) -> List[Module]:
+        pass

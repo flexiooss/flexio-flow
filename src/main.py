@@ -11,7 +11,7 @@ from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.FlexioFlow import FlexioFlow
 from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
-from FlexioFlow.StateHandler import StateHandler
+from PoomCiDependency.Actions.Actions import Actions as PoomCiActions
 from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
 from Branches.Branches import Branches
@@ -24,11 +24,12 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
     try:
         opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMNK",
-                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major", 'no-cli', 'keep-branch'])
+                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
+                                        'no-cli', 'keep-branch', "repository-id=", "repository-name=",
+                                        "repository-checkout-spec="])
     except getopt.GetoptError:
         print('OUPS !!!')
-        print('flexio-flow -h')
-        print('May help you !!!!')
+        print('try flexio-flow -h')
         sys.exit(2)
 
     for opt, arg in opts:
@@ -60,16 +61,25 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
         if opt in ("-K", "--keep-branch"):
             options.update({'keep-branch': True})
 
+        if opt in ("--repository-id"):
+            options.update({'repository_id': arg})
+        if opt in ("--repository-name"):
+            options.update({'repository_name': arg})
+        if opt in ("--repository-checkout-spec"):
+            options.update({'repository_checkout_spec': arg})
+
     return args, options
 
 
 def extract_subject_action(argv: List[str]) -> Tuple[
-    Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore], Optional[IssueActions]]:
+    Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore], Optional[IssueActions], Optional[
+        PoomCiActions]]:
     branch: Optional[Branches] = None
     branch_action: Optional[Actions] = None
     subject: Optional[Subject] = None
     core_actions: Optional[ActionsCore] = None
     issue_action: Optional[IssueActions] = None
+    poom_ci_actions: Optional[PoomCiActions] = None
 
     arg: str
     for arg in argv:
@@ -78,20 +88,23 @@ def extract_subject_action(argv: List[str]) -> Tuple[
         if Actions.has_value(arg):
             branch_action = Actions[arg.upper()]
         if Branches.has_value(arg):
-            branch = Branches[arg.upper()]
+            branch = Branches[arg.upper().replace('-', '_')]
         if Subject.has_value(arg):
-            subject = Subject[arg.upper()]
+            subject = Subject[arg.upper().replace('-', '_')]
         if ActionsCore.has_value(arg):
-            core_actions = ActionsCore[arg.upper()]
+            core_actions = ActionsCore[arg.upper().replace('-', '_')]
         if IssueActions.has_value(arg):
-            issue_action = IssueActions[arg.upper()]
+            issue_action = IssueActions[arg.upper().replace('-', '_')]
+        if PoomCiActions.has_value(arg):
+            poom_ci_actions = PoomCiActions[arg.upper().replace('-', '_')]
 
-    return branch, branch_action, subject, core_actions, issue_action
+    return branch, branch_action, subject, core_actions, issue_action, poom_ci_actions
 
 
 def command_orders(argv: List[str]) -> Tuple[
     Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[
-        str, Union[str, Schemes, bool]], Path, Optional[IssueActions]]:
+        str, Union[str, Schemes, bool]], Path, Optional[IssueActions], Optional[
+        PoomCiActions]]:
     argv_no_options: List[str]
     options: Dict[str, Union[str, Schemes, bool]]
     argv_no_options, options = parse_options(argv)
@@ -100,11 +113,13 @@ def command_orders(argv: List[str]) -> Tuple[
     branch_action: Optional[Actions]
     subject: Optional[Subject]
     core_actions: Optional[ActionsCore]
+    poom_ci_actions: Optional[PoomCiActions]
 
-    branch, branch_action, subject, core_actions, issue_action = extract_subject_action(argv_no_options)
+    branch, branch_action, subject, core_actions, issue_action, poom_ci_actions = extract_subject_action(
+        argv_no_options)
     version_dir: Path = Path(str(options.get('version-dir'))) if options.get('version-dir') else Path.cwd()
 
-    return branch_action, branch, subject, core_actions, options, version_dir, issue_action
+    return branch_action, branch, subject, core_actions, options, version_dir, issue_action, poom_ci_actions
 
 
 def main(argv) -> None:
@@ -116,7 +131,8 @@ def main(argv) -> None:
     version_dir: Path
     issue_action: Optional[IssueActions]
 
-    branch_action, branch, subject, core_action, options, version_dir, issue_action = command_orders(argv)
+    branch_action, branch, subject, core_action, options, version_dir, issue_action, poom_ci_actions = command_orders(
+        argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
 
@@ -127,6 +143,7 @@ def main(argv) -> None:
         branch_action=branch_action,
         core_action=core_action,
         issue_action=issue_action,
+        poom_ci_actions=poom_ci_actions,
         branch=branch,
         options=options,
         dir_path=version_dir,

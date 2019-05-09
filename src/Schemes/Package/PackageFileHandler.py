@@ -9,6 +9,7 @@ class PackageFileHandler:
     FILE_NAME: str = 'package.json'
     VERSION_KEY: str = 'version'
     DEPENDENCIES_KEY: str = 'dependencies'
+    NAME: str = 'name'
 
     def __init__(self, dir_path: Path):
         self.__file_path: Path = dir_path / self.FILE_NAME
@@ -31,6 +32,9 @@ class PackageFileHandler:
     def set_version(self, version: str) -> PackageFileHandler:
         self.__data[self.VERSION_KEY] = version
         return self
+
+    def get_name(self) -> str:
+        return self.__data[self.NAME]
 
     def write(self) -> PackageFileHandler:
         with self.__file_path.open('w') as outfile:
