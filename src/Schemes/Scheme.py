@@ -1,7 +1,8 @@
 from __future__ import annotations
 import abc
-from typing import Type
+from typing import Type, List
 from FlexioFlow.StateHandler import StateHandler
+from PoomCiDependency.Module import Module
 from Schemes.Dependencies import Dependencies
 
 
