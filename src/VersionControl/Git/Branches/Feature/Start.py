@@ -31,10 +31,6 @@ class Start:
         self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
-    def __pull_master(self) -> Start:
-        self.__git.checkout(Branches.MASTER).try_to_pull()
-        return self
-
     def __start_feature(self):
         self.__git.checkout(Branches.DEVELOP)
         branch_name: str = BranchHandler(Branches.FEATURE).with_issue(self.__issue).branch_name_from_version_with_name(
@@ -57,4 +53,4 @@ class Start:
     def process(self):
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
-        self.__init_gitflow().__pull_develop().__pull_master().__start_feature()
+        self.__init_gitflow().__pull_develop().__start_feature()
