@@ -29,10 +29,6 @@ class Finish:
         self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
-    def __pull_master(self) -> Finish:
-        self.__git.checkout(Branches.MASTER).try_to_pull()
-        return self
-
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
         self.__git.commit(
@@ -60,8 +56,8 @@ class Finish:
         return self
 
     def __delete_feature(self) -> Finish:
-        self.__git.delete_branch_from_name(self.__current_branch_name, True)
-        self.__git.delete_branch_from_name(self.__current_branch_name, False)
+        self.__git.delete_local_branch_from_name(self.__current_branch_name)
+        self.__git.try_delete_remote_branch_from_name(self.__current_branch_name)
         return self
 
     def __finish_feature(self):
@@ -75,4 +71,4 @@ class Finish:
             raise NotCleanWorkingTree()
         if not self.__gitflow.is_feature():
             raise BranchNotExist(Branches.FEATURE.value)
-        self.__pull_develop().__pull_master().__finish_feature()
+        self.__pull_develop().__finish_feature()
