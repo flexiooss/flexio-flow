@@ -43,8 +43,8 @@ class Finish:
             ).with_close()
         ).try_to_push()
 
-        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
-            branch=Branches.FEATURE,
+        self.__git.checkout(Branches.DEVELOP).merge_with_version_message_from_branch_name(
+            branch=self.__current_branch_name,
             message=Message(
                 message='',
                 issue=self.__issue
@@ -56,7 +56,8 @@ class Finish:
         return self
 
     def __delete_feature(self) -> Finish:
-        self.__git.delete_local_branch_from_name(self.__current_branch_name)
+        if not self.__keep_branch:
+            self.__git.delete_local_branch_from_name(self.__current_branch_name)
         self.__git.try_delete_remote_branch_from_name(self.__current_branch_name)
         return self
 
