@@ -18,23 +18,23 @@ class TestPreCheck(unittest.TestCase):
 
     #TODO refactor with confighandler
 
-    # def test_should_dev_dependencies_empty(self):
-    #     TestSchemesHelper.mount_workdir_without_dev_dependencies()
-    #     state_handler: StateHandler = StateHandler(TestSchemesHelper.DIR_PATH_TEST).load_file_config()
-    #
-    #     version_control: Type[VersionControl] = VersionControlFactory.build(
-    #         VersionController.GITFLOW,
-    #         state_handler
-    #     )
-    #     action: Type[Action] = ActionFactory.build(
-    #         Actions.PRECHECK,
-    #         version_control,
-    #         Branches.RELEASE,
-    #         state_handler,
-    #         {},
-    #
-    #     ).process()
-    #
+    def test_should_dev_dependencies_empty(self):
+        TestSchemesHelper.mount_workdir_without_dev_dependencies()
+        state_handler: StateHandler = StateHandler(TestSchemesHelper.DIR_PATH_TEST).load_file_config()
+
+        version_control: Type[VersionControl] = VersionControlBuilder.build(
+            VersionController.GITFLOW,
+            state_handler
+        )
+        action: Type[Action] = ActionBuilder.build(
+            Actions.PRECHECK,
+            version_control,
+            Branches.RELEASE,
+            state_handler,
+            {},
+
+        ).process()
+
     # def test_should_dev_dependencies_not_empty(self):
     #     TestSchemesHelper.mount_workdir_with_dev_dependencies()
     #     state_handler: StateHandler = StateHandler(TestSchemesHelper.DIR_PATH_TEST).load_file_config()
