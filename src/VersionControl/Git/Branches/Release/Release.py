@@ -15,7 +15,8 @@ class Release(AbstractRelease):
 
         elif self.action is Actions.FINISH:
             self.start_message('Release finish')
-            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False)).process()
+            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False),
+                   self.options.get('close_issue', False)).process()
 
         elif self.action is Actions.PRECHECK:
             self.start_message('Release precheck')

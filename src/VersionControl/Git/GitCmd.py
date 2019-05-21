@@ -100,6 +100,7 @@ class GitCmd:
 
     def commit(self, msg: str, options: List[str] = []) -> GitCmd:
         self.__exec(["git", "commit", "-am", msg, *options])
+        Log.info('commit with message :' + msg)
         return self
 
     def clone(self, url: str) -> GitCmd:

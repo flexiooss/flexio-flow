@@ -17,12 +17,13 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool, close_issue: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
         self.__keep_branch: bool = keep_branch
+        self.__close_issue: bool = close_issue
         self.__name: str = self.__git.get_branch_name_from_git(Branches.RELEASE)
 
     def __init_gitflow(self) -> Finish:
@@ -42,12 +43,21 @@ class Finish:
         return self
 
     def __merge_master(self) -> Finish:
+
+        message: Message = Message(
+            message='Merge ' + self.__name + 'into ' + Branches.MASTER.value,
+            issue=self.__issue
+        )
+
+        message_str: str = ''
+        if self.__close_issue:
+            message_str = message.with_close()
+        else:
+            message_str = message.message
+
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
             branch=Branches.RELEASE,
-            message=Message(
-                message='Merge ' + self.__name + 'into ' + Branches.MASTER.value,
-                issue=self.__issue
-            ).with_ref(),
+            message=message_str,
             options=['--no-ff', '--strategy-option', 'theirs']
         )
 

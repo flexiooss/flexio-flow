@@ -14,6 +14,6 @@ class Hotfix(Branch):
             Start(self.state_handler, self.issue).process()
         elif self.action is Actions.FINISH:
             self.start_message('Hotfix finish')
-            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False)).process()
+            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False),self.options.get('close_issue', False)).process()
         else:
             raise NotImplementedError

@@ -13,13 +13,14 @@ from VersionControlProvider.Issue import Issue
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool, close_issue: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
         self.__current_branch_name: str = self.__git.get_current_branch_name()
         self.__keep_branch: bool = keep_branch
+        self.__close_issue: bool = close_issue
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -31,16 +32,26 @@ class Finish:
 
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
+        print(self.__issue)
+        message: Message = Message(
+            message=''.join([
+                "'Finish feature ` ",
+                self.__current_branch_name,
+                " ` for dev: ",
+                self.__state_handler.version_as_str()
+            ]),
+            issue=self.__issue
+        )
+
+        message_str: str = ''
+        if self.__close_issue:
+            message_str = message.with_close()
+        else:
+            message_str = message.message
+
         self.__git.commit(
-            Message(
-                message=''.join([
-                    "'Finish feature ` ",
-                    self.__current_branch_name,
-                    " ` for dev: ",
-                    self.__state_handler.version_as_str()
-                ]),
-                issue=self.__issue
-            ).with_close()
+            message_str,
+            ['--allow-empty']
         ).try_to_push()
 
         self.__git.checkout(Branches.DEVELOP).merge_with_version_message_from_branch_name(
@@ -48,7 +59,7 @@ class Finish:
             message=Message(
                 message='',
                 issue=self.__issue
-            ).with_ref()
+            ).with_ref(),
         ).try_to_push()
 
         if self.__git.has_conflict():
