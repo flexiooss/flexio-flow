@@ -27,7 +27,7 @@ class FullRepositoryJsonAction:
             if filename.is_file():
                 raise FileExistsError(filename)
 
-            with filename.open('w') as outfile:
+            with filename.open('w+') as outfile:
                 outfile.write(PoomCiDependencyJSONEncoder().encode(full_repository))
 
         else:
