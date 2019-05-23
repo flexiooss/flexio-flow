@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pathlib import Path
 
 from typing import Dict, Union, Optional
 
@@ -19,4 +20,15 @@ class FullRepositoryJsonAction:
 
     def process(self):
         full_repository: FullRepository = FullRepositoryBuilder(self.state_handler, self.options).build()
-        print(PoomCiDependencyJSONEncoder().encode(full_repository))
+
+        if self.options.get('filename') is not None:
+            filename: Path = Path(self.options.get('filename'))
+
+            if filename.is_file():
+                raise FileExistsError(filename)
+
+            with filename.open('w') as outfile:
+                outfile.write(PoomCiDependencyJSONEncoder().encode(full_repository))
+
+        else:
+            print(PoomCiDependencyJSONEncoder().encode(full_repository))

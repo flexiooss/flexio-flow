@@ -23,10 +23,10 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
     options: Dict[str, Union[str, Schemes, bool]] = {}
 
     try:
-        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMNK",
+        opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMNKF:",
                                        ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
                                         'no-cli', 'keep-branch', "repository-id=", "repository-name=",
-                                        "repository-checkout-spec="])
+                                        "repository-checkout-spec=", "filename="])
     except getopt.GetoptError:
         print('OUPS !!!')
         print('try flexio-flow -h')
@@ -67,6 +67,9 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
             options.update({'repository_name': arg})
         if opt in ("--repository-checkout-spec"):
             options.update({'repository_checkout_spec': arg})
+
+        if opt in ("--filename", "-F"):
+            options.update({'filename': arg})
 
     return args, options
 

@@ -76,9 +76,11 @@ flexio-flow
                         full-repository-json
 
                                               -S, --scheme                maven|package|composer|docker
+                                              -F, --filename                  filename
                                               --repository-id             [required]
                                               --repository-name           [required]
                                               --repository-checkout-spec  [required]
+
 
 
 
