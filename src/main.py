@@ -28,6 +28,7 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
                                         'no-cli', 'keep-branch', "repository-id=", "repository-name=",
                                         "repository-checkout-spec=", "filename="])
     except getopt.GetoptError:
+        print(sys.argv[1:])
         print('OUPS !!!')
         print('try flexio-flow -h')
         sys.exit(2)
