@@ -6,6 +6,7 @@ from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.IssueDefault import IssueDefault
 from VersionControlProvider.IssueMessage import IssueMessage
 
 
@@ -25,7 +26,7 @@ class Issuer(abc.ABC):
         return self
 
     @abc.abstractmethod
-    def create(self) -> Issue:
+    def create(self, default_issue: Optional[IssueDefault]) -> Issue:
         pass
 
     @abc.abstractmethod

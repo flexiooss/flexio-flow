@@ -56,7 +56,7 @@ class Start(Action):
         branch: Optional[Branch] = None
 
         if self.config_handler.has_issuer():
-            issue = RelatedIssueTopicRecipe(self.state_handler, self.config_handler).process()
+            issue = RelatedIssueTopicRecipe(self.state_handler, self.config_handler,self.branch).process()
 
         if issue is not None:
             branch = self.__process_with_issue(issue)

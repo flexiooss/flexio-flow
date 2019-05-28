@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Optional
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Github.Github import Github
@@ -10,12 +10,15 @@ from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
 from sty import fg, bg
 
+from VersionControlProvider.IssueDefault import IssueDefault
+
 
 class Create:
-    def __init__(self, config_handler: ConfigHandler, repo: Repo):
+    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault]):
         self.__config_handler: ConfigHandler = config_handler
-        self.__repo = repo
+        self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
+        self.__default_issue: Optional[IssueDefault] = default_issue
 
     def __would_attach_issue(self) -> bool:
         issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
@@ -52,8 +55,8 @@ class Create:
 {bg_help}separator `;`{reset_bg}
 {bg_help}`-l` to list users{reset_bg}
 """.format(
-            default=fg.green + self.__config_handler.config.github.user + fg.rs + ' :' if len(
-                self.__config_handler.config.github.user) else '',
+            default=fg.green + ';'.join(self.__default_issue.assignees) + fg.rs + ' :' if len(
+                self.__default_issue.assignees) else '',
             reset_bg=bg.rs,
             bg_help=bg.li_black
         )
@@ -184,21 +187,27 @@ Choose number :
             for l in labels_response:
                 labels_repo.append(l.get('name'))
 
+        default: str = ';'.join(self.__default_issue.labels) if len(
+            self.__default_issue.assignees) else ''
+
         if len(labels_repo):
             message += """
 {fg_cyan}{labels!s}{fg_reset}
 
-Choose label : 
+Choose label : {fg_green}{default}{fg_reset}
 {bg_help}separator `;` {reset_bg}
 """.format(
                 fg_cyan=fg.cyan,
                 labels=' | '.join(labels_repo),
                 fg_reset=fg.rs,
                 reset_bg=bg.rs,
-                bg_help=bg.li_black
+                bg_help=bg.li_black,
+                fg_green=fg.green,
+                default=default
             )
 
         labels: str = input(message)
+        labels = labels if len(labels) > 0 else default
         labels_lst: List[str] = labels.split(';')
         labels_lst = self.__sanitize_list_input(labels_lst)
 
@@ -211,7 +220,11 @@ Choose label :
         title: str = ''
 
         while not len(title) > 0:
-            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
+            title_default: str = fg.green + self.__default_issue.title + fg.rs if self.__default_issue.title is not None else ''
+
+            title = input(fg.red + '[required]' + fg.rs + ' Title : ' + title_default)
+
+            title = title if title else self.__default_issue.title
         issue.title = title
 
         body: str = input('Description : ')
@@ -248,6 +261,7 @@ url : {url!s}{fg_gray}
         )
 
         return self
+
     def __resume_issue_created(self, issue: IssueGithub) -> Create:
         print(
             """{fg_gray}###############################################

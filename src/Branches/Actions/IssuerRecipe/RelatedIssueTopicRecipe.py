@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from Branches.Actions.IssuerRecipe.IssueDefaultBuilder import IssueDefaultBuilder
+from Branches.Branches import Branches
 from Core.ConfigHandler import ConfigHandler
 from Core.IssuerHandler import IssuerHandler
 from Core.TopicerHandler import TopicerHandler
@@ -15,7 +17,8 @@ from VersionControlProvider.Topicer import Topicer
 class RelatedIssueTopicRecipe:
     def __init__(self,
                  state_handler: StateHandler,
-                 config_handler: ConfigHandler
+                 config_handler: ConfigHandler,
+                 branch: Optional[Branches]
                  ):
 
         self.__state_handler: StateHandler = state_handler
@@ -23,6 +26,7 @@ class RelatedIssueTopicRecipe:
         self.__issuer: Optional[Issuer] = IssuerHandler(
             self.__state_handler, self.__config_handler
         ).issuer()
+        self.__branch: Optional[Branches] = branch
         self.__issue: Optional[Issue] = None
         self.__topicer: Optional[Topicer] = None
         self.__topic: Optional[Topic] = None
@@ -38,7 +42,7 @@ class RelatedIssueTopicRecipe:
 
     def __try_ensure_issue(self) -> RelatedIssueTopicRecipe:
         if self.__issuer is not None and self.__issuer.has_repo():
-            self.__issue = self.__issuer.create()
+            self.__issue = self.__issuer.create(IssueDefaultBuilder().build(self.__state_handler,self.__config_handler,self.__branch))
         return self
 
     def __try_ensure_topic(self) -> RelatedIssueTopicRecipe:
