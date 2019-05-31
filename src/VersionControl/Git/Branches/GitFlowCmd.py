@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from subprocess import Popen, PIPE
 from typing import List
+
+from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
 from Log.Log import Log
@@ -30,12 +32,13 @@ class GitFlowCmd:
         if not self.__git.has_head():
             print('The repository does not have a HEAD yet')
             self.__git.init_head().commit('Initial commit', ['--allow-empty'])
+            print('Initial commit')
         return self
 
     def ensure_master_branch(self) -> GitFlowCmd:
         Log.info('Ensure have Master branch')
         if not self.__git.local_branch_exists(Branches.MASTER.value):
-            self.ensure_head()
+            raise BranchNotExist('Master')
         return self
 
     def ensure_develop_branch(self) -> GitFlowCmd:
