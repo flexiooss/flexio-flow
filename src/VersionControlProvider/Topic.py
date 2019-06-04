@@ -6,8 +6,10 @@ from VersionControlProvider.IssueState import IssueState
 
 
 class Topic(abc.ABC):
-    number: int
-    title: str
+    PREFIX: str = '##'
+
+    number: Optional[int]
+    title: Optional[str]
     state: Optional[IssueState]
     body: Optional[str]
 
@@ -17,7 +19,7 @@ class Topic(abc.ABC):
         self.body = None
         self.state = None
 
-    def with_number(self, number: int) -> Topic:
+    def with_number(self, number: Optional[int]) -> Topic:
         self.number = number
         return self
 
@@ -29,3 +31,6 @@ class Topic(abc.ABC):
     def url(self) -> str:
         pass
 
+    @abc.abstractmethod
+    def get_ref(self) -> str:
+        pass

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
-from VersionControlProvider.IssueState import IssueState
 from VersionControlProvider.Topic import Topic
 
 
@@ -11,15 +10,7 @@ class FlexioTopic(Topic, FlexioRessource):
     NUMBER_ID: str = '5c336cebf3bb2517583dac83'
     TITLE_ID: str = '5c336c7ff3bb2517583dac61'
     BODY_ID: str = '5c337a75f3bb251c3d227691'
-    STATE_ID: str = '5c337a44f3bb252171367670'
     SLUG: str = 'topic'
-
-    def __state_to_value(self) -> str:
-        if self.state is IssueState.OPEN:
-            return '1'
-        elif self.state is IssueState.CLOSED:
-            return '0'
-        return ''
 
     def __body_to_value(self) -> str:
         return self.body if self.body is not None else ''
@@ -35,8 +26,6 @@ class FlexioTopic(Topic, FlexioRessource):
         ret: dict = {}
         if self.body is not None:
             ret[self.BODY_ID] = self.__body_to_value()
-        if self.state is not None:
-            ret[self.STATE_ID] = self.__state_to_value
         if self.title is not None:
             ret[self.TITLE_ID] = self.title
         if self.number is not None:
@@ -52,5 +41,9 @@ class FlexioTopic(Topic, FlexioRessource):
         topic.number = json.get(cls.NUMBER_ID)
         topic.title = json.get(cls.TITLE_ID)
         topic.body = json.get(cls.BODY_ID)
-        topic.state = IssueState.OPEN if json.get(cls.STATE_ID) == '1' else IssueState.CLOSED
         return topic
+
+    def get_ref(self) -> str:
+        if self.number is None:
+            raise ValueError('Topic should have a number')
+        return '{prefix!s}{number!s}'.format(prefix=self.PREFIX, number=self.number)

@@ -12,12 +12,14 @@ from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Topic import Topic
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]]):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], topic: Optional[Topic]):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
+        self.__topic: Optional[Topic] = topic
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
 
@@ -40,7 +42,8 @@ class Start:
             raise BranchAlreadyExist(Branches.HOTFIX)
 
         self.__git.checkout(Branches.MASTER)
-        branch_name: str = BranchHandler(Branches.HOTFIX).with_issue(self.__issue).branch_name_from_version(
+        branch_name: str = BranchHandler(Branches.HOTFIX).with_issue(self.__issue).with_topic(
+            self.__topic).branch_name_from_version(
             self.__state_handler.get_next_patch_version())
 
         self.__git.create_branch_from(branch_name, Branches.MASTER)

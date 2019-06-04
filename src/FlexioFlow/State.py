@@ -4,12 +4,14 @@ from typing import List, Dict, Any
 from Schemes.Schemes import Schemes
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
+from VersionControlProvider.DefaultTopic import DefaultTopic
 
 
 class State:
     __version: Version
     __level: Level
     __schemes: List[Schemes]
+    __topic: DefaultTopic
 
     def __init__(self) -> None:
         self.__issues = []
@@ -42,11 +44,20 @@ class State:
             raise TypeError('schemes should be an instance of List[FlexioFlow.Scheme]')
         self.__schemes = v
 
+    @property
+    def topic(self) -> DefaultTopic:
+        return self.__topic
+
+    @topic.setter
+    def topic(self, v: DefaultTopic):
+        self.__topic: DefaultTopic = v
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             'version': str(self.version),
             'level': self.level.value,
-            'schemes': self.__schemeListValue()
+            'schemes': self.__schemeListValue(),
+            'topic': self.__topic.number
         }
 
     def next_major(self) -> Version:

@@ -10,6 +10,8 @@ from FlexioFlow.Version import Version
 from pathlib import Path
 import fileinput
 
+from VersionControlProvider.DefaultTopic import DefaultTopic
+
 
 class StateHandler:
     FILE_NAME: str = 'flexio-flow.yml'
@@ -43,6 +45,7 @@ class StateHandler:
         self.__state.version = Version.from_str(data['version'])
         self.__state.schemes = Schemes.list_from_value(data['schemes'])
         self.__state.level = Level(data['level'])
+        self.__state.topic = DefaultTopic().with_number(data.get('topic'))
 
         return self
 
@@ -110,3 +113,9 @@ class StateHandler:
             return self.state.schemes[0]
         else:
             return None
+
+    def has_default_topic(self) -> bool:
+        return self.__state.topic.number is not None
+
+    def default_topic(self) -> DefaultTopic:
+        return self.__state.topic

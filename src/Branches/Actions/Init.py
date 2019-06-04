@@ -1,13 +1,18 @@
 from __future__ import annotations
+
+from Core.TopicerHandler import TopicerHandler
 from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
 from Schemes.Schemes import Schemes
-from typing import List
+from typing import List, Optional
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
 from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
 from ConsoleColors.PrintColor import PrintColor
+from VersionControlProvider.DefaultTopic import DefaultTopic
+from VersionControlProvider.Topic import Topic
+from VersionControlProvider.Topicer import Topicer
 
 
 class Init(Action):
@@ -61,6 +66,24 @@ class Init(Action):
         print(yml)
         return self
 
+    def __input_topic(self) -> Init:
+        print('__input_topic')
+        print(self.config_handler.has_topicer())
+        if self.config_handler.has_topicer():
+            self.__topicer: Optional[Topicer] = TopicerHandler(
+                self.state_handler,
+                self.config_handler
+            ).topicer()
+
+            self.__topic: Topic = self.__topicer.create()
+            self.state_handler.state.topic = DefaultTopic().with_number(
+                self.__topic.number
+            )
+        else:
+            self.state_handler.state.topic = DefaultTopic()
+
+        return self
+
     def __ensure_have_state(self) -> bool:
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
@@ -82,7 +105,7 @@ class Init(Action):
             else:
                 self.state_handler.reset_state()
 
-        self.__start_message().__input_version().__input_level().__input_schemes()
+        self.__start_message().__input_version().__input_level().__input_schemes().__input_topic()
         print(self.state_handler.state.schemes)
 
         return False

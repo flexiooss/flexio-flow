@@ -1,5 +1,5 @@
-#######################################################################################
-#######################################################################################
+############################################################
+############################################################
 
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
@@ -8,12 +8,12 @@
 
 https://github.com/flexiooss/flexio-flow
 
-#######################################################################################
+###########################################################
 
 
 flexio-flow
               --help, -h
-              -V, --version-dir               Directory of repository with flexio-flow.yml at the root
+              -V, --version-dir     Directory of repository with flexio-flow.yml at the root
 
 
    --------   <core>
@@ -27,22 +27,32 @@ flexio-flow
    --------   <branch>
 
               init
+                  --version   // TODO
+                  --scheme    // TODO
+                  --topic    // TODO
+                  -N, --no-cli    // TODO
 
               feature
                         start
                         finish
                                     -K, --keep-branch
+                                    --branch-name   // TODO
+                                    --default-issue   // TODO
 
               hotfix
                         start
                         finish
                                     -K, --keep-branch
+                                    --branch-name   // TODO
+                                    --default-issue   // TODO
 
               release
                         precheck
                         start
                                     -M, --major
                                     -N, --no-cli
+                                    --branch-name   // TODO
+                                    --default-issue   // TODO
                         finish
                                     -K, --keep-branch
 
@@ -50,13 +60,14 @@ flexio-flow
    --------  <commit>
 
               commit
+                        --message // TODO
 
 
    --------  <issue>
 
               issue
                         read
-                        comment
+                        comment // TODO
 
 
    --------  <scheme>
@@ -75,8 +86,8 @@ flexio-flow
               poom-ci
                         full-repository-json
 
-                                              -S, --scheme                maven|package|composer|docker
-                                              -F, --filename                  filename
+                                              -S, --scheme    maven|package|composer|docker
+                                              -F, --filename              filename
                                               --repository-id             [required]
                                               --repository-name           [required]
                                               --repository-checkout-spec  [required]

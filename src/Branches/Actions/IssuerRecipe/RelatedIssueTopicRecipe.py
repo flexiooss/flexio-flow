@@ -42,13 +42,22 @@ class RelatedIssueTopicRecipe:
 
     def __try_ensure_issue(self) -> RelatedIssueTopicRecipe:
         if self.__issuer is not None and self.__issuer.has_repo():
-            self.__issue = self.__issuer.create(IssueDefaultBuilder().build(self.__state_handler,self.__config_handler,self.__branch))
+            self.__issue = self.__issuer.create(
+                IssueDefaultBuilder().build(self.__state_handler, self.__config_handler, self.__branch))
         return self
 
     def __try_ensure_topic(self) -> RelatedIssueTopicRecipe:
 
         if self.__topicer is not None:
-            self.__topic: Topic = self.__topicer.create()
+            if self.__state_handler.has_default_topic():
+                self.__topic = self.__topicer.from_default(self.__state_handler.default_topic())
+                print(self.__topic)
+                use_default_topic: str = input('Use this topic (Y)/N')
+                if use_default_topic.lower() == 'n':
+                    self.__topic = None
+
+            if self.__topic is None:
+                self.__topic: Topic = self.__topicer.create()
         return self
 
     def __comment_issue_with_topic(self) -> RelatedIssueTopicRecipe:

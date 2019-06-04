@@ -5,21 +5,28 @@ from typing import Optional, Dict
 from Branches.Actions.Actions import Actions
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Topic import Topic
 
 
 class Branch(abc.ABC):
     action: Actions
     issue: Optional[Issue]
+    topic: Optional[Topic]
     name: Optional[str]
 
     def __init__(self, state_handler: StateHandler) -> None:
         self.state_handler: StateHandler = state_handler
         self.issue: Optional[Issue] = None
+        self.topic: Optional[Topic] = None
         self.name: Optional[str] = None
         self.options: Dict[str, str] = {}
 
     def with_issue(self, issue: Issue) -> Branch:
         self.issue = issue
+        return self
+
+    def with_topic(self, topic: Topic) -> Branch:
+        self.topic = topic
         return self
 
     def with_name(self, name: str) -> Branch:

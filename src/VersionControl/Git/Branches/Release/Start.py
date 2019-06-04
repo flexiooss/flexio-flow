@@ -11,12 +11,15 @@ from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Topic import Topic
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], is_major: bool):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], topic: Optional[Topic],
+                 is_major: bool):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
+        self.__topic: Optional[Topic] = topic
         self.__is_major: bool = is_major
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
@@ -39,7 +42,6 @@ class Start:
             self.__state_handler.reset_minor()
             self.__state_handler.reset_patch()
 
-
     def __start_check(self):
         #  TODO recheck local vs remote
         # if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
@@ -54,14 +56,14 @@ class Start:
         if self.__gitflow.has_hotfix(True) or self.__gitflow.has_hotfix(False):
             raise BranchAlreadyExist(Branches.HOTFIX)
 
-
     def __start_release(self):
         self.__start_check()
 
         self.__git.checkout(Branches.DEVELOP)
         self.__set_version()
 
-        branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).branch_name_from_version(
+        branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).with_topic(
+            self.__topic).branch_name_from_version(
             self.__state_handler.state.version
         )
 
@@ -79,7 +81,6 @@ class Start:
                 issue=self.__issue
             ).with_ref()
         ).try_to_set_upstream()
-
 
     def process(self):
         if not self.__git.is_clean_working_tree():

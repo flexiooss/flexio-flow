@@ -11,11 +11,11 @@ class Release(AbstractRelease):
     def process(self):
         if self.action is Actions.START:
             self.start_message('Release start')
-            Start(self.state_handler, self.issue, self.is_major).process()
+            Start(self.state_handler, self.issue,self.topic, self.is_major).process()
 
         elif self.action is Actions.FINISH:
             self.start_message('Release finish')
-            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False),
+            Finish(self.state_handler, self.issue,self.topic, self.options.get('keep-branch', False),
                    self.options.get('close_issue', False)).process()
 
         elif self.action is Actions.PRECHECK:

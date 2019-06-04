@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from VersionControlProvider.DefaultTopic import DefaultTopic
 from VersionControlProvider.Flexio.Topic.Create import Create
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.Issue import Issue
@@ -17,3 +18,6 @@ class FlexioTopicer(Topicer):
 
     def topic_builder(self) -> Topic:
         return FlexioTopic()
+
+    def from_default(self, default_topic: DefaultTopic) -> Topic:
+        return FlexioTopic().with_number(default_topic.number)
