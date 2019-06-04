@@ -17,4 +17,10 @@ class IssueDefaultBuilder:
             issue.title = 'Release ' + str(state_handler.state.version)
             issue.labels = ['release']
 
+        if branch is Branches.FEATURE:
+            issue.labels = ['enhancement']
+
+        if branch is Branches.HOTFIX:
+            issue.labels = ['bug']
+
         return issue
