@@ -79,7 +79,6 @@ class State:
 
     def next_dev_minor(self) -> Version:
         self.__level = Level.DEV
-        self.__version = self.__version.reset_patch()
         self.__version = self.__version.next_minor()
         return self.__version
 

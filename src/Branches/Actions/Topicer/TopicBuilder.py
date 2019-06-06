@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Dict
 
 from Branches.Branches import Branches
 from Core.ConfigHandler import ConfigHandler
 from Core.TopicerHandler import TopicerHandler
 from FlexioFlow.StateHandler import StateHandler
+from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
@@ -18,7 +19,8 @@ class TopicBuilder:
                  version_control: VersionControl,
                  state_handler: StateHandler,
                  config_handler: ConfigHandler,
-                 branch: Optional[Branches]
+                 branch: Optional[Branches],
+                 options: Dict[str, str]
                  ):
         self.__version_control: VersionControl = version_control
         self.__state_handler: StateHandler = state_handler
@@ -26,7 +28,7 @@ class TopicBuilder:
         self.__branch: Optional[Branches] = branch
         self.__topicer: Optional[Topicer] = None
         self.__topic: Optional[Topic] = None
-
+        self.options: Dict[str, str] = options
         self.__init_topicer()
 
     def __init_topicer(self):
@@ -47,23 +49,22 @@ class TopicBuilder:
 
                 print(
                     """###############################################
-        ################ {green}    Default Topic     {reset}################
-        ###############################################{green}
-        title : {title!s}
-        number : {number!s}
-        description : {body!s}
-        url : {url!s}{reset}
-        ###############################################
-        """.format(
+################ {green}    Default Topic     {reset}################
+###############################################{green}
+title : {title!s}
+number : {number!s}
+description : {body!s}
+url : {url!s}{reset}
+###############################################
+""".format(
                         green=Fg.FOCUS.value,
                         title=self.__topic.title,
                         number=self.__topic.number,
                         body=self.__topic.body,
-                        url=self.__topic.url,
+                        url=self.__topic.url(),
                         reset=Fg.RESET.value
                     )
                 )
-
 
             use_default_topic: str = input('Use this topic Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
             if use_default_topic.lower() == 'n':
@@ -74,12 +75,11 @@ class TopicBuilder:
 
         return self
 
-
     def attach_issue(self, issue: Issue) -> TopicBuilder:
         if self.__topic is not None:
+            Log.info('Waiting... Attach issue to topic...')
             self.__topicer.attach_issue(self.__topic, issue)
         return self
-
 
     def topic(self) -> Optional[Issue]:
         return self.__topic

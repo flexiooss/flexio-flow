@@ -10,7 +10,6 @@ from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
 from Log.Log import Log
 from VersionControl.Branch import Branch
-from VersionControl.Release import Release
 from VersionControlProvider.Issue import Issue
 from slugify import slugify
 
@@ -46,6 +45,8 @@ class Start(Action):
                     is_major: str = input(
                         ' Is major Release Y/N : ' + Fg.SUCCESS.value + 'N' + Fg.RESET.value + ' ')
                     is_major_b = True if is_major.capitalize() == 'Y' else False
+                    self.options.update({'major': is_major_b})
+
             else:
                 is_major_b = self.options.get('major') is True
                 if is_major_b:
@@ -65,11 +66,17 @@ class Start(Action):
         return branch
 
     def process(self):
+        branch: Branch = self.version_control.build_branch(self.branch)
+        branch = self.__with_action(branch)
+        branch = self.__ensure_is_major(branch)
+        branch = self.__with_options(branch)
+
         issuer_builder: issuer_builder = IssueBuilder(
             self.version_control,
             self.state_handler,
             self.config_handler,
-            self.branch
+            self.branch,
+            self.options
         )
 
         issue: Optional[Issue] = issuer_builder.try_ensure_issue().issue()
@@ -78,7 +85,8 @@ class Start(Action):
             self.version_control,
             self.state_handler,
             self.config_handler,
-            self.branch
+            self.branch,
+            self.options
         )
 
         topic: Optional[Topic] = topic_builder.try_ensure_topic().topic()
@@ -87,11 +95,7 @@ class Start(Action):
             issuer_builder.comment_issue_with_topic(topic)
             topic_builder.attach_issue(issue)
 
-        branch: Branch = self.version_control.build_branch(self.branch)
-        branch = self.__with_action(branch)
-        branch = self.__with_options(branch)
         branch = self.__with_issue(branch, issue)
         branch = self.__with_topic(branch, topic)
-        branch = self.__ensure_is_major(branch)
         branch = self.__ensure_name(branch)
         branch.process()

@@ -41,10 +41,10 @@ class Version:
         return matches
 
     def next_major(self) -> Version:
-        return Version(self.major + 1, self.minor, self.patch)
+        return Version(self.major + 1, 0, 0)
 
     def next_minor(self) -> Version:
-        return Version(self.major, self.minor + 1, self.patch)
+        return Version(self.major, self.minor + 1, 0)
 
     def next_patch(self) -> Version:
         return Version(self.major, self.minor, self.patch + 1)

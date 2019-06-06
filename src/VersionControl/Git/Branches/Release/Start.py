@@ -39,8 +39,6 @@ class Start:
     def __set_version(self):
         if self.__is_major:
             self.__state_handler.next_major()
-            self.__state_handler.reset_minor()
-            self.__state_handler.reset_patch()
 
     def __start_check(self):
         #  TODO recheck local vs remote
