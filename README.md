@@ -19,12 +19,15 @@ feature1   \       --------------                       /
 feature2        --------------------------------------
 ```
 
+### Installation
+With Ansible playbook : https://github.com/flexiooss/flexio-flow-playbook
 
 ### Specification `flexio-flow.yml`
 ```yaml
-version: 0.0.0
+version: [\d].[\d].[\d]
 level: stable|dev
 schemes: maven|package|composer|docker
+topic: [\d]
 ```
 
 ### Main orders
@@ -33,6 +36,7 @@ flexio-flow -h
 
 flexio-flow core config
 flexio-flow init
+flexio-flow version
 
 flexio-flow commit
 
@@ -45,6 +49,15 @@ flexio-flow feature finish
 flexio-flow release precheck
 flexio-flow release start
 flexio-flow release finish
+
+flexio-flow commit
+
+flexio-flow issue read
+flexio-flow topic read
+
+flexio-flow scheme update
+
+flexio-flow poom ci full-repository-json
 ```
 
 ### Dev environment
