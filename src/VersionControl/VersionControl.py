@@ -41,3 +41,9 @@ class VersionControl:
     @abc.abstractmethod
     def commit(self, commit: Commit) -> CommitHandler:
         pass
+
+    @abc.abstractmethod
+    def is_current_branch_develop(self) -> bool:
+        pass
+
+

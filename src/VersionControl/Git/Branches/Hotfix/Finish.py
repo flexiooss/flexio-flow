@@ -4,6 +4,7 @@ from typing import Type, Optional
 
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.NoBranchSelected import NoBranchSelected
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
@@ -119,6 +120,8 @@ class Finish:
             self.__delete_hotfix()
 
     def process(self):
+        if not self.__gitflow.is_hotfix():
+            raise NoBranchSelected('Checkout to hotfix branch before')
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
         self.__pull_develop().__pull_master().__finish_hotfix()

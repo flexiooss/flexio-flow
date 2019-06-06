@@ -4,6 +4,7 @@ from typing import Optional
 
 from VersionControl.Git.Actions.CommitHandler import CommitHandler
 from VersionControl.CommitHandler import CommitHandler as AbstractCommitHandler
+from VersionControl.Git.GitCmd import GitCmd
 from VersionControl.Git.IssueHandler import IssueHandler
 from VersionControl.Git.TopicHandler import TopicHandler
 from VersionControl.VersionControl import VersionControl
@@ -45,3 +46,6 @@ class Git(VersionControl):
 
     def commit(self, commit: CommitValueObject) -> AbstractCommitHandler:
         return CommitHandler(self.state_handler).with_commit(commit)
+
+    def is_current_branch_develop(self) -> bool:
+        return GitCmd(self.state_handler).get_current_branch_name() == Branches.DEVELOP.value

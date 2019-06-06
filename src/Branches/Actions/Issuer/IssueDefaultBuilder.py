@@ -19,7 +19,9 @@ class IssueDefaultBuilder:
         issue.assignees = [config_handler.config.github.user]
 
         if branch is Branches.RELEASE:
-            version: Version = state_handler.state.version if options.get('major') is True else state_handler.state.version.next_major()
+
+            version: Version = state_handler.state.version.next_major() if options.get(
+                'major') is True else state_handler.state.version
 
             issue.title = 'Release ' + str(version)
             issue.labels = ['release']

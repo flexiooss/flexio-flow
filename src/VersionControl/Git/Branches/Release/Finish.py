@@ -5,9 +5,11 @@ from typing import Type, Optional
 from Exceptions.BranchHaveDiverged import BranchHaveDiverged
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.NoBranchSelected import NoBranchSelected
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from Exceptions.RemoteDivergence import RemoteDivergence
 from FlexioFlow.StateHandler import StateHandler
+from Log.Log import Log
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from Branches.Branches import Branches
 from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
@@ -33,6 +35,7 @@ class Finish:
         self.__keep_branch: bool = keep_branch
         self.__close_issue: bool = close_issue
         self.__name: str = self.__git.get_branch_name_from_git(Branches.RELEASE)
+        self.__version_check: str = self.__state_handler.version_as_str()
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -58,10 +61,17 @@ class Finish:
         )
 
         message_str: str = ''
+        print('self.__close_issue')
+        print(self.__close_issue)
         if self.__close_issue:
             message_str = message.with_close()
         else:
             message_str = message.message
+
+        self.__git.commit(
+            message_str,
+            ['--allow-empty']
+        )
 
         self.__git.checkout(Branches.MASTER).merge_with_version_message(
             branch=Branches.RELEASE,
@@ -73,6 +83,10 @@ class Finish:
             raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
 
         tag: str = self.__state_handler.version_as_str()
+
+        if tag != self.__version_check:
+            Log.error('Version have diverged during merge : ' + tag + 'should be ' + version_check)
+            raise GitMergeConflictError(Branches.MASTER.value)
 
         self.__git.tag(
             tag,
@@ -140,6 +154,9 @@ class Finish:
         self.__delete_release()
 
     def process(self):
+        if not self.__gitflow.is_release():
+            raise NoBranchSelected('Checkout to release branch before')
+
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
 

@@ -8,6 +8,7 @@ from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
 from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
+from Exceptions.NoBranchSelected import NoBranchSelected
 from Log.Log import Log
 from VersionControl.Branch import Branch
 from VersionControlProvider.Issue import Issue
@@ -38,6 +39,8 @@ class Start(Action):
 
     def __ensure_is_major(self, branch: Branch) -> Branch:
         if self.branch is Branches.RELEASE:
+            if not self.version_control.is_current_branch_develop():
+                raise NoBranchSelected('Checkout to develop branch before')
             is_major_b: bool = False
 
             if self.options.get('major') is None:

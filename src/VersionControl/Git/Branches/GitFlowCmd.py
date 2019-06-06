@@ -67,6 +67,22 @@ class GitFlowCmd:
             resp
         ) is not None
 
+    def is_release(self) -> bool:
+        resp: str = self.__git.get_current_branch_name()
+
+        return len(resp) > 0 and re.match(
+            re.compile('^' + Branches.RELEASE.value + '/.*$'),
+            resp
+        ) is not None
+
+    def is_hotfix(self) -> bool:
+        resp: str = self.__git.get_current_branch_name()
+
+        return len(resp) > 0 and re.match(
+            re.compile('^' + Branches.HOTFIX.value + '/.*$'),
+            resp
+        ) is not None
+
     def __has_branch_from_parent(self, branch: Branches, remote: bool) -> bool:
         if remote:
             resp: str = self.__exec_for_stdout(
