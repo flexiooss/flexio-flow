@@ -8,6 +8,7 @@ import os
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
 from FlexioFlow.Actions.IssueActions import IssueActions
+from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.FlexioFlow import FlexioFlow
 from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
@@ -77,12 +78,14 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
 def extract_subject_action(argv: List[str]) -> Tuple[
     Optional[Branches], Optional[Actions], Optional[Subject], Optional[ActionsCore], Optional[IssueActions], Optional[
+        TopicActions], Optional[
         PoomCiActions]]:
     branch: Optional[Branches] = None
     branch_action: Optional[Actions] = None
     subject: Optional[Subject] = None
     core_actions: Optional[ActionsCore] = None
     issue_action: Optional[IssueActions] = None
+    topic_action: Optional[TopicActions] = None
     poom_ci_actions: Optional[PoomCiActions] = None
 
     arg: str
@@ -97,17 +100,19 @@ def extract_subject_action(argv: List[str]) -> Tuple[
             subject = Subject[arg.upper().replace('-', '_')]
         if ActionsCore.has_value(arg):
             core_actions = ActionsCore[arg.upper().replace('-', '_')]
-        if IssueActions.has_value(arg):
+        if IssueActions.has_value(arg) or TopicActions.has_value(arg):
             issue_action = IssueActions[arg.upper().replace('-', '_')]
+        if TopicActions.has_value(arg):
+            topic_action = TopicActions[arg.upper().replace('-', '_')]
         if PoomCiActions.has_value(arg):
             poom_ci_actions = PoomCiActions[arg.upper().replace('-', '_')]
 
-    return branch, branch_action, subject, core_actions, issue_action, poom_ci_actions
+    return branch, branch_action, subject, core_actions, issue_action, topic_action, poom_ci_actions
 
 
 def command_orders(argv: List[str]) -> Tuple[
     Optional[Actions], Optional[Branches], Optional[Subject], Optional[ActionsCore], Dict[
-        str, Union[str, Schemes, bool]], Path, Optional[IssueActions], Optional[
+        str, Union[str, Schemes, bool]], Path, Optional[IssueActions], Optional[TopicActions], Optional[
         PoomCiActions]]:
     argv_no_options: List[str]
     options: Dict[str, Union[str, Schemes, bool]]
@@ -119,11 +124,11 @@ def command_orders(argv: List[str]) -> Tuple[
     core_actions: Optional[ActionsCore]
     poom_ci_actions: Optional[PoomCiActions]
 
-    branch, branch_action, subject, core_actions, issue_action, poom_ci_actions = extract_subject_action(
+    branch, branch_action, subject, core_actions, issue_action, topic_action, poom_ci_actions = extract_subject_action(
         argv_no_options)
     version_dir: Path = Path(str(options.get('version-dir'))) if options.get('version-dir') else Path.cwd()
 
-    return branch_action, branch, subject, core_actions, options, version_dir, issue_action, poom_ci_actions
+    return branch_action, branch, subject, core_actions, options, version_dir, issue_action, topic_action, poom_ci_actions
 
 
 def main(argv) -> None:
@@ -134,8 +139,9 @@ def main(argv) -> None:
     options: Dict[str, Union[str, Schemes, bool]]
     version_dir: Path
     issue_action: Optional[IssueActions]
+    topic_action: Optional[TopicActions]
 
-    branch_action, branch, subject, core_action, options, version_dir, issue_action, poom_ci_actions = command_orders(
+    branch_action, branch, subject, core_action, options, version_dir, issue_action, topic_action, poom_ci_actions = command_orders(
         argv)
 
     config_handler: ConfigHandler = ConfigHandler(Core.CONFIG_DIR)
@@ -147,6 +153,7 @@ def main(argv) -> None:
         branch_action=branch_action,
         core_action=core_action,
         issue_action=issue_action,
+        topic_action=topic_action,
         poom_ci_actions=poom_ci_actions,
         branch=branch,
         options=options,

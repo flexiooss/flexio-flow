@@ -31,3 +31,7 @@ class Topicer(abc.ABC):
     @abc.abstractmethod
     def from_default(self, topic: DefaultTopic) -> Topic:
         pass
+
+    @abc.abstractmethod
+    def read_topic_by_number(self, number: int) -> Topic:
+        pass

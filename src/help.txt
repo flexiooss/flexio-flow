@@ -68,6 +68,10 @@ flexio-flow
               issue
                         read
                         comment // TODO
+   --------  <topic>
+
+              topic
+                        read
 
 
    --------  <scheme>

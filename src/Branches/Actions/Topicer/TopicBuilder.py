@@ -90,10 +90,13 @@ url : {url!s}{reset}
                 self.__topic = self.__topicer.topic_builder().with_number(topic_number)
                 if self.__topic is not None:
                     Log.info('Topic number ' + str(self.__topic.number) + ' found')
-            else :
+            else:
                 Log.info('No Topic found')
 
         return self
 
     def topic(self) -> Optional[Issue]:
         return self.__topic
+
+    def topicer(self) -> Optional[Topicer]:
+        return self.__topicer

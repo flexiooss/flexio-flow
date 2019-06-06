@@ -5,6 +5,7 @@ from typing import Optional
 from VersionControl.Git.Actions.CommitHandler import CommitHandler
 from VersionControl.CommitHandler import CommitHandler as AbstractCommitHandler
 from VersionControl.Git.IssueHandler import IssueHandler
+from VersionControl.Git.TopicHandler import TopicHandler
 from VersionControl.VersionControl import VersionControl
 from VersionControl.Branch import Branch
 from VersionControl.Git.Branches.BranchBuilder import BranchBuilder
@@ -39,7 +40,7 @@ class Git(VersionControl):
         return issue_number
 
     def get_topic_number(self) -> Optional[int]:
-        topic_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
+        topic_number: Optional[int] = TopicHandler(self.state_handler).number_from_branch_name()
         return topic_number
 
     def commit(self, commit: CommitValueObject) -> AbstractCommitHandler:

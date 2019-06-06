@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from pprint import pprint
 
-from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
+from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.Actions.IssueActions import IssueActions
+from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.StateHandler import StateHandler
 from typing import Dict, Optional
 
 from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
-from VersionControlProvider.Issue import Issue as AbstractIssue
+from VersionControlProvider.Topic import Topic as AbstractTopic
 
 
-class Issue:
+class Topic:
 
     def __init__(self,
                  action: IssueActions,
@@ -29,9 +30,9 @@ class Issue:
         self.options: Dict[str, str] = options
 
     def process(self):
-        if self.action is IssueActions.READ:
 
-            issuer_builder: issuer_builder = IssueBuilder(
+        if self.action is TopicActions.READ:
+            topic_builder: TopicBuilder = TopicBuilder(
                 self.version_control,
                 self.state_handler,
                 self.config_handler,
@@ -39,17 +40,11 @@ class Issue:
                 self.options
             )
 
-            issue: Optional[AbstractIssue] = issuer_builder.find_issue_from_branch_name().issue()
+            topic: Optional[AbstractTopic] = topic_builder.find_topic_from_branch_name().topic()
 
-            if issue is not None:
-                Log.info('waiting... from github...')
-                read_issue: Optional[AbstractIssue] = issuer_builder.issuer().read_issue_by_number(issue.number)
-                if read_issue is not None:
-                    pprint(read_issue.__dict__())
+            if topic is not None:
+                Log.info('waiting... from flexio...')
 
-
-
-
-
-        elif self.action is IssueActions.COMMENT:
-            raise NotImplementedError
+                read_topic: Optional[AbstractTopic] = topic_builder.topicer().read_topic_by_number(int(topic.number))
+                if read_topic is not None:
+                    pprint(read_topic.to_dict())

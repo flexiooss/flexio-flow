@@ -5,8 +5,11 @@ from typing import Optional, Type, Dict, Union
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
 from Exceptions.NoIssuerConfigured import NoIssuerConfigured
+from Exceptions.NoTopicerConfigured import NoTopicerConfigured
 from FlexioFlow.Actions.Issue import Issue
 from FlexioFlow.Actions.IssueActions import IssueActions
+from FlexioFlow.Actions.Topic import Topic
+from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Actions.Actions import Actions as BranchActions
 from Branches.Actions.Action import Action
@@ -32,6 +35,7 @@ class FlexioFlow:
     __poom_ci_actions: Optional[PoomCiActions] = None
     __dir_path: Path
     __issue_action: Optional[IssueActions] = None
+    __topic_action: Optional[TopicActions] = None
     __options: Dict[str, Union[str, Schemes, bool]]
     __state_handler: Optional[StateHandler] = None
     __version_controller: VersionController
@@ -45,6 +49,7 @@ class FlexioFlow:
                         branch_action: Optional[BranchActions],
                         core_action: Optional[ActionsCore],
                         issue_action: Optional[IssueActions],
+                        topic_action: Optional[TopicActions],
                         poom_ci_actions: Optional[PoomCiActions],
                         branch: Optional[Branches],
                         options: Dict[str, Union[str, Schemes, bool]],
@@ -56,6 +61,7 @@ class FlexioFlow:
 
         self.__branch_action: Optional[BranchActions] = branch_action
         self.__issue_action: Optional[IssueActions] = issue_action
+        self.__topic_action: Optional[TopicActions] = topic_action
         self.__core_action: Optional[ActionsCore] = core_action
         self.__poom_ci_actions: Optional[PoomCiActions] = poom_ci_actions
         self.__branch: Optional[Branches] = branch
@@ -122,6 +128,25 @@ class FlexioFlow:
             options=self.__options
         ).process()
 
+    def __process_subject_topic(self):
+        if self.__topic_action is None:
+            raise ValueError('should have Action')
+
+        self.__ensure_state_handler()
+        self.__ensure_version_control()
+        self.__ensure_config_handler()
+
+        if not self.__config_handler.has_topicer():
+            raise NoTopicerConfigured()
+
+        Topic(
+            action=self.__topic_action,
+            state_handler=self.__state_handler,
+            version_control=self.__version_control,
+            config_handler=self.__config_handler,
+            options=self.__options
+        ).process()
+
     def __process_branch_action(self):
         if self.__branch_action is None:
             raise ValueError('should have Action')
@@ -173,6 +198,9 @@ class FlexioFlow:
 
         elif self.subject is Subject.ISSUE:
             self.__process_subject_issue()
+
+        elif self.subject is Subject.TOPIC:
+            self.__process_subject_topic()
 
         elif self.subject is Subject.BRANCH:
             self.__process_branch_action()

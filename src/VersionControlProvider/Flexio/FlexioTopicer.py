@@ -26,3 +26,7 @@ class FlexioTopicer(Topicer):
     def from_default(self, default_topic: DefaultTopic) -> Topic:
         return FlexioTopic.build_from_api(
             FlexioClient(self.config_handler).get_record(FlexioTopic().with_number(default_topic.number)))
+
+    def read_topic_by_number(self, number: int) -> Topic:
+        return FlexioTopic.build_from_api(
+            FlexioClient(self.config_handler).get_record(FlexioTopic().with_number(number)))
