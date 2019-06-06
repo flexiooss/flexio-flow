@@ -11,9 +11,22 @@ class Hotfix(Branch):
     def process(self):
         if self.action is Actions.START:
             self.start_message('Hotfix start')
-            Start(self.state_handler, self.issue).process()
+            Start(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic
+            ).process()
+
         elif self.action is Actions.FINISH:
             self.start_message('Hotfix finish')
-            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False),self.options.get('close_issue', False)).process()
+
+            Finish(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic,
+                keep_branch=self.options.get('keep-branch', False),
+                close_issue=self.options.get('close_issue', False)
+            ).process()
+
         else:
             raise NotImplementedError

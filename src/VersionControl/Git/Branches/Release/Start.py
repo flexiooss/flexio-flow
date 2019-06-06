@@ -15,8 +15,12 @@ from VersionControlProvider.Topic import Topic
 
 
 class Start:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], topic: Optional[Topic],
-                 is_major: bool):
+    def __init__(self,
+                 state_handler: StateHandler,
+                 issue: Optional[Type[Issue]],
+                 topic: Optional[Topic],
+                 is_major: bool
+                 ):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__topic: Optional[Topic] = topic

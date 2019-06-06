@@ -35,8 +35,6 @@ class Finish(Action):
         else:
             return branch
 
-
-
     def __should_close_issue(self):
         close_issue: str = input(
             ' Close Issue Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value + ' ')
@@ -69,10 +67,6 @@ class Finish(Action):
         )
 
         topic: Optional[Topic] = topic_builder.find_topic_from_branch_name().topic()
-
-        if issue is not None and topic is not None:
-            issuer_builder.comment_issue_with_topic(topic)
-            topic_builder.attach_issue(issue)
 
         branch = self.__with_issue(branch, issue)
         branch = self.__with_topic(branch, topic)

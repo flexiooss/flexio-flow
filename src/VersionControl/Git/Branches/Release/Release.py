@@ -11,16 +11,33 @@ class Release(AbstractRelease):
     def process(self):
         if self.action is Actions.START:
             self.start_message('Release start')
-            Start(self.state_handler, self.issue,self.topic, self.is_major).process()
+
+            Start(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic,
+                is_major=self.is_major
+            ).process()
 
         elif self.action is Actions.FINISH:
             self.start_message('Release finish')
-            Finish(self.state_handler, self.issue,self.topic, self.options.get('keep-branch', False),
-                   self.options.get('close_issue', False)).process()
+
+            Finish(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic,
+                keep_branch=self.options.get('keep-branch', False),
+                close_issue=self.options.get('close_issue', False)
+            ).process()
 
         elif self.action is Actions.PRECHECK:
             self.start_message('Release precheck')
-            PreCheck(self.state_handler, self.issue).process()
+
+            PreCheck(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic
+            ).process()
 
         else:
             raise NotImplementedError
