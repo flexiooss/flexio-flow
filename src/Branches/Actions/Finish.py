@@ -40,6 +40,12 @@ class Finish(Action):
                 issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler).issuer()
                 issue = issuer.issue_builder().with_number(issue_number)
 
+        branch = self.version_control.build_branch(self.branch)
+        branch = self.__with_action(branch)
+        branch = self.__with_issue(branch, issue)
+        branch = self.__with_topic(branch, topic)
+        branch = self.__ensure_is_major(branch)
+
         if issue is not None:
             branch = self.__process_with_issue(issue)
         else:

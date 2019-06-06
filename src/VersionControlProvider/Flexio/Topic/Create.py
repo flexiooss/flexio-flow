@@ -17,11 +17,6 @@ class Create:
         self.__config_handler: ConfigHandler = config_handler
         from VersionControlProvider.Flexio.FlexioClient import FlexioClient
         self.__flexio: FlexioClient = FlexioClient(self.__config_handler)
-        self.__issue: Issue = None
-
-    def with_issue(self, issue: Issue) -> Create:
-        self.__issue = issue
-        return self
 
     def __would_attach_topic(self) -> bool:
         topic: str = input("""Have already a topic y/{green}n{reset_fg} : """.format(

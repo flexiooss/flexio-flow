@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
+from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Issue import Issue
 
 
@@ -22,6 +23,12 @@ class FlexioIssue(Issue, FlexioRessource):
 
     def with_topic(self, topic: FlexioTopic) -> FlexioIssue:
         self.topic = topic
+        return self
+
+    def set_github_issue(self, issue: IssueGithub)-> FlexioIssue:
+        self.github_number = issue.number
+        self.github_title = issue.title
+        self.github_url = issue.url
         return self
 
     def get_ref(self) -> str:

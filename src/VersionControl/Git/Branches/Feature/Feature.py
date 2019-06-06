@@ -21,6 +21,7 @@ class Feature(Branch):
             Start(
                 state_handler=self.state_handler,
                 issue=self.issue,
+                topic=self.topic,
                 name=self.name
             ).process()
 

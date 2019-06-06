@@ -21,7 +21,7 @@ class Topicer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def create_with_issue(self, issue: Issue) -> Topic:
+    def attach_issue(self, topic: Topic, issue: Issue) -> Topicer:
         pass
 
     @abc.abstractmethod

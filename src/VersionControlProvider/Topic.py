@@ -17,7 +17,6 @@ class Topic(abc.ABC):
         self.number = None
         self.title = None
         self.body = None
-        self.state = None
 
     def with_number(self, number: Optional[int]) -> Topic:
         self.number = number
@@ -33,4 +32,12 @@ class Topic(abc.ABC):
 
     @abc.abstractmethod
     def get_ref(self) -> str:
+        pass
+
+    def to_api_dict(self) -> dict:
+        ret: dict = self.__dict__()
+        return ret
+
+    @abc.abstractmethod
+    def to_dict(self) -> str:
         pass

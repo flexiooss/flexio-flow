@@ -22,6 +22,14 @@ class FlexioTopic(Topic, FlexioRessource):
             record_id=self.id
         )
 
+    def to_dict(self) -> dict:
+        return {
+            'number': self.number,
+            'title': self.title,
+            'body': self.body,
+            'url': self.url()
+        }
+
     def __dict__(self):
         ret: dict = {}
         if self.body is not None:
