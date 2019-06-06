@@ -89,9 +89,9 @@ url : {url!s}{reset}
             if topic_number is not None:
                 self.__topic = self.__topicer.topic_builder().with_number(topic_number)
                 if self.__topic is not None:
-                    Log.info('Topic number ' + str(self.__topic.number) + ' found')
+                    Log.info('Topic number ' + str(self.__topic.number) + ' founded')
             else:
-                Log.info('No Topic found')
+                Log.info('No Topic founded')
 
         return self
 

@@ -51,9 +51,9 @@ class IssueBuilder:
             if issue_number is not None:
                 self.__issue = self.__issuer.issue_builder().with_number(issue_number)
                 if self.__issue is not None:
-                    Log.info('Issue number ' + str(self.__issue.number) + ' found')
+                    Log.info('Issue number ' + str(self.__issue.number) + ' founded')
             else:
-                Log.info('No Issue found')
+                Log.info('No Issue founded')
         return self
 
     def comment_issue_with_topic(self, topic: Topic) -> IssueBuilder:
