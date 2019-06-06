@@ -6,16 +6,25 @@ from Exceptions.GitMergeConflictError import GitMergeConflictError
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from FlexioFlow.StateHandler import StateHandler
 from Branches.Branches import Branches
+from Log.Log import Log
 from VersionControl.Git.Branches.GitFlowCmd import GitFlowCmd
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
+from VersionControlProvider.Topic import Topic
 
 
 class Finish:
-    def __init__(self, state_handler: StateHandler, issue: Optional[Type[Issue]], keep_branch: bool, close_issue: bool):
+    def __init__(self,
+                 state_handler: StateHandler,
+                 issue: Optional[Type[Issue]],
+                 topic: Optional[Topic],
+                 keep_branch: bool,
+                 close_issue: bool
+                 ):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
+        self.__topic: Optional[Topic] = topic
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
         self.__current_branch_name: str = self.__git.get_current_branch_name()
@@ -32,7 +41,7 @@ class Finish:
 
     def __merge_develop(self) -> Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
-        print(self.__issue)
+
         message: Message = Message(
             message=''.join([
                 "'Finish feature ` ",

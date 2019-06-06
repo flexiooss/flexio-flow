@@ -38,5 +38,9 @@ class Git(VersionControl):
         issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
         return issue_number
 
+    def get_topic_number(self) -> Optional[int]:
+        topic_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
+        return topic_number
+
     def commit(self, commit: CommitValueObject) -> AbstractCommitHandler:
         return CommitHandler(self.state_handler).with_commit(commit)

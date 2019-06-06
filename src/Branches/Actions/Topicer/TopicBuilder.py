@@ -45,11 +45,13 @@ class TopicBuilder:
 
         if self.__topicer is not None:
             if self.__state_handler.has_default_topic():
+                Log.info('waiting... default Topic...')
                 self.__build_default()
 
                 print(
-                    """###############################################
-################ {green}    Default Topic     {reset}################
+                    """
+###############################################
+############{green}    Default Topic     {reset}############
 ###############################################{green}
 title : {title!s}
 number : {number!s}
@@ -79,6 +81,18 @@ url : {url!s}{reset}
         if self.__topic is not None:
             Log.info('Waiting... Attach issue to topic...')
             self.__topicer.attach_issue(self.__topic, issue)
+        return self
+
+    def find_topic_from_branch_name(self) -> TopicBuilder:
+        if self.__topicer is not None:
+            topic_number: Optional[int] = self.__version_control.get_topic_number()
+            if topic_number is not None:
+                self.__topic = self.__topicer.topic_builder().with_number(topic_number)
+                if self.__topic is not None:
+                    Log.info('Topic number ' + str(self.__topic.number) + ' found')
+            else :
+                Log.info('No Topic found')
+
         return self
 
     def topic(self) -> Optional[Issue]:

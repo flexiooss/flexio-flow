@@ -33,7 +33,7 @@ class IssueBuilder:
         self.__options: Dict[str, str] = options
 
     def try_ensure_issue(self) -> IssueBuilder:
-        if self.__issuer is not None and self.__issuer.has_repo():
+        if self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:
             self.__issue = self.__issuer.create(
                 IssueDefaultBuilder().build(
                     self.__state_handler,
@@ -45,9 +45,15 @@ class IssueBuilder:
         return self
 
     def find_issue_from_branch_name(self) -> IssueBuilder:
-        issue_number: Optional[int] = self.__version_control.get_issue_number()
-        if issue_number is not None:
-            self.__issue = self.__issuer.issue_builder().with_number(issue_number)
+        if self.__issuer is not None:
+            issue_number: Optional[int] = self.__version_control.get_issue_number()
+
+            if issue_number is not None:
+                self.__issue = self.__issuer.issue_builder().with_number(issue_number)
+                if self.__issue is not None:
+                    Log.info('Issue number ' + str(self.__issue.number) + ' found')
+            else:
+                Log.info('No Issue found')
         return self
 
     def comment_issue_with_topic(self, topic: Topic) -> IssueBuilder:
@@ -59,3 +65,6 @@ class IssueBuilder:
 
     def issue(self) -> Optional[Issue]:
         return self.__issue
+
+    def issuer(self) -> Optional[Issuer]:
+        return self.__issuer

@@ -7,7 +7,6 @@ from VersionControl import Commit
 from VersionControl.Branch import Branch as VersionControlBranch
 from Branches.Branches import Branches
 from VersionControl.CommitHandler import CommitHandler
-from VersionControlProvider.Issue import Issue
 
 
 class VersionControl:
@@ -32,7 +31,11 @@ class VersionControl:
         pass
 
     @abc.abstractmethod
-    def get_issue_number(self) -> Optional[Issue]:
+    def get_issue_number(self) -> Optional[int]:
+        pass
+
+    @abc.abstractmethod
+    def get_topic_number(self) -> Optional[int]:
         pass
 
     @abc.abstractmethod

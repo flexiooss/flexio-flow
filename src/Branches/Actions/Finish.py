@@ -4,17 +4,38 @@ from typing import Optional
 
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
+from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
+from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from VersionControl.Branch import Branch
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Issuer import Issuer
 from Core.IssuerHandler import IssuerHandler
 from ConsoleColors.Fg import Fg
+from VersionControlProvider.Topic import Topic
 
 
 class Finish(Action):
 
-    def __process_without_issue(self) -> Branch:
-        return self.version_control.build_branch(self.branch).with_action(Actions.FINISH).with_options(self.options)
+    def __with_action(self, branch: Branch) -> Branch:
+        return branch.with_action(Actions.FINISH)
+
+    def __with_options(self, branch: Branch) -> Branch:
+        return branch.with_options(self.options)
+
+    def __with_issue(self, branch: Branch, issue: Issue) -> Branch:
+        if issue is not None:
+            self.__should_close_issue()
+            return branch.with_issue(issue)
+        else:
+            return branch
+
+    def __with_topic(self, branch: Branch, topic: Topic) -> Branch:
+        if topic is not None:
+            return branch.with_topic(topic)
+        else:
+            return branch
+
+
 
     def __should_close_issue(self):
         close_issue: str = input(
@@ -23,32 +44,36 @@ class Finish(Action):
         if close_issue_b:
             self.options.update({'close_issue': True})
 
-    def __process_with_issue(self, issue: Issue) -> Branch:
-        self.__should_close_issue()
-
-        return self.version_control.build_branch(self.branch).with_issue(issue).with_action(
-            Actions.FINISH).with_options(self.options)
-
     def process(self):
 
-        issue: Optional[Issue] = None
-        branch: Optional[Branch] = None
-
-        if self.config_handler.has_issuer():
-            issue_number: Optional[int] = self.version_control.get_issue_number()
-            if issue_number is not None:
-                issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler).issuer()
-                issue = issuer.issue_builder().with_number(issue_number)
-
-        branch = self.version_control.build_branch(self.branch)
+        branch: Branch = self.version_control.build_branch(self.branch)
         branch = self.__with_action(branch)
+        branch = self.__with_options(branch)
+
+        issuer_builder: issuer_builder = IssueBuilder(
+            self.version_control,
+            self.state_handler,
+            self.config_handler,
+            self.branch,
+            self.options
+        )
+
+        issue: Optional[Issue] = issuer_builder.find_issue_from_branch_name().issue()
+
+        topic_builder: TopicBuilder = TopicBuilder(
+            self.version_control,
+            self.state_handler,
+            self.config_handler,
+            self.branch,
+            self.options
+        )
+
+        topic: Optional[Topic] = topic_builder.find_topic_from_branch_name().topic()
+
+        if issue is not None and topic is not None:
+            issuer_builder.comment_issue_with_topic(topic)
+            topic_builder.attach_issue(issue)
+
         branch = self.__with_issue(branch, issue)
         branch = self.__with_topic(branch, topic)
-        branch = self.__ensure_is_major(branch)
-
-        if issue is not None:
-            branch = self.__process_with_issue(issue)
-        else:
-            branch = self.__process_without_issue()
-
         branch.process()

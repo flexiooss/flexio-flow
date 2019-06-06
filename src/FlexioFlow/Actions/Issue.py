@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from pprint import pprint
+
+from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
 from Core.ConfigHandler import ConfigHandler
 from Core.IssuerHandler import IssuerHandler
 from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.StateHandler import StateHandler
-from typing import Dict
+from typing import Dict, Optional
 
 from VersionControl.VersionControl import VersionControl
 from VersionControlProvider.Issuer import Issuer
@@ -28,18 +31,25 @@ class Issue:
 
     def process(self):
         if self.action is IssueActions.READ:
-            print('read issue')
-            issue_number = self.version_control.get_issue_number()
-            print(issue_number)
 
-            issuer: Issuer = IssuerHandler(
-                state_handler=self.state_handler,
-                config_handler=self.config_handler).issuer()
+            issuer_builder: issuer_builder = IssueBuilder(
+                self.version_control,
+                self.state_handler,
+                self.config_handler,
+                None,
+                self.options
+            )
 
-            issue : AbstractIssue = issuer.read_issue_by_number(int(issue_number))
-            print(issue.__dict__())
+            issue: Optional[AbstractIssue] = issuer_builder.find_issue_from_branch_name().issue()
+
+            if issue is not None:
+                read_issue: Optional[AbstractIssue] = issuer_builder.issuer().read_issue_by_number(issue.number)
+                if read_issue is not None:
+                    pprint(read_issue.__dict__())
+
+
 
 
 
         elif self.action is IssueActions.COMMENT:
-            print('comment issue')
+            raise NotImplementedError

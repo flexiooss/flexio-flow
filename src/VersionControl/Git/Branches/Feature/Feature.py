@@ -27,7 +27,14 @@ class Feature(Branch):
 
         elif self.action is Actions.FINISH:
             self.start_message('Feature finish')
-            Finish(self.state_handler, self.issue, self.options.get('keep-branch', False),
-                   self.options.get('close_issue', False)).process()
+
+            Finish(
+                state_handler=self.state_handler,
+                issue=self.issue,
+                topic=self.topic,
+                keep_branch=self.options.get('keep-branch', False),
+                close_issue=self.options.get('close_issue', False)
+            ).process()
+
         else:
             raise NotImplementedError
