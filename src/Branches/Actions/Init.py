@@ -3,6 +3,7 @@ from __future__ import annotations
 from Core.TopicerHandler import TopicerHandler
 from FlexioFlow.Version import Version
 from FlexioFlow.Level import Level
+from Log.Log import Log
 from Schemes.Schemes import Schemes
 from typing import List, Optional
 from Branches.Actions.Action import Action
@@ -67,8 +68,7 @@ class Init(Action):
         return self
 
     def __input_topic(self) -> Init:
-        print('__input_topic')
-        print(self.config_handler.has_topicer())
+        Log.info('No topicer found')
         if self.config_handler.has_topicer():
             self.__topicer: Optional[Topicer] = TopicerHandler(
                 self.state_handler,
@@ -106,7 +106,6 @@ class Init(Action):
                 self.state_handler.reset_state()
 
         self.__start_message().__input_version().__input_level().__input_schemes().__input_topic()
-        print(self.state_handler.state.schemes)
 
         return False
 

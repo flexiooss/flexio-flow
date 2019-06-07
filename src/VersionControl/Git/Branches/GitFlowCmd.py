@@ -30,9 +30,9 @@ class GitFlowCmd:
 
     def ensure_head(self) -> GitFlowCmd:
         if not self.__git.has_head():
-            print('The repository does not have a HEAD yet')
+            Log.warning('The repository does not have a HEAD yet')
             self.__git.init_head().commit('Initial commit', ['--allow-empty'])
-            print('Initial commit')
+            Log.info('Initial commit')
         return self
 
     def ensure_master_branch(self) -> GitFlowCmd:
