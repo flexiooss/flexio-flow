@@ -33,7 +33,7 @@ class IssueBuilder:
         self.__options: Dict[str, str] = options
 
     def try_ensure_issue(self) -> IssueBuilder:
-        if self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:
+        if self.__config_handler.has_issuer() and self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:
             self.__issue = self.__issuer.create(
                 IssueDefaultBuilder().build(
                     self.__state_handler,

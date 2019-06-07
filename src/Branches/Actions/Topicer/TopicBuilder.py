@@ -43,7 +43,7 @@ class TopicBuilder:
 
     def try_ensure_topic(self) -> TopicBuilder:
 
-        if self.__topicer is not None:
+        if self.__config_handler.has_topicer() and self.__topicer is not None:
             if self.__state_handler.has_default_topic():
                 Log.info('waiting... default Topic...')
                 self.__build_default()
@@ -72,8 +72,8 @@ url : {url!s}{reset}
             if use_default_topic.lower() == 'n':
                 self.__topic = None
 
-        if self.__topic is None:
-            self.__topic: Topic = self.__topicer.create()
+            if self.__topic is None:
+                self.__topic: Topic = self.__topicer.create()
 
         return self
 
