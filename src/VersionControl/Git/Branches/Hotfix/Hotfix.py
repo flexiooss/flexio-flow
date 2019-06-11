@@ -14,7 +14,7 @@ class Hotfix(Branch):
             Start(
                 state_handler=self.state_handler,
                 issue=self.issue,
-                topic=self.topic
+                topic=self.topics
             ).process()
 
         elif self.action is Actions.FINISH:
@@ -23,7 +23,7 @@ class Hotfix(Branch):
             Finish(
                 state_handler=self.state_handler,
                 issue=self.issue,
-                topic=self.topic,
+                topics=self.topics,
                 keep_branch=self.options.get('keep-branch', False),
                 close_issue=self.options.get('close_issue', False)
             ).process()

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Optional
+from typing import Type, Optional, List
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from Exceptions.RemoteDivergence import RemoteDivergence
@@ -18,12 +18,12 @@ class Start:
     def __init__(self,
                  state_handler: StateHandler,
                  issue: Optional[Type[Issue]],
-                 topic: Optional[Topic],
+                 topics: Optional[List[Topic]],
                  is_major: bool
                  ):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
-        self.__topic: Optional[Topic] = topic
+        self.__topics: Optional[List[Topic]] = topics
         self.__is_major: bool = is_major
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
@@ -64,8 +64,8 @@ class Start:
         self.__git.checkout(Branches.DEVELOP)
         self.__set_version()
 
-        branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).with_topic(
-            self.__topic).branch_name_from_version(
+        branch_name: str = BranchHandler(Branches.RELEASE).with_issue(self.__issue).with_topics(
+            self.__topics).branch_name_from_version(
             self.__state_handler.state.version
         )
 

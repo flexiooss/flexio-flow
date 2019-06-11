@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Type, Optional
+from typing import Type, Optional, List
 
 from Exceptions.BranchHaveDiverged import BranchHaveDiverged
 from Exceptions.BranchNotExist import BranchNotExist
@@ -24,13 +24,13 @@ class Finish:
     def __init__(self,
                  state_handler: StateHandler,
                  issue: Optional[Type[Issue]],
-                 topic: Optional[Topic],
+                 topics: Optional[List[Topic]],
                  keep_branch: bool,
                  close_issue: bool
                  ):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Type[Issue]] = issue
-        self.__topic: Optional[Topic] = topic
+        self.__topics: Optional[List[Topic]] = topics
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
         self.__keep_branch: bool = keep_branch

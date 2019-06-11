@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from Branches.Actions.Actions import Actions
 from FlexioFlow.StateHandler import StateHandler
@@ -11,13 +11,13 @@ from VersionControlProvider.Topic import Topic
 class Branch(abc.ABC):
     action: Actions
     issue: Optional[Issue]
-    topic: Optional[Topic]
+    topics: Optional[Topic]
     name: Optional[str]
 
     def __init__(self, state_handler: StateHandler) -> None:
         self.state_handler: StateHandler = state_handler
         self.issue: Optional[Issue] = None
-        self.topic: Optional[Topic] = None
+        self.topics: Optional[List[Topic]] = None
         self.name: Optional[str] = None
         self.options: Dict[str, str] = {}
 
@@ -25,8 +25,8 @@ class Branch(abc.ABC):
         self.issue = issue
         return self
 
-    def with_topic(self, topic: Topic) -> Branch:
-        self.topic = topic
+    def with_topics(self, topics: Optional[List[Topic]]) -> Branch:
+        self.topics = topics
         return self
 
     def with_name(self, name: str) -> Branch:

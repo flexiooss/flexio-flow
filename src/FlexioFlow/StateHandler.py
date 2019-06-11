@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List
 
 import yaml
+
 from FlexioFlow.State import State
 from FlexioFlow.Level import Level
+from Log.Log import Log
 from Schemes.Schemes import Schemes
 from FlexioFlow.Version import Version
 from pathlib import Path
@@ -35,6 +37,13 @@ class StateHandler:
     def file_exists(self) -> bool:
         return self.file_path().is_file()
 
+    def __topics_from_list_number(self, list: List[int]):
+        ret: List[DefaultTopic] = []
+        for number in list:
+            ret.append(DefaultTopic().with_number(number))
+
+        return ret
+
     def load_file_config(self) -> StateHandler:
         if not self.file_path().is_file():
             raise FileNotFoundError(self.file_path(), 'Flexio Flow not initialized try : flexio-flow init')
@@ -45,7 +54,13 @@ class StateHandler:
         self.__state.version = Version.from_str(data['version'])
         self.__state.schemes = Schemes.list_from_value(data['schemes'])
         self.__state.level = Level(data['level'])
-        self.__state.topic = DefaultTopic().with_number(data.get('topic'))
+
+        topics = data.get('topics')
+        if topics is not None and not isinstance(topics, list):
+            topics = [topics]
+        if topics is None:
+            topics = []
+        self.__state.topics = self.__topics_from_list_number(topics)
 
         return self
 
@@ -53,7 +68,7 @@ class StateHandler:
         stream = self.file_path().open('w')
         yaml.dump(self.state.to_dict(), stream)
         stream.close()
-        print('Write file state : ' + self.file_path().as_posix())
+        Log.info('Write file state : ' + self.file_path().as_posix())
         return yaml.dump(self.state.to_dict())
 
     def file_path(self) -> Path:
@@ -115,7 +130,7 @@ class StateHandler:
             return None
 
     def has_default_topic(self) -> bool:
-        return self.__state.topic.number is not None
+        return len(self.__state.topics) > 0
 
-    def default_topic(self) -> DefaultTopic:
-        return self.__state.topic
+    def default_topics(self) -> List[DefaultTopic]:
+        return self.__state.topics

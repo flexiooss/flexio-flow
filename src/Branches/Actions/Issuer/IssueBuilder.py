@@ -58,7 +58,7 @@ class IssueBuilder:
 
     def comment_issue_with_topic(self, topic: Topic) -> IssueBuilder:
         if self.__issue is not None:
-            Log.info('Waiting... Comment issue with topic...')
+            Log.info('Waiting... Comment issue with topics : ' + str(topic.number))
             self.__issuer.comment(self.__issue, 'Topic : ' + topic.url())
 
         return self

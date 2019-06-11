@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, Type, Tuple, Match
+from typing import Optional, Type, Tuple, Match, List
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
 from Branches.Branches import Branches
@@ -14,20 +14,26 @@ class BranchHandler:
     def __init__(self, branch: Branches):
         self.branch: Branches = branch
         self.issue: Optional[Issue] = None
-        self.topic: Optional[Topic] = None
+        self.topics: Optional[List[Topic]] = None
 
     def with_issue(self, issue: Optional[Issue]) -> BranchHandler:
         self.issue = issue
         return self
 
-    def with_topic(self, topic: Optional[Topic]) -> BranchHandler:
-        self.topic = topic
+    def with_topics(self, topics: Optional[List[Topic]]) -> BranchHandler:
+        self.topics = topics
         return self
 
     def __format_branch_name(self, name: str) -> str:
-        return "{name!s}{topic_ref!s}{issue_ref!s}".format(
+        topics_ref: str = ''
+
+        if self.topics is not None and len(self.topics) > 0:
+            for topic in self.topics:
+                topics_ref += topic.get_ref()
+
+        return "{name!s}{topics_ref!s}{issue_ref!s}".format(
             name=name,
-            topic_ref=self.topic.get_ref() if self.topic is not None else '',
+            topics_ref=topics_ref,
             issue_ref=self.issue.get_ref() if self.issue is not None else ''
         )
 
@@ -53,18 +59,20 @@ class BranchHandler:
 
     @staticmethod
     def issue_number_from_branch_name(name: str) -> Optional[int]:
-        regexp = re.compile('[\w_\/\d\-\.#]*(?:#(?P<issue_number>[\d]+))$')
+        regexp = re.compile('[\w_\/\d\-\.#]*(?:(?:(?<=[^#])#(?=[^#]))(?P<issue_number>[\d]+)?)$')
         matches: Match = re.match(regexp, name)
         if matches is None:
             return None
         else:
-            return matches.groupdict().get('issue_number')
+            return int(matches.groupdict().get('issue_number'))
 
     @staticmethod
-    def topic_number_from_branch_name(name: str) -> Optional[int]:
-        regexp = re.compile('[\w_\/\d\-\.]*(?:##(?P<topic_number>[\d]+))')
-        matches: Match = re.match(regexp, name)
-        if matches is None:
-            return None
+    def topics_number_from_branch_name(name: str) -> Optional[List[int]]:
+        regexp = re.compile('[\w_\/\d\-\.]*(?:##(?P<topic_number>[\d]+))?')
+        matches: List = re.findall(regexp, name)
+        ret: List[int] = list(map(lambda x: int(x), filter(lambda x: len(x) > 0, map(lambda x: x.strip(), matches))))
+
+        if len(ret) > 0:
+            return ret
         else:
-            return matches.groupdict().get('topic_number')
+            return None

@@ -15,7 +15,7 @@ class Release(AbstractRelease):
             Start(
                 state_handler=self.state_handler,
                 issue=self.issue,
-                topic=self.topic,
+                topics=self.topics,
                 is_major=self.is_major
             ).process()
 
@@ -25,7 +25,7 @@ class Release(AbstractRelease):
             Finish(
                 state_handler=self.state_handler,
                 issue=self.issue,
-                topic=self.topic,
+                topics=self.topics,
                 keep_branch=self.options.get('keep-branch', False),
                 close_issue=self.options.get('close_issue', False)
             ).process()
@@ -36,7 +36,7 @@ class Release(AbstractRelease):
             PreCheck(
                 state_handler=self.state_handler,
                 issue=self.issue,
-                topic=self.topic
+                topics=self.topics
             ).process()
 
         else:

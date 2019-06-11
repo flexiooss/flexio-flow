@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List
 
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
@@ -29,9 +29,9 @@ class Finish(Action):
         else:
             return branch
 
-    def __with_topic(self, branch: Branch, topic: Topic) -> Branch:
-        if topic is not None:
-            return branch.with_topic(topic)
+    def __with_topic(self, branch: Branch, topics: Optional[List[Topic]]) -> Branch:
+        if topics is not None:
+            return branch.with_topics(topics)
         else:
             return branch
 
@@ -66,8 +66,8 @@ class Finish(Action):
             self.options
         )
 
-        topic: Optional[Topic] = topic_builder.find_topic_from_branch_name().topic()
+        topics: Optional[List[Topic]] = topic_builder.find_topic_from_branch_name().topics()
 
         branch = self.__with_issue(branch, issue)
-        branch = self.__with_topic(branch, topic)
+        branch = self.__with_topic(branch, topics)
         branch.process()

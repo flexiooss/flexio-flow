@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import List
+
 from VersionControlProvider.DefaultTopic import DefaultTopic
 from VersionControlProvider.Flexio.FlexioClient import FlexioClient
 from VersionControlProvider.Flexio.FlexioIssue import FlexioIssue
+from VersionControlProvider.Flexio.Topic.AttachOrCreate import AttachOrCreate
 from VersionControlProvider.Flexio.Topic.Create import Create
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
 from VersionControlProvider.Issue import Issue
@@ -14,6 +17,9 @@ class FlexioTopicer(Topicer):
 
     def create(self) -> Topic:
         return Create(config_handler=self.config_handler).process()
+
+    def attach_or_create(self) -> List[Topic]:
+        return AttachOrCreate(config_handler=self.config_handler).process()
 
     def attach_issue(self, topic: Topic, issue: Issue) -> FlexioTopicer:
         flexio: FlexioClient = FlexioClient(self.config_handler)

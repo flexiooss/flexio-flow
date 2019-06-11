@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Optional
+from typing import Optional, List
 
 from FlexioFlow.StateHandler import StateHandler
 from VersionControl import Commit
@@ -35,7 +35,7 @@ class VersionControl:
         pass
 
     @abc.abstractmethod
-    def get_topic_number(self) -> Optional[int]:
+    def get_topics_number(self) -> Optional[List[int]]:
         pass
 
     @abc.abstractmethod

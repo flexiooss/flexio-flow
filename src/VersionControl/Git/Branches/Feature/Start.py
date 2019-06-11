@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Type, Optional
+from typing import Type, Optional, List
 from slugify import slugify
 
 from Exceptions.BranchAlreadyExist import BranchAlreadyExist
@@ -17,10 +17,10 @@ from VersionControlProvider.Topic import Topic
 
 class Start:
 
-    def __init__(self, state_handler: StateHandler, issue: Optional[Issue], topic: Optional[Topic], name: str):
+    def __init__(self, state_handler: StateHandler, issue: Optional[Issue], topics: Optional[List[Topic]], name: str):
         self.__state_handler: StateHandler = state_handler
         self.__issue: Optional[Issue] = issue
-        self.__topic: Optional[Topic] = topic
+        self.__topics: Optional[List[Topic]] = topics
         self.__name: str = slugify(name)
         self.__git: GitCmd = GitCmd(self.__state_handler)
         self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
@@ -35,8 +35,8 @@ class Start:
 
     def __start_feature(self):
         self.__git.checkout(Branches.DEVELOP)
-        branch_name: str = BranchHandler(Branches.FEATURE).with_issue(self.__issue).with_topic(
-            self.__topic).branch_name_from_version_with_name(
+        branch_name: str = BranchHandler(Branches.FEATURE).with_issue(self.__issue).with_topics(
+            self.__topics).branch_name_from_version_with_name(
             version=self.__state_handler.state.version,
             name=self.__name
         )

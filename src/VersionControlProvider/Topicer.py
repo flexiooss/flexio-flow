@@ -1,5 +1,6 @@
 from __future__ import annotations
 import abc
+from typing import List
 
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
@@ -18,6 +19,10 @@ class Topicer(abc.ABC):
 
     @abc.abstractmethod
     def create(self) -> Topic:
+        pass
+
+    @abc.abstractmethod
+    def attach_or_create(self) -> List[Topic]:
         pass
 
     @abc.abstractmethod

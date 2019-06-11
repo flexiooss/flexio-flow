@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List
 
 from VersionControl.Git.Actions.CommitHandler import CommitHandler
 from VersionControl.CommitHandler import CommitHandler as AbstractCommitHandler
@@ -40,8 +40,8 @@ class Git(VersionControl):
         issue_number: Optional[int] = IssueHandler(self.state_handler).number_from_branch_name()
         return issue_number
 
-    def get_topic_number(self) -> Optional[int]:
-        topic_number: Optional[int] = TopicHandler(self.state_handler).number_from_branch_name()
+    def get_topics_number(self) -> Optional[List[int]]:
+        topic_number: Optional[int] = TopicHandler(self.state_handler).numbers_from_branch_name()
         return topic_number
 
     def commit(self, commit: CommitValueObject) -> AbstractCommitHandler:

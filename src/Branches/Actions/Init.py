@@ -67,20 +67,22 @@ class Init(Action):
         print(yml)
         return self
 
-    def __input_topic(self) -> Init:
-        Log.info('No topicer found')
+    def __input_topics(self) -> Init:
         if self.config_handler.has_topicer():
             self.__topicer: Optional[Topicer] = TopicerHandler(
                 self.state_handler,
                 self.config_handler
             ).topicer()
 
-            self.__topic: Topic = self.__topicer.create()
-            self.state_handler.state.topic = DefaultTopic().with_number(
-                self.__topic.number
-            )
+            self.__topics: List[Topic] = self.__topicer.attach_or_create()
+            self.state_handler.state.topics = []
+            for topic in self.__topics:
+                self.state_handler.state.topics.append(DefaultTopic().with_number(
+                    topic.number)
+                )
         else:
-            self.state_handler.state.topic = DefaultTopic()
+            Log.info('No topicer found')
+            # self.state_handler.state.topic = DefaultTopic()
 
         return self
 
@@ -105,7 +107,7 @@ class Init(Action):
             else:
                 self.state_handler.reset_state()
 
-        self.__start_message().__input_version().__input_level().__input_schemes().__input_topic()
+        self.__start_message().__input_version().__input_level().__input_schemes().__input_topics()
 
         return False
 

@@ -16,9 +16,6 @@ from VersionControlProvider.IssueMessage import IssueMessage as AbstractMessage
 
 class GithubIssuer(Issuer):
     def create(self, default_issue: Optional[IssueDefault]) -> Issue:
-        print('create issue')
-
-        # repo: Repo = Repo(owner='flexiooss', repo='flexio-flow-punching-ball')
         repo: Repo = GitCmd(self.state_handler).get_repo()
 
         return Create(self.config_handler, repo, default_issue).process()

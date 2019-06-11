@@ -11,7 +11,7 @@ class State:
     __version: Version
     __level: Level
     __schemes: List[Schemes]
-    __topic: DefaultTopic
+    __topics: List[DefaultTopic]
 
     def __init__(self) -> None:
         self.__issues = []
@@ -45,19 +45,19 @@ class State:
         self.__schemes = v
 
     @property
-    def topic(self) -> DefaultTopic:
-        return self.__topic
+    def topics(self) -> List[DefaultTopic]:
+        return self.__topics
 
-    @topic.setter
-    def topic(self, v: DefaultTopic):
-        self.__topic: DefaultTopic = v
+    @topics.setter
+    def topics(self, v: List[DefaultTopic]):
+        self.__topics: List[DefaultTopic] = v
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             'version': str(self.version),
             'level': self.level.value,
             'schemes': self.__schemeListValue(),
-            'topic': self.__topic.number
+            'topics': self.__topicNumberValue()
         }
 
     def next_major(self) -> Version:
@@ -94,6 +94,12 @@ class State:
         ret = []
         for scheme in self.schemes:
             ret.append(scheme.value)
+        return ret
+
+    def __topicNumberValue(self) -> List[int]:
+        ret = []
+        for topic in self.__topics:
+            ret.append(topic.number)
         return ret
 
     def __str__(self):

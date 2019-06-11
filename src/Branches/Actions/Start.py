@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List
 
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
@@ -31,9 +31,9 @@ class Start(Action):
         else:
             return branch
 
-    def __with_topic(self, branch: Branch, topic: Topic) -> Branch:
-        if topic is not None:
-            return branch.with_topic(topic)
+    def __with_topics(self, branch: Branch, topics: Optional[List[Topic]]) -> Branch:
+        if topics is not None:
+            return branch.with_topics(topics)
         else:
             return branch
 
@@ -92,13 +92,14 @@ class Start(Action):
             self.options
         )
 
-        topic: Optional[Topic] = topic_builder.try_ensure_topic().topic()
+        topics: Optional[List[Topic]] = topic_builder.try_ensure_topic().topic()
 
-        if issue is not None and topic is not None:
-            issuer_builder.comment_issue_with_topic(topic)
+        if issue is not None and topics is not None and len(topics) > 0:
             topic_builder.attach_issue(issue)
+            for topic in topics:
+                issuer_builder.comment_issue_with_topic(topic)
 
         branch = self.__with_issue(branch, issue)
-        branch = self.__with_topic(branch, topic)
+        branch = self.__with_topics(branch, topics)
         branch = self.__ensure_name(branch)
         branch.process()

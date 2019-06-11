@@ -52,7 +52,7 @@ class TestFlexio(unittest.TestCase):
 
     def test_get_last_record(self):
         topic: FlexioTopic = FlexioTopic()
-        # topic.number = 2
+        # topics.number = 2
 
         r: Response = FlexioClient(self.config_handler).get_records(record=topic, range=Range())
 

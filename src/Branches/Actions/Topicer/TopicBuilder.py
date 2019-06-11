@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from Branches.Branches import Branches
 from Core.ConfigHandler import ConfigHandler
@@ -27,7 +27,7 @@ class TopicBuilder:
         self.__config_handler: ConfigHandler = config_handler
         self.__branch: Optional[Branches] = branch
         self.__topicer: Optional[Topicer] = None
-        self.__topic: Optional[Topic] = None
+        self.__topics: Optional[List[Topic]] = None
         self.options: Dict[str, str] = options
         self.__init_topicer()
 
@@ -39,17 +39,23 @@ class TopicBuilder:
             ).topicer()
 
     def __build_default(self):
-        self.__topic = self.__topicer.from_default(self.__state_handler.default_topic())
+        self.__topics = []
+        for defaultTopic in self.__state_handler.default_topics():
+            self.__topics.append(self.__topicer.from_default(defaultTopic))
 
     def try_ensure_topic(self) -> TopicBuilder:
 
         if self.__config_handler.has_topicer() and self.__topicer is not None:
             if self.__state_handler.has_default_topic():
+
                 Log.info('waiting... default Topic...')
                 self.__build_default()
+                Log.info(str(len(self.__topics)) + ' found')
 
-                print(
-                    """
+                if self.__topics is not None:
+                    for topic in self.__topics:
+                        print(
+                            """
 ###############################################
 ############{green}    Default Topic     {reset}############
 ###############################################{green}
@@ -58,47 +64,52 @@ number : {number!s}
 description : {body!s}
 url : {url!s}{reset}
 ###############################################
-""".format(
-                        green=Fg.FOCUS.value,
-                        title=self.__topic.title,
-                        number=self.__topic.number,
-                        body=self.__topic.body,
-                        url=self.__topic.url(),
-                        reset=Fg.RESET.value
-                    )
-                )
+        """.format(
+                                green=Fg.FOCUS.value,
+                                title=topic.title,
+                                number=topic.number,
+                                body=topic.body,
+                                url=topic.url(),
+                                reset=Fg.RESET.value
+                            )
+                        )
 
-                use_default_topic: str = input('Use this topic Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
-                if use_default_topic.lower() == 'n':
-                    self.__topic = None
+                    use_default_topic: str = input('Use these topics Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
+                    if use_default_topic.lower() == 'n':
+                        self.__topics = None
             else:
                 Log.info('No default Topic found')
 
-            if self.__topic is None:
-                self.__topic: Topic = self.__topicer.create()
+            if self.__topics is None:
+                self.__topics: List[Topic] = self.__topicer.attach_or_create()
 
         return self
 
     def attach_issue(self, issue: Issue) -> TopicBuilder:
-        if self.__topic is not None:
-            Log.info('Waiting... Attach issue to topic...')
-            self.__topicer.attach_issue(self.__topic, issue)
+        if self.__topics is not None:
+            for topic in self.__topics:
+                Log.info('Waiting... Attach issue to topics : ' + str(topic.number))
+                self.__topicer.attach_issue(topic, issue)
         return self
 
     def find_topic_from_branch_name(self) -> TopicBuilder:
         if self.__topicer is not None:
-            topic_number: Optional[int] = self.__version_control.get_topic_number()
-            if topic_number is not None:
-                self.__topic = self.__topicer.topic_builder().with_number(topic_number)
-                if self.__topic is not None:
-                    Log.info('Topic number ' + str(self.__topic.number) + ' found')
+            topics_number: Optional[List[int]] = self.__version_control.get_topics_number()
+            if topics_number is not None and len(topics_number) > 0:
+                self.__topics = []
+                for number in topics_number:
+                    self.__topics.append(self.__topicer.topic_builder().with_number(number))
+
+            if self.__topics is not None and len(self.__topics) > 0:
+                for topic in self.__topics:
+                    Log.info('Topic number ' + str(topic.number) + ' found')
             else:
                 Log.info('No Topic found')
 
         return self
 
-    def topic(self) -> Optional[Issue]:
-        return self.__topic
+    def topic(self) -> Optional[List[Topic]]:
+        return self.__topics
 
     def topicer(self) -> Optional[Topicer]:
         return self.__topicer
