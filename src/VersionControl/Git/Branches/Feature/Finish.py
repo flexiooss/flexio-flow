@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from typing import Type, Optional
+
+from Exceptions.BranchHaveDiverged import BranchHaveDiverged
 from Exceptions.BranchNotExist import BranchNotExist
 from Exceptions.GitMergeConflictError import GitMergeConflictError
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
@@ -12,6 +14,7 @@ from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
+from ConsoleColors.Fg import Fg
 
 
 class Finish:
@@ -39,8 +42,11 @@ class Finish:
         self.__git.checkout(Branches.DEVELOP).try_to_pull()
         return self
 
-    def __merge_develop(self) -> Finish:
+    def __checkout_current_feature(self):
         self.__git.checkout_with_branch_name(self.__current_branch_name)
+
+    def __merge_develop(self) -> Finish:
+        self.__checkout_current_feature()
 
         message: Message = Message(
             message=''.join([
@@ -72,6 +78,14 @@ class Finish:
         ).try_to_push()
 
         if self.__git.has_conflict():
+            Log.error("""
+
+{fg_fail}CONFLICT : resolve conflict, and remove your feature branch manually{reset_fg}
+
+""".format(
+                fg_fail=Fg.FAIL.value,
+                reset_fg=Fg.RESET.value,
+            ))
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
         return self
 
@@ -92,4 +106,29 @@ class Finish:
             raise NotCleanWorkingTree()
         if not self.__gitflow.is_feature():
             raise BranchNotExist(Branches.FEATURE.value)
-        self.__pull_develop().__finish_feature()
+
+        self.__pull_develop()
+        if self.__git.is_branch_ahead(Branches.DEVELOP.value, self.__current_branch_name):
+            Log.error("""
+
+{fg_fail}{list}{reset_fg}
+
+            """.format(
+                fg_fail=Fg.FAIL.value,
+                list=self.__git.list_commit_diff(Branches.DEVELOP.value, self.__current_branch_name),
+                reset_fg=Fg.RESET.value,
+            ))
+            self.__checkout_current_feature()
+            raise BranchHaveDiverged(
+                """
+    
+{fg_fail}{message}{reset_fg}
+    
+                            """.format(
+                    fg_fail=Fg.FAIL.value,
+                    message='Oups !!! Develop have commit ahead ' + self.__current_branch_name + ' merge before',
+                    reset_fg=Fg.RESET.value,
+                )
+            )
+
+        self.__finish_feature()

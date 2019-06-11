@@ -17,6 +17,7 @@ from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
+from ConsoleColors.Fg import Fg
 
 
 class Finish:
@@ -41,6 +42,9 @@ class Finish:
         self.__gitflow.init_config()
         return self
 
+    def __checkout_current_release(self):
+        self.__git.checkout_with_branch_name(self.__name)
+
     def __pull_develop(self) -> Finish:
         # if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
         #     raise RemoteDivergence(Branches.DEVELOP.value + 'should be merged with remote')
@@ -61,8 +65,6 @@ class Finish:
         )
 
         message_str: str = ''
-        print('self.__close_issue')
-        print(self.__close_issue)
         if self.__close_issue:
             message_str = message.with_close()
         else:
@@ -85,7 +87,7 @@ class Finish:
         tag: str = self.__state_handler.version_as_str()
 
         if tag != self.__version_check:
-            Log.error('Version have diverged during merge : ' + tag + 'should be ' + version_check)
+            Log.error('Version have diverged during merge : ' + tag + 'should be ' + self.__version_check)
             raise GitMergeConflictError(Branches.MASTER.value)
 
         self.__git.tag(
@@ -110,7 +112,7 @@ class Finish:
         return self
 
     def __merge_develop(self) -> Finish:
-        self.__git.checkout_with_branch_name(self.__git.get_branch_name_from_git(Branches.RELEASE))
+        self.__checkout_current_release()
         self.__state_handler.next_dev_minor()
         self.__state_handler.set_dev()
         self.__state_handler.write_file()
@@ -132,6 +134,14 @@ class Finish:
         )
 
         if self.__git.has_conflict():
+            Log.error("""
+
+{fg_fail}CONFLICT : resolve conflict, and remove your release branch manually{reset_fg}
+
+            """.format(
+                fg_fail=Fg.FAIL.value,
+                reset_fg=Fg.RESET.value,
+            ))
             raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
 
         self.__git.checkout(Branches.RELEASE).undo_last_commit()
@@ -160,8 +170,30 @@ class Finish:
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
 
-        if self.__git.is_branch_ahead(Branches.MASTER.value, self.__name):
-            print(self.__git.list_commit_diff(Branches.MASTER.value, self.__name))
-            raise BranchHaveDiverged('Oups !!! Master have commit ahead ' + self.__name + ' merge before')
+        self.__pull_master()
 
-        self.__pull_develop().__pull_master().__finish_release()
+        if self.__git.is_branch_ahead(Branches.MASTER.value, self.__name):
+            Log.error("""
+
+            {fg_fail}{list}{reset_fg}
+
+                        """.format(
+                fg_fail=Fg.FAIL.value,
+                list=self.__git.list_commit_diff(Branches.MASTER.value, self.__name),
+                reset_fg=Fg.RESET.value,
+            ))
+            self.__checkout_current_release()
+
+            raise BranchHaveDiverged(
+                """
+    
+    {fg_fail}{message}{reset_fg}
+    
+                            """.format(
+                    fg_fail=Fg.FAIL.value,
+                    message='Oups !!! Master have commit ahead ' + self.__name + ' merge before',
+                    reset_fg=Fg.RESET.value,
+                )
+            )
+
+        self.__pull_develop().__finish_release()
