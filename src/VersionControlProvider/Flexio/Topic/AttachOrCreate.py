@@ -33,6 +33,7 @@ class AttachOrCreate:
         return topic != 'n'
 
     def __list_topics(self, count: int):
+        Log.info('waiting... Flexio... last 100 Topics')
         records: List[dict] = self.__get_last_100_records()
         for t_d in records:
             t: FlexioTopic
@@ -82,7 +83,7 @@ class AttachOrCreate:
         print(
             """
 ###############################################
-#################### {yellow}TOPIC{reset} ####################
+################ {yellow}FLEXIO TOPICER{reset} ###############
 ###############################################
 """.format(yellow=Fg.FOCUS.value, reset=Fg.RESET.value))
         return self
@@ -110,7 +111,7 @@ class AttachOrCreate:
                 except FileNotFoundError:
                     Log.error(Fg.FAIL.value + 'Topic not found : retry' + Fg.RESET.value)
                     self.__topics = []
-                    self.process()
+                    return self.process()
             return True
         else:
             return False

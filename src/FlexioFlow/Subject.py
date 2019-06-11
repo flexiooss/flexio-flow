@@ -6,7 +6,7 @@ class Subject(Enum):
     BRANCH: str = 'branch'
     CORE: str = 'core'
     ISSUE: str = 'issue'
-    TOPIC: str = 'topics'
+    TOPICS: str = 'topics'
     SCHEME: str = 'scheme'
     VERSION: str = 'version'
     POOM_CI: str = 'poom-ci'

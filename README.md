@@ -27,7 +27,7 @@ With Ansible playbook : https://github.com/flexiooss/flexio-flow-playbook
 version: [\d].[\d].[\d]
 level: stable|dev
 schemes: maven|package|composer|docker
-topic: [\d]
+topics: [\d][]
 ```
 
 ### Main orders
@@ -53,7 +53,7 @@ flexio-flow release finish
 flexio-flow commit
 
 flexio-flow issue read
-flexio-flow topic read
+flexio-flow topics read
 
 flexio-flow scheme update
 

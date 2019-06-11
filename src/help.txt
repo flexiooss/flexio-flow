@@ -29,7 +29,7 @@ flexio-flow
               init
                   --version   // TODO
                   --scheme    // TODO
-                  --topic    // TODO
+                  --topics    // TODO
                   -N, --no-cli    // TODO
 
               feature
@@ -68,9 +68,9 @@ flexio-flow
               issue
                         read
                         comment // TODO
-   --------  <topic>
+   --------  <topics>
 
-              topic
+              topics
                         read
 
 

@@ -8,6 +8,7 @@ from Core.TopicerHandler import TopicerHandler
 from FlexioFlow.StateHandler import StateHandler
 from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
+from VersionControlProvider.Flexio.Topic.CommonTopic import CommonTopic
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
 from VersionControlProvider.Topicer import Topicer
@@ -48,33 +49,16 @@ class TopicBuilder:
         if self.__config_handler.has_topicer() and self.__topicer is not None:
             if self.__state_handler.has_default_topic():
 
-                Log.info('waiting... default Topic...')
+                Log.info('waiting for... default Topics...')
                 self.__build_default()
-                Log.info(str(len(self.__topics)) + ' found')
+                Log.info(str(len(self.__topics)) + ' Topics found')
 
                 if self.__topics is not None:
                     for topic in self.__topics:
-                        print(
-                            """
-###############################################
-############{green}    Default Topic     {reset}############
-###############################################{green}
-title : {title!s}
-number : {number!s}
-description : {body!s}
-url : {url!s}{reset}
-###############################################
-        """.format(
-                                green=Fg.FOCUS.value,
-                                title=topic.title,
-                                number=topic.number,
-                                body=topic.body,
-                                url=topic.url(),
-                                reset=Fg.RESET.value
-                            )
-                        )
+                        CommonTopic.print_resume_topic(topic)
 
-                    use_default_topic: str = input('Use these topics Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
+                    use_default_topic: str = input(
+                        'Use these topics ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
                     if use_default_topic.lower() == 'n':
                         self.__topics = None
             else:
@@ -108,7 +92,7 @@ url : {url!s}{reset}
 
         return self
 
-    def topic(self) -> Optional[List[Topic]]:
+    def topics(self) -> Optional[List[Topic]]:
         return self.__topics
 
     def topicer(self) -> Optional[Topicer]:

@@ -92,7 +92,7 @@ class Start(Action):
             self.options
         )
 
-        topics: Optional[List[Topic]] = topic_builder.try_ensure_topic().topic()
+        topics: Optional[List[Topic]] = topic_builder.try_ensure_topic().topics()
 
         if issue is not None and topics is not None and len(topics) > 0:
             topic_builder.attach_issue(issue)

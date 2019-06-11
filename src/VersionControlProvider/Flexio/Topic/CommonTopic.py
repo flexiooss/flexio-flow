@@ -7,7 +7,7 @@ class CommonTopic:
     def print_resume_topic(topic: Topic):
         print(
             """###############################################
-################ {green}Topic created{reset} ################
+################# {green}Topic {number!s}{reset} #################
 ###############################################{green}
 title : {title!s}
 number : {number!s}

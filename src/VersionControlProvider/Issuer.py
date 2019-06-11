@@ -30,6 +30,10 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def attach_or_create(self, default_issue: Optional[IssueDefault]) -> Issue:
+        pass
+
+    @abc.abstractmethod
     def read_issue_by_number(self, number: int) -> Issue:
         pass
 

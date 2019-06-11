@@ -68,6 +68,7 @@ class Init(Action):
         return self
 
     def __input_topics(self) -> Init:
+
         if self.config_handler.has_topicer():
             self.__topicer: Optional[Topicer] = TopicerHandler(
                 self.state_handler,
@@ -77,12 +78,12 @@ class Init(Action):
             self.__topics: List[Topic] = self.__topicer.attach_or_create()
             self.state_handler.state.topics = []
             for topic in self.__topics:
-                self.state_handler.state.topics.append(DefaultTopic().with_number(
-                    topic.number)
+                self.state_handler.state.topics.append(
+                    DefaultTopic().with_number(topic.number)
                 )
         else:
             Log.info('No topicer found')
-            # self.state_handler.state.topic = DefaultTopic()
+            self.state_handler.state.topics = None
 
         return self
 

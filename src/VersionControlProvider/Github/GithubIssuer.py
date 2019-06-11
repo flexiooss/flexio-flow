@@ -4,6 +4,7 @@ from requests import Response
 
 from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Github import Github
+from VersionControlProvider.Github.Issue.AttachOrCreate import AttachOrCreate
 from VersionControlProvider.Github.Issue.Create import Create
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Github.Repo import Repo
@@ -19,6 +20,14 @@ class GithubIssuer(Issuer):
         repo: Repo = GitCmd(self.state_handler).get_repo()
 
         return Create(self.config_handler, repo, default_issue).process()
+
+    def attach_or_create(self, default_issue: Optional[IssueDefault]) -> Issue:
+        repo: Repo = GitCmd(self.state_handler).get_repo()
+        return AttachOrCreate(
+            config_handler=self.config_handler,
+            repo=repo,
+            default_issue=default_issue
+        ).process()
 
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> AbstractMessage:
         return Message(message, issue)

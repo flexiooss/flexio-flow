@@ -4,26 +4,26 @@ from pprint import pprint
 
 from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Core.ConfigHandler import ConfigHandler
-from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.StateHandler import StateHandler
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
+from VersionControlProvider.Flexio.Topic.CommonTopic import CommonTopic
 from VersionControlProvider.Topic import Topic as AbstractTopic
 
 
 class Topic:
 
     def __init__(self,
-                 action: IssueActions,
+                 action: TopicActions,
                  state_handler: StateHandler,
                  version_control: VersionControl,
                  config_handler: ConfigHandler,
                  options: Dict[str, str],
                  ) -> None:
-        self.action: IssueActions = action
+        self.action: TopicActions = action
         self.state_handler: StateHandler = state_handler
         self.version_control: VersionControl = version_control
         self.config_handler: ConfigHandler = config_handler
@@ -40,11 +40,15 @@ class Topic:
                 self.options
             )
 
-            topic: Optional[AbstractTopic] = topic_builder.find_topic_from_branch_name().topic()
+            topics: Optional[List[AbstractTopic]] = topic_builder.find_topic_from_branch_name().topics()
 
-            if topic is not None:
-                Log.info('waiting... from flexio...')
+            if topics is not None and len(topics) > 0:
+                for topic in topics:
+                    Log.info('waiting... from flexio...')
 
-                read_topic: Optional[AbstractTopic] = topic_builder.topicer().read_topic_by_number(int(topic.number))
-                if read_topic is not None:
-                    pprint(read_topic.to_dict())
+                    read_topic: Optional[AbstractTopic] = topic_builder.topicer().read_topic_by_number(
+                        int(topic.number))
+                    if read_topic is not None:
+                        CommonTopic.print_resume_topic(read_topic)
+            else:
+                Log.warning('No Topic found')

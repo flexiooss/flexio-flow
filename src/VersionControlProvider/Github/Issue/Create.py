@@ -2,8 +2,10 @@ from __future__ import annotations
 from typing import List, Dict, Type, Optional
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
+from Log.Log import Log
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
+from VersionControlProvider.Github.Issue.CommonIssue import CommonIssue
 from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
@@ -20,30 +22,14 @@ class Create:
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
 
-    def __would_attach_issue(self) -> bool:
-        issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
-            green=Fg.SUCCESS.value,
-            reset_fg=Fg.RESET.value,
-        ))
-        issue = issue if issue else 'n'
-        return issue == 'y'
-
-    def __number_issue(self) -> int:
-        issue: str = input('Issue number : ')
-        return int(issue)
-
     def __start_message(self) -> Create:
-        print(
-            """###############################################
-#################### {yellow}ISSUE{reset} ####################
-###############################################
-""".format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
+        CommonIssue.issuer_message()
         return self
 
     def __start_message_issue(self) -> Create:
         print(
             """###############################################
-##########     {yellow}Create Github Issue{reset}     ##########
+#########     {yellow}Create Github Issue{reset}     #########
 """.format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
         return self
 
@@ -217,7 +203,7 @@ Choose label : {fg_green}{default}{fg_reset}
         title: str = ''
 
         while not len(title) > 0:
-            title_default: str = fg.green + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
+            title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
 
             title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ' + title_default)
 
@@ -233,76 +219,31 @@ Choose label : {fg_green}{default}{fg_reset}
         return issue
 
     def __post_issue(self, issue: IssueGithub) -> Response:
+        Log.info('waiting... Github create issue')
         return self.__github.create_issue(issue)
 
-    def __read_issue(self, issue: IssueGithub) -> Response:
-        return self.__github.read_issue(issue)
-
     def __resume_issue(self, issue: IssueGithub) -> Create:
-        print(
-            """###############################################
-############# {green}    Issue found    {reset}##############
-###############################################{green}
-title : {title!s}
-number : {number!s}
-url : {url!s}{reset}
-###############################################
-""".format(
-                green=Fg.NOTICE.value,
-                title=issue.title,
-                number=issue.number,
-                url=issue.url,
-                reset=Fg.RESET.value
-            )
-        )
-
+        CommonIssue.print_resume_issue(issue)
         return self
 
     def __resume_issue_created(self, issue: IssueGithub) -> Create:
-        print(
-            """###############################################
-################ {green}Issue created {reset}################
-###############################################{green}
-title : {title!s}
-number : {number!s}
-url : {url!s}{reset}
-###############################################
-""".format(
-                green=Fg.NOTICE.value,
-                title=issue.title,
-                number=issue.number,
-                url=issue.url,
-                reset=Fg.RESET.value
-            )
-        )
-
+        CommonIssue.print_resume_issue(issue)
         return self
 
     def process(self) -> Issue:
         self.__start_message()
-        if self.__would_attach_issue():
-            issue_number = self.__number_issue()
-            issue: IssueGithub = IssueGithub().with_number(issue_number)
-            try:
-                r: Response = self.__read_issue(issue)
-                issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
-                self.__resume_issue(issue_created)
-            except FileNotFoundError:
-                print(Fg.FAIL.value + 'Issue not found : retry' + Fg.RESET.value)
-                return self.process()
 
+        self.__start_message_issue()
+
+        issue: IssueGithub = self.__input_issue()
+
+        r: Response = self.__post_issue(issue)
+
+        if r.status_code is 201:
+            issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
+
+            self.__resume_issue_created(issue_created)
         else:
-            self.__start_message_issue()
-
-            issue: IssueGithub = self.__input_issue()
-
-            r: Response = self.__post_issue(issue)
-
-            if r.status_code is 201:
-                issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
-
-                self.__resume_issue_created(issue_created)
-            else:
-                raise GithubRequestApiError(r)
+            raise GithubRequestApiError(r)
 
         return issue_created

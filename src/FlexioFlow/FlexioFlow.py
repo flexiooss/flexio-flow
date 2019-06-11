@@ -199,7 +199,7 @@ class FlexioFlow:
         elif self.subject is Subject.ISSUE:
             self.__process_subject_issue()
 
-        elif self.subject is Subject.TOPIC:
+        elif self.subject is Subject.TOPICS:
             self.__process_subject_topic()
 
         elif self.subject is Subject.BRANCH:
