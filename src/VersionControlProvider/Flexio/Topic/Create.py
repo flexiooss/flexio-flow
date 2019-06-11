@@ -4,6 +4,7 @@ from requests import Response
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Flexio.FlexioRequestApiError import FlexioRequestApiError
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
+from VersionControlProvider.Flexio.Topic.CommonTopic import CommonTopic
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
 from sty import fg, bg
@@ -16,8 +17,6 @@ class Create:
         self.__config_handler: ConfigHandler = config_handler
         from VersionControlProvider.Flexio.FlexioClient import FlexioClient
         self.__flexio: FlexioClient = FlexioClient(self.__config_handler)
-
-
 
     def __get_topic_with_number(self, topic: FlexioTopic) -> FlexioTopic:
         return FlexioTopic.build_from_api(self.__flexio.get_record(record=topic))
@@ -55,23 +54,7 @@ class Create:
         return self.__flexio.post_record(topic)
 
     def __resume_topic(self, topic: FlexioTopic) -> Create:
-        print(
-            """{fg_gray}###############################################
-################ {green}Topic created{fg_gray} ################
-###############################################{green}
-title : {title!s}
-number : {number!s}
-url : {url!s}{fg_gray}
-###############################################{reset}
-""".format(
-                green=fg.green,
-                title=topic.title,
-                number=topic.number,
-                url=topic.url(),
-                reset=fg.rs,
-                fg_gray=fg(240)
-            )
-        )
+        CommonTopic.print_resume_topic(topic)
         return self
 
     def process(self) -> Topic:

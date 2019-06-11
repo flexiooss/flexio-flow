@@ -8,7 +8,7 @@ from VersionControlProvider.Github.Ressources.IssueGithub import IssueGithub
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Github.Ressources.Milestone import Milestone
 from VersionControlProvider.Issue import Issue
-from sty import fg, bg
+from ConsoleColors.Fg import Fg
 
 from VersionControlProvider.IssueDefault import IssueDefault
 
@@ -22,8 +22,8 @@ class Create:
 
     def __would_attach_issue(self) -> bool:
         issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
-            green=fg.green,
-            reset_fg=fg.rs,
+            green=Fg.SUCCESS.value,
+            reset_fg=Fg.RESET.value,
         ))
         issue = issue if issue else 'n'
         return issue == 'y'
@@ -34,17 +34,17 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """{fg_gray}###############################################
-#################### {yellow}ISSUE{fg_gray} ####################
-###############################################{reset}
-""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
+            """###############################################
+#################### {yellow}ISSUE{reset} ####################
+###############################################
+""".format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
         return self
 
     def __start_message_issue(self) -> Create:
         print(
-            """{fg_gray}###############################################
-##########     {yellow}Create Github Issue{fg_gray}     ##########{reset}
-""".format(fg_gray=fg(240), yellow=fg.yellow, reset=fg.rs))
+            """###############################################
+##########     {yellow}Create Github Issue{reset}     ##########
+""".format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
         return self
 
     def __sanitize_list_input(self, v: List[str]) -> List[str]:
@@ -55,10 +55,10 @@ class Create:
 {bg_help}separator `;`{reset_bg}
 {bg_help}`-l` to list users{reset_bg}
 """.format(
-            default=fg.green + ';'.join(self.__default_issue.assignees) + fg.rs + ' :' if len(
+            default=Fg.SUCCESS.value + ';'.join(self.__default_issue.assignees) + Fg.RESET.value + ' :' if len(
                 self.__default_issue.assignees) else '',
-            reset_bg=bg.rs,
-            bg_help=bg.li_black
+            reset_bg=Fg.RESET.value,
+            bg_help=Fg.NOTICE.value
         )
 
         assignees: str = input(message)
@@ -77,12 +77,12 @@ class Create:
                 message: str = """{fg_cyan}{members!s} {reset_fg}
 
 Choose pseudo :
-""".format(fg_cyan=fg.cyan,
+""".format(fg_cyan=Fg.NOTICE.value,
            members=' | '.join(members),
-           reset_fg=fg.rs
+           reset_fg=Fg.RESET.value
            )
             else:
-                message: str = fg.red + 'No member, type `abort`' + fg.rs
+                message: str = Fg.FAIL.value + 'No member, type `abort`' + Fg.RESET.value
             assignees: str = input(message)
 
         assignees: List[str] = assignees.split(';')
@@ -97,7 +97,7 @@ Choose pseudo :
         title: str = ''
 
         while not len(title) > 0:
-            title = input(fg.red + '[required]' + fg.rs + ' Title : ')
+            title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ')
             milestone.title = title
 
         description: str = input('Description : ')
@@ -108,20 +108,19 @@ Choose pseudo :
 
     def __resume_milestone(self, milestone: Dict[str, str]) -> Create:
         print(
-            """{fg_gray}###############################################
-################ {green}Milestone created{fg_gray} ################
+            """###############################################
+################ {green}Milestone created{reset} ################
 ###############################################{green}
 title : {title!s}
 number : {number!s}
 url : {url!s}
-{fg_gray}###############################################{reset}
+{reset}###############################################
 """.format(
-                green=fg.green,
+                green=Fg.NOTICE.value,
                 title=milestone.get('title'),
                 number=milestone.get('number'),
                 url=milestone.get('html_url'),
-                reset=fg.rs,
-                fg_gray=fg(240)
+                reset=Fg.RESET.value
             )
         )
         return self
@@ -132,8 +131,8 @@ url : {url!s}
             """Milestone number : 
 {bg_help}`-l` to list the existing 
 `-c` to create milestone{reset_bg}""".format(
-                reset_bg=bg.rs,
-                bg_help=bg.li_black
+                reset_bg=Fg.RESET.value,
+                bg_help=Fg.NOTICE.value
             ))
 
         if milestone == '-c':
@@ -153,12 +152,12 @@ url : {url!s}
 
 Choose number : 
 """.format(
-                    fg_cyan=fg.cyan,
+                    fg_cyan=Fg.NOTICE.value,
                     milestones=' | '.join(milestones_repo),
-                    fg_reset=fg.rs
+                    fg_reset=Fg.RESET.value
                 )
             else:
-                message: str = fg.red + 'No milestone, type `-c` to create milestone or `-a` for abort' + fg.rs
+                message: str = Fg.FAIL.value + 'No milestone, type `-c` to create milestone or `-a` for abort' + Fg.RESET.value
 
             milestone: str = input(message)
 
@@ -195,14 +194,12 @@ Choose number :
 {fg_cyan}{labels!s}{fg_reset}
 
 Choose label : {fg_green}{default}{fg_reset}
-{bg_help}separator `;` {reset_bg}
+{fg_cyan}separator `;` {fg_reset}
 """.format(
-                fg_cyan=fg.cyan,
+                fg_cyan=Fg.NOTICE.value,
                 labels=' | '.join(labels_repo),
-                fg_reset=fg.rs,
-                reset_bg=bg.rs,
-                bg_help=bg.li_black,
-                fg_green=fg.green,
+                fg_reset=Fg.RESET.value,
+                fg_green=Fg.SUCCESS.value,
                 default=default
             )
 
@@ -220,9 +217,9 @@ Choose label : {fg_green}{default}{fg_reset}
         title: str = ''
 
         while not len(title) > 0:
-            title_default: str = fg.green + self.__default_issue.title + fg.rs if self.__default_issue.title is not None else ''
+            title_default: str = fg.green + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
 
-            title = input(fg.red + '[required]' + fg.rs + ' Title : ' + title_default)
+            title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ' + title_default)
 
             title = title if title else self.__default_issue.title
         issue.title = title
@@ -243,20 +240,19 @@ Choose label : {fg_green}{default}{fg_reset}
 
     def __resume_issue(self, issue: IssueGithub) -> Create:
         print(
-            """{fg_gray}###############################################
-################ {green}    Issue     {fg_gray}################
+            """###############################################
+############# {green}    Issue found    {reset}##############
 ###############################################{green}
 title : {title!s}
 number : {number!s}
-url : {url!s}{fg_gray}
-###############################################{reset}
+url : {url!s}{reset}
+###############################################
 """.format(
-                green=fg.green,
+                green=Fg.NOTICE.value,
                 title=issue.title,
                 number=issue.number,
                 url=issue.url,
-                reset=fg.rs,
-                fg_gray=fg(240)
+                reset=Fg.RESET.value
             )
         )
 
@@ -264,20 +260,19 @@ url : {url!s}{fg_gray}
 
     def __resume_issue_created(self, issue: IssueGithub) -> Create:
         print(
-            """{fg_gray}###############################################
-################ {green}Issue created {fg_gray}################
+            """###############################################
+################ {green}Issue created {reset}################
 ###############################################{green}
 title : {title!s}
 number : {number!s}
-url : {url!s}{fg_gray}
-###############################################{reset}
+url : {url!s}{reset}
+###############################################
 """.format(
-                green=fg.green,
+                green=Fg.NOTICE.value,
                 title=issue.title,
                 number=issue.number,
                 url=issue.url,
-                reset=fg.rs,
-                fg_gray=fg(240)
+                reset=Fg.RESET.value
             )
         )
 
@@ -293,7 +288,7 @@ url : {url!s}{fg_gray}
                 issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
                 self.__resume_issue(issue_created)
             except FileNotFoundError:
-                print(fg.red + 'Issue not found : retry' + fg.rs)
+                print(Fg.FAIL.value + 'Issue not found : retry' + Fg.RESET.value)
                 return self.process()
 
         else:

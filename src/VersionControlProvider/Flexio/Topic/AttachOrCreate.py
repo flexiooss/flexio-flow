@@ -9,6 +9,7 @@ from Core.ConfigHandler import ConfigHandler
 from Log.Log import Log
 from VersionControlProvider.Flexio.FlexioRequestApiError import FlexioRequestApiError
 from VersionControlProvider.Flexio.FlexioTopic import FlexioTopic
+from VersionControlProvider.Flexio.Topic.CommonTopic import CommonTopic
 from VersionControlProvider.Flexio.Topic.Create import Create
 from VersionControlProvider.Topic import Topic
 from ConsoleColors.Fg import Fg
@@ -102,7 +103,9 @@ class AttachOrCreate:
                 request_topic: FlexioTopic = FlexioTopic().with_number(topic_number)
 
                 try:
+                    Log.info('waiting... from Flexio... Topic : ' + str(topic_number))
                     topic: FlexioTopic = self.__get_topic_with_number(request_topic)
+                    CommonTopic.print_resume_topic(topic)
                     self.__topics.append(topic)
                 except FileNotFoundError:
                     Log.error(Fg.FAIL.value + 'Topic not found : retry' + Fg.RESET.value)
