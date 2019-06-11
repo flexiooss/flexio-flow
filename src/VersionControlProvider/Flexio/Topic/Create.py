@@ -68,7 +68,7 @@ class Create:
     def __start_message(self) -> Create:
         print(
             """{fg_gray}###############################################
-################# {yellow}Flexio FLow{fg_gray} #################
+#################### {yellow}TOPIC{fg_gray} ####################
 ###############################################{reset}
 """.format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
         return self

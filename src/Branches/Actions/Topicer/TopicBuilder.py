@@ -68,9 +68,11 @@ url : {url!s}{reset}
                     )
                 )
 
-            use_default_topic: str = input('Use this topic Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
-            if use_default_topic.lower() == 'n':
-                self.__topic = None
+                use_default_topic: str = input('Use this topic Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value)
+                if use_default_topic.lower() == 'n':
+                    self.__topic = None
+            else:
+                Log.info('No default Topic found')
 
             if self.__topic is None:
                 self.__topic: Topic = self.__topicer.create()
