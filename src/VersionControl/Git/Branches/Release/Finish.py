@@ -120,7 +120,7 @@ class Finish:
 
         self.__git.commit(
             Message(
-                message=''.join(["'Finish release for dev: ", self.__state_handler.version_as_str()]),
+                message=''.join(["'Finish release ready for dev next release : ", self.__state_handler.version_as_str()]),
                 issue=self.__issue
             ).with_ref()
         )
