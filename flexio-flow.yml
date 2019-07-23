@@ -1,4 +1,4 @@
-issues: []
-level: dev
-schemes: [package, composer]
-version: 1.2.3
+level: stable
+schemes: []
+topics: [35]
+version: 0.0.0
