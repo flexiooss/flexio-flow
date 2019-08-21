@@ -18,17 +18,17 @@ class PreCheck:
         dep_id: str
         version: str
         for dep_id, version in package_dependencies.items():
-            if self.is_dev(version):
-                dependencies.append(dep_id, version)
+            if self.is_flexio_dep(dep_id):
+                if self.is_dev(version):
+                    dependencies.append(dep_id, version)
 
         return dependencies
 
-    def match_dev(self, v: str) -> Match:
-        regexp: Pattern[str] = re.compile(
-            '^(?:https|git).*(?P<is_git>\.git)+(?:#(?:(?:(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<dev_suffix>-' + self.__dev_suffix + '))|(?P<branch_develop>develop))?)?$')
-        return re.match(regexp, v)
-
     def is_dev(self, version: str) -> bool:
-        matches: Match = self.match_dev(version)
-        return True if matches and matches.groupdict().get('is_git') and (
-                matches.groupdict().get('dev_suffix') or matches.groupdict().get('branch_develop')) else False
+        regexp: Pattern[str] = re.compile(
+            '(?:(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<dev_suffix>-' + self.__dev_suffix + '))?$')
+        return re.match(regexp, version) is not None
+
+    def is_flexio_dep(self, name: str) -> bool:
+        regexp: Pattern[str] = re.compile('^@flexio-(?:corp|oss)/.*')
+        return re.match(regexp, name) is not None

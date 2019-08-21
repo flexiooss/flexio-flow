@@ -7,6 +7,7 @@ import requests
 from requests import Response
 
 from Core.ConfigHandler import ConfigHandler
+from Log.Log import Log
 from VersionControlProvider.Flexio.FlexioRessource import FlexioRessource
 
 
@@ -66,12 +67,15 @@ class FlexioClient:
         range_min: Range = Range()
         range_min.offset = 0
         range_min.limit = 1
+        print(url)
+        print(self.__auth(self.__with_content_range({}, range_min)))
 
         resp: Response = requests.get(url, headers=self.__auth(self.__with_content_range({}, range_min)))
         # print(resp.status_code)
         # print(resp.headers)
         # print(resp.json())
         if not resp.status_code in [200, 206]:
+            self.__print_response_error(resp)
             raise ConnectionError
 
         headers: dict = resp.headers
@@ -84,6 +88,7 @@ class FlexioClient:
             url: str = '/'.join([self.BASE_URL, 'record', record.SLUG, record.id])
             resp: Response = requests.get(url, headers=self.__auth())
             if not resp.status_code in [200]:
+                self.__print_response_error(resp)
                 raise ConnectionError
             return resp.json()
         else:
@@ -97,6 +102,7 @@ class FlexioClient:
             while resquestRange.limit <= fullRange.total and findedRecord is None:
                 resp: Response = self.get_records(record, resquestRange)
                 if not resp.status_code in [200, 206]:
+                    self.__print_response_error(resp)
                     raise ConnectionError
                 resp_part: Dict = resp.json()
                 for r in resp_part:
@@ -109,3 +115,9 @@ class FlexioClient:
             if findedRecord is None:
                 raise FileNotFoundError
             return findedRecord
+
+    def __print_response_error(self, response: Response):
+        Log.error('RESPONSE ERROR')
+        print('status : ' + response.status_code)
+        print('content :')
+        print(response.content)
