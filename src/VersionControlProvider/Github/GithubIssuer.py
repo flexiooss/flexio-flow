@@ -54,7 +54,8 @@ class GithubIssuer(Issuer):
         try:
             repo: Repo = GitCmd(self.state_handler).get_repo()
             has_repo = True
-        except ValueError:
+        except ValueError as e:
+            print(e)
             print('GithubIssuer have not repo')
         finally:
             return has_repo
