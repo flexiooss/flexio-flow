@@ -183,14 +183,28 @@ class GitCmd:
 
     def get_repo(self) -> Repo:
         url: str = self.__exec_for_stdout(['git', 'config', '--local', '--get', 'remote.origin.url'])
+        matches: Optional[Match] = self.match_remote_url_ssh(url)
+        if matches is None:
+            matches: Optional[Match] = self.match_remote_url_https(url)
+            if matches is None:
+                raise ValueError(
+                    '''remote.origin.url not match with : 
+                    ^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
+                    ^https://github\.com/(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
+                ''')
+        return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
+
+    def match_remote_url_ssh(self, url: str) -> Optional[Match]:
         regexp: Pattern[str] = re.compile(
             '^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$',
             re.IGNORECASE)
-        matches: Match = re.match(regexp, url)
-        if matches is None:
-            raise ValueError(
-                'remote.origin.url not match with : ^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$')
-        return Repo(owner=matches.groupdict().get('owner'), repo=matches.groupdict().get('repo'))
+        return re.match(regexp, url)
+
+    def match_remote_url_https(self, url: str) -> Optional[Match]:
+        regexp: Pattern[str] = re.compile(
+            '^https://github\.com/(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$',
+            re.IGNORECASE)
+        return re.match(regexp, url)
 
     def get_current_branch_name(self) -> str:
         if not self.has_head():

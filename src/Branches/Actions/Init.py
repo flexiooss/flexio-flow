@@ -36,8 +36,11 @@ class Init(Action):
         return self
 
     def __input_version(self) -> Init:
-        version: str = input('Develop version ' + Fg.SUCCESS.value + '0.0.0' + Fg.RESET.value + ' : ')
-        self.state_handler.state.version = Version.from_str(version if version else '0.0.0')
+        version: str = input('Develop version ' + Fg.SUCCESS.value + str(Version.DEFAULT_MAJOR) + '.' + str(
+            Version.DEFAULT_MINOR) + '.' + str(Version.DEFAULT_PATCH) + Fg.RESET.value + ' : ')
+        self.state_handler.state.version = Version.from_str(
+            version if version else (str(Version.DEFAULT_MAJOR) + '.' + str(
+                Version.DEFAULT_MINOR) + '.' + str(Version.DEFAULT_PATCH)))
         return self
 
     def __input_level(self) -> Init:

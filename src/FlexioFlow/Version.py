@@ -5,6 +5,9 @@ from typing import Dict, Match
 
 class Version:
     SEP: str = '.'
+    DEFAULT_MAJOR: int = 1
+    DEFAULT_MINOR: int = 0
+    DEFAULT_PATCH: int = 0
 
     def __init__(self, major: int, minor: int, patch: int) -> None:
         self.__major: int = major
@@ -16,9 +19,9 @@ class Version:
         matches: Match = cls.parse_str(v)
 
         return cls(
-            major=int(matches.groupdict().get('__major', 0)),
-            minor=int(matches.groupdict().get('__minor', 0)),
-            patch=int(matches.groupdict().get('__patch', 0))
+            major=int(matches.groupdict().get('__major', Version.DEFAULT_MAJOR)),
+            minor=int(matches.groupdict().get('__minor', Version.DEFAULT_MINOR)),
+            patch=int(matches.groupdict().get('__patch', Version.DEFAULT_PATCH))
         )
 
     @property
