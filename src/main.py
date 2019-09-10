@@ -27,7 +27,7 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
         opts, args = getopt.gnu_getopt(argv, "hV:S:s:rcMNKF:",
                                        ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
                                         'no-cli', 'keep-branch', "repository-id=", "repository-name=",
-                                        "repository-checkout-spec=", "filename="])
+                                        "repository-checkout-spec=", "filename=", "version=", "from=", "to="])
     except getopt.GetoptError:
         print(sys.argv[1:])
         print('OUPS !!!')
@@ -72,6 +72,15 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
         if opt in ("--filename", "-F"):
             options.update({'filename': arg})
+
+        if opt in ("--version"):
+            options.update({'version': arg})
+
+        if opt in ("--from"):
+            options.update({'from': arg})
+
+        if opt in ("--to"):
+            options.update({'to': arg})
 
     return args, options
 

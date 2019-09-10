@@ -23,6 +23,7 @@ from VersionControl.VersionControl import VersionControl
 from VersionControl.VersionControlBuilder import VersionControlBuilder
 from pathlib import Path
 from FlexioFlow.Actions.Version import Version
+from FlexioFlow.Actions.Convert import Convert
 from Core.Actions.Actions import Actions as ActionsCore
 from PoomCiDependency.Actions.Actions import Actions as PoomCiActions
 
@@ -106,6 +107,13 @@ class FlexioFlow:
 
         Version(
             state_handler=self.__state_handler,
+            options=self.__options
+        ).process()
+
+    def __process_subject_convert(self):
+        self.__ensure_state_handler()
+
+        Convert(
             options=self.__options
         ).process()
 
@@ -195,6 +203,9 @@ class FlexioFlow:
 
         elif self.subject is Subject.VERSION:
             self.__process_subject_version()
+
+        elif self.subject is Subject.CONVERT:
+            self.__process_subject_convert()
 
         elif self.subject is Subject.ISSUE:
             self.__process_subject_issue()

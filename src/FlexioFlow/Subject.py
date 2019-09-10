@@ -9,6 +9,7 @@ class Subject(Enum):
     TOPICS: str = 'topics'
     SCHEME: str = 'scheme'
     VERSION: str = 'version'
+    CONVERT: str = 'convert'
     POOM_CI: str = 'poom-ci'
 
     @classmethod

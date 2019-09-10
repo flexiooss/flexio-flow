@@ -85,6 +85,12 @@ flexio-flow
               version
                                 -S, --scheme          maven|package|composer|docker
 
+              convert
+                                --version             version [required]
+                                --from                maven|package|composer|docker [required]
+                                --to                  maven|package|composer|docker [required]
+
+
    --------  <poom ci>
 
               poom-ci
