@@ -2,6 +2,7 @@ from __future__ import annotations
 from enum import Enum, unique
 from typing import List
 
+
 @unique
 class Schemes(Enum):
     MAVEN: str = 'maven'
@@ -17,3 +18,10 @@ class Schemes(Enum):
                 ret.append(item)
 
         return ret
+
+    @classmethod
+    def value_of(cls, value: str) -> Schemes:
+        for item in cls:
+            if item.value == value:
+                return item
+        raise IndexError('No value for ' + value)

@@ -1,3 +1,4 @@
+from Schemes.Composer.ComposerScheme import ComposerScheme
 from Schemes.Maven.MavenScheme import MavenScheme
 from Schemes.Schemes import Schemes
 from Schemes.Scheme import Scheme
@@ -12,5 +13,7 @@ class SchemeBuilder:
             return PackageScheme(state_handler)
         if scheme is Schemes.MAVEN:
             return MavenScheme(state_handler)
+        if scheme is Schemes.COMPOSER:
+            return ComposerScheme(state_handler)
 
         raise ValueError("Bad SchemeFactory creation: " + scheme.value)

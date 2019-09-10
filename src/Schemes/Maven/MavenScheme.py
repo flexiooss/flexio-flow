@@ -11,10 +11,7 @@ from Schemes.Dependencies import Dependencies
 
 
 class MavenScheme(Scheme):
-
-    @property
-    def DEV_SUFFIX(self) -> str:
-        return 'SNAPSHOT'
+    DEV_SUFFIX: str = 'SNAPSHOT'
 
     def set_version(self) -> MavenScheme:
         MavenSetVersion(self.state_handler, self.get_version()).set()
