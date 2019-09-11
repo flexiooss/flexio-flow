@@ -10,7 +10,7 @@ class FlexioTopic(Topic, FlexioRessource):
     NUMBER_ID: str = '5c336cebf3bb2517583dac83'
     TITLE_ID: str = '5c336c7ff3bb2517583dac61'
     BODY_ID: str = '5c337a75f3bb251c3d227691'
-    SLUG: str = 'topics'
+    SLUG: str = 'topic'
 
     def __body_to_value(self) -> str:
         return self.body if self.body is not None else ''
