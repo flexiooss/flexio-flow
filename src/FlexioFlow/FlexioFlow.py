@@ -111,8 +111,6 @@ class FlexioFlow:
         ).process()
 
     def __process_subject_convert(self):
-        self.__ensure_state_handler()
-
         Convert(
             options=self.__options
         ).process()
