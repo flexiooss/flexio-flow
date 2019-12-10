@@ -99,7 +99,7 @@ class TestFlexio(unittest.TestCase):
         self.assertIn(resp_records.status_code, [200, 206])
 
     def test_get_topic_by_number(self):
-        topic: FlexioTopic = FlexioTopic().with_number(2)
+        topic: FlexioTopic = FlexioTopic().with_number(11)
         r: dict = FlexioClient(self.config_handler).get_record(record=topic)
 
         self.assertIsNotNone(r)

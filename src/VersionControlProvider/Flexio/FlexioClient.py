@@ -94,12 +94,20 @@ class FlexioClient:
             resquestRange.accept_range = fullRange.accept_range
             resquestRange.offset = 0
             resquestRange.limit = fullRange.total if fullRange.total <= fullRange.accept_range else fullRange.accept_range
-            while resquestRange.limit <= fullRange.total and findedRecord is None:
+
+            status_code: int = None
+
+            while resquestRange.limit <= (fullRange.total + fullRange.accept_range) and findedRecord is None and status_code != 200:
+
                 resp: Response = self.get_records(record, resquestRange)
-                if not resp.status_code in [200, 206]:
+
+                status_code = resp.status_code
+
+                if not status_code in [200, 206]:
                     self.__print_response_error(resp)
                     raise ConnectionError
                 resp_part: Dict = resp.json()
+
                 for r in resp_part:
                     shared_items = {k: r[k] for k in r if k in recordDict and r[k] == recordDict[k]}
                     if len(recordDict) == len(shared_items):
@@ -107,6 +115,7 @@ class FlexioClient:
                         break
                 resquestRange.offset = resquestRange.limit
                 resquestRange.limit = resquestRange.limit + resquestRange.accept_range
+
             if findedRecord is None:
                 raise FileNotFoundError
             return findedRecord
