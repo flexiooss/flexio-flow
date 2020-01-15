@@ -16,7 +16,7 @@ class MavenSetVersion:
 
     def set(self):
         p1 = Popen(
-            ['mvn', 'versions:set', '-DnewVersion=' + self.target_version],
+            ['mvn', 'versions:set', '-DnewVersion=' + self.target_version, '-U'],
             cwd=self.__state_handler.dir_path.as_posix()
         )
         p1.wait()
@@ -35,4 +35,3 @@ class MavenSetVersion:
 
             sys.stderr.write("Command terminated with wrong status code: " + str(p1.returncode) + "\n")
             sys.exit(p1.returncode)
-
