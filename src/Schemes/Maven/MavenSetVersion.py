@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 
 from subprocess import Popen
 
@@ -14,19 +15,24 @@ class MavenSetVersion:
         self.target_version: str = target_version
 
     def set(self):
-        status = Popen(
+        p1 = Popen(
             ['mvn', 'versions:set', '-DnewVersion=' + self.target_version],
             cwd=self.__state_handler.dir_path.as_posix()
-        ).wait()
+        )
+        p1.wait()
 
-        if status is not 0:
+        if p1.returncode is not 0:
             print('something went wrong while setting version, trying to rollback')
             status = Popen(
                 ['mvn', 'versions:rollback'],
                 cwd=self.__state_handler.dir_path.as_posix()
             ).wait()
 
-        status = Popen(
-            ['mvn', 'versions:commit'],
-            cwd=self.__state_handler.dir_path.as_posix()
-        ).wait()
+            status = Popen(
+                ['mvn', 'versions:commit'],
+                cwd=self.__state_handler.dir_path.as_posix()
+            ).wait()
+
+            sys.stderr.write("Command terminated with wrong status code: " + str(p1.returncode) + "\n")
+            sys.exit(p1.returncode)
+
