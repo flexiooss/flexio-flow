@@ -28,10 +28,11 @@ class MavenSetVersion:
                 cwd=self.__state_handler.dir_path.as_posix()
             ).wait()
 
-            status = Popen(
-                ['mvn', 'versions:commit'],
-                cwd=self.__state_handler.dir_path.as_posix()
-            ).wait()
-
             sys.stderr.write("Command terminated with wrong status code: " + str(p1.returncode) + "\n")
             sys.exit(p1.returncode)
+
+        status = Popen(
+            ['mvn', 'versions:commit'],
+            cwd=self.__state_handler.dir_path.as_posix()
+        ).wait()
+
