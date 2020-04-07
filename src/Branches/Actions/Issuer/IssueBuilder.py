@@ -34,13 +34,15 @@ class IssueBuilder:
 
     def try_ensure_issue(self) -> IssueBuilder:
         if self.__config_handler.has_issuer() and self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:
+
             self.__issue = self.__issuer.attach_or_create(
-                IssueDefaultBuilder().build(
+                default_issue=IssueDefaultBuilder().build(
                     self.__state_handler,
                     self.__config_handler,
                     self.__branch,
                     self.__options
-                )
+                ),
+                options=self.__options
             )
         return self
 

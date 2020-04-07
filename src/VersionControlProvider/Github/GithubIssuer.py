@@ -1,4 +1,4 @@
-from typing import Type, Optional
+from typing import Type, Optional,Dict
 
 from requests import Response
 
@@ -21,12 +21,13 @@ class GithubIssuer(Issuer):
 
         return Create(self.config_handler, repo, default_issue).process()
 
-    def attach_or_create(self, default_issue: Optional[IssueDefault]) -> Issue:
+    def attach_or_create(self, default_issue: Optional[IssueDefault], options: Optional[Dict[str, str]]) -> Issue:
         repo: Repo = GitCmd(self.state_handler).get_repo()
         return AttachOrCreate(
             config_handler=self.config_handler,
             repo=repo,
-            default_issue=default_issue
+            default_issue=default_issue,
+            options=options
         ).process()
 
     def message_builder(self, message: str, issue: Optional[Issue] = None) -> AbstractMessage:

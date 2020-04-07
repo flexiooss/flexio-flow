@@ -17,20 +17,24 @@ from VersionControlProvider.IssueDefault import IssueDefault
 
 class AttachOrCreate:
 
-    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault]):
+    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault], options: Optional[Dict[str, str]]):
         self.__config_handler: ConfigHandler = config_handler
         self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
+        self.__options: Optional[Dict[str, str]] = options
         self.__issue: Optional[Issue] = None
 
     def __would_attach_issue(self) -> bool:
-        issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
-            green=Fg.SUCCESS.value,
-            reset_fg=Fg.RESET.value,
-        ))
-        issue = issue if issue else 'n'
-        return issue == 'y'
+        if self.__options.get('default') is not None:
+            return False
+        else:
+            issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
+                green=Fg.SUCCESS.value,
+                reset_fg=Fg.RESET.value,
+            ))
+            issue = issue if issue else 'n'
+            return issue == 'y'
 
     def __number_issue(self) -> int:
         issue: str = input('Issue number : ')
@@ -62,11 +66,13 @@ class AttachOrCreate:
         return Create(
             config_handler=self.__config_handler,
             repo=self.__repo,
-            default_issue=self.__default_issue
+            default_issue=self.__default_issue,
+            options=self.__options
         ).process()
 
     def process(self) -> Issue:
-        CommonIssue.issuer_message()
+        if self.__options.get('default') is None:
+            CommonIssue.issuer_message()
 
         if self.__attach():
             return self.__issue

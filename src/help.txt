@@ -51,8 +51,8 @@ flexio-flow
                         start
                                     -M, --major
                                     -N, --no-cli
+                                    -D, --default
                                     --branch-name   // TODO
-                                    --default-issue   // TODO
                         finish
                                     -K, --keep-branch
 

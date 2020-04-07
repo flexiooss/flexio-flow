@@ -43,7 +43,7 @@ class Start(Action):
                 raise NoBranchSelected('Checkout to develop branch before')
             is_major_b: bool = False
 
-            if self.options.get('major') is None:
+            if self.options.get('major') is None and self.options.get('default') is None:
                 if self.options.get('no-cli') is not True:
                     is_major: str = input(
                         ' Is major Release Y/N : ' + Fg.SUCCESS.value + 'N' + Fg.RESET.value + ' ')

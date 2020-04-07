@@ -98,8 +98,9 @@ class State:
 
     def __topicNumberValue(self) -> List[int]:
         ret = []
-        for topic in self.__topics:
-            ret.append(topic.number)
+        if self.__topics is not None:
+            for topic in self.__topics:
+                ret.append(topic.number)
         return ret
 
     def __str__(self):
