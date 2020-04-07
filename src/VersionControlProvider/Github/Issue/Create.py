@@ -16,18 +16,22 @@ from VersionControlProvider.IssueDefault import IssueDefault
 
 
 class Create:
-    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault]):
+    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault],
+                 options: Optional[Dict[str, str]]):
         self.__config_handler: ConfigHandler = config_handler
         self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
+        self.__options: Optional[Dict[str, str]] = options
 
     def __start_message(self) -> Create:
-        CommonIssue.issuer_message()
+        if self.__options.get('default') is None:
+            CommonIssue.issuer_message()
         return self
 
     def __start_message_issue(self) -> Create:
-        print(
+        if self.__options.get('default') is None:
+            print(
             """###############################################
 #########     {yellow}Create Github Issue{reset}     #########
 """.format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
@@ -37,42 +41,45 @@ class Create:
         return list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), v)))
 
     def __input_assignees(self, issue: IssueGithub) -> Create:
-        message: str = """ Assignees {default}
-{bg_help}separator `;`{reset_bg}
-{bg_help}`-l` to list users{reset_bg}
-""".format(
-            default=Fg.SUCCESS.value + ';'.join(self.__default_issue.assignees) + Fg.RESET.value + ' :' if len(
-                self.__default_issue.assignees) else '',
-            reset_bg=Fg.RESET.value,
-            bg_help=Fg.NOTICE.value
-        )
+        if self.__options.get('default') is not None:
+            assignees: List[str] = self.__default_issue.assignees
+        else:
+            message: str = """ Assignees {default}
+    {bg_help}separator `;`{reset_bg}
+    {bg_help}`-l` to list users{reset_bg}
+    """.format(
+                default=Fg.SUCCESS.value + ';'.join(self.__default_issue.assignees) + Fg.RESET.value + ' :' if len(
+                    self.__default_issue.assignees) else '',
+                reset_bg=Fg.RESET.value,
+                bg_help=Fg.NOTICE.value
+            )
 
-        assignees: str = input(message)
-        assignees = assignees if assignees else self.__config_handler.config.github.user
-        if assignees == '-l':
-            r: Response = self.__github.get_users()
-            members: List[str] = []
-            if r.status_code is 200:
-                members_response: List[Dict[str, str]] = r.json()
-                l: Dict[str, str]
-                for l in members_response:
-                    members.append('{login!s}'.format(
-                        login=l.get('login')
-                    ))
-            if len(members):
-                message: str = """{fg_cyan}{members!s} {reset_fg}
-
-Choose pseudo :
-""".format(fg_cyan=Fg.NOTICE.value,
-           members=' | '.join(members),
-           reset_fg=Fg.RESET.value
-           )
-            else:
-                message: str = Fg.FAIL.value + 'No member, type `abort`' + Fg.RESET.value
             assignees: str = input(message)
+            assignees = assignees if assignees else self.__config_handler.config.github.user
+            if assignees == '-l':
+                r: Response = self.__github.get_users()
+                members: List[str] = []
+                if r.status_code is 200:
+                    members_response: List[Dict[str, str]] = r.json()
+                    l: Dict[str, str]
+                    for l in members_response:
+                        members.append('{login!s}'.format(
+                            login=l.get('login')
+                        ))
+                if len(members):
+                    message: str = """{fg_cyan}{members!s} {reset_fg}
+    
+    Choose pseudo :
+    """.format(fg_cyan=Fg.NOTICE.value,
+               members=' | '.join(members),
+               reset_fg=Fg.RESET.value
+               )
+                else:
+                    message: str = Fg.FAIL.value + 'No member, type `abort`' + Fg.RESET.value
+                assignees: str = input(message)
 
-        assignees: List[str] = assignees.split(';')
-        assignees = self.__sanitize_list_input(assignees)
+            assignees: List[str] = assignees.split(';')
+            assignees = self.__sanitize_list_input(assignees)
 
         if len(assignees):
             issue.assignees = assignees
@@ -162,37 +169,42 @@ Choose number :
         return self
 
     def __input_labels(self, issue: IssueGithub) -> Create:
-        message: str = 'Labels '
-        r: Response = self.__github.get_labels()
+        labels_lst: List[str]
 
-        labels_repo: List[str] = []
-        if r.status_code is 200:
-            labels_response: List[Dict[str, str]] = r.json()
-            l: Dict[str, str]
-            for l in labels_response:
-                labels_repo.append(l.get('name'))
+        if self.__options.get('default') is not None:
+            labels_lst = self.__default_issue.labels
+        else:
+            message: str = 'Labels '
+            r: Response = self.__github.get_labels()
 
-        default: str = ';'.join(self.__default_issue.labels) if len(
-            self.__default_issue.assignees) else ''
+            labels_repo: List[str] = []
+            if r.status_code is 200:
+                labels_response: List[Dict[str, str]] = r.json()
+                l: Dict[str, str]
+                for l in labels_response:
+                    labels_repo.append(l.get('name'))
 
-        if len(labels_repo):
-            message += """
-{fg_cyan}{labels!s}{fg_reset}
+            default: str = ';'.join(self.__default_issue.labels) if len(
+                self.__default_issue.assignees) else ''
 
-Choose label : {fg_green}{default}{fg_reset}
-{fg_cyan}separator `;` {fg_reset}
-""".format(
-                fg_cyan=Fg.NOTICE.value,
-                labels=' | '.join(labels_repo),
-                fg_reset=Fg.RESET.value,
-                fg_green=Fg.SUCCESS.value,
-                default=default
-            )
+            if len(labels_repo):
+                message += """
+    {fg_cyan}{labels!s}{fg_reset}
+    
+    Choose label : {fg_green}{default}{fg_reset}
+    {fg_cyan}separator `;` {fg_reset}
+    """.format(
+                    fg_cyan=Fg.NOTICE.value,
+                    labels=' | '.join(labels_repo),
+                    fg_reset=Fg.RESET.value,
+                    fg_green=Fg.SUCCESS.value,
+                    default=default
+                )
 
-        labels: str = input(message)
-        labels = labels if len(labels) > 0 else default
-        labels_lst: List[str] = labels.split(';')
-        labels_lst = self.__sanitize_list_input(labels_lst)
+            labels: str = input(message)
+            labels = labels if len(labels) > 0 else default
+            labels_lst = labels.split(';')
+            labels_lst = self.__sanitize_list_input(labels_lst)
 
         if len(labels_lst):
             issue.labels = labels_lst
@@ -202,17 +214,22 @@ Choose label : {fg_green}{default}{fg_reset}
         issue: IssueGithub = IssueGithub()
         title: str = ''
 
-        while not len(title) > 0:
-            title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
+        title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
 
-            title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ' + title_default)
+        if self.__options.get('default') is not None and title_default != '':
+            title = title_default
+        else:
+            while not len(title) > 0:
 
-            title = title if title else self.__default_issue.title
+                title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ' + title_default)
+                title = title if title else self.__default_issue.title
+
         issue.title = title
 
-        body: str = input('Description : ')
-        if body:
-            issue.body = body
+        if self.__options.get('default') is None:
+            body: str = input('Description : ')
+            if body:
+                issue.body = body
 
         self.__input_assignees(issue).__input_labels(issue)
 

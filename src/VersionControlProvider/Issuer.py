@@ -1,6 +1,6 @@
 from __future__ import annotations
 import abc
-from typing import Type, Optional
+from typing import Type, Optional, Dict
 
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.StateHandler import StateHandler
@@ -30,7 +30,7 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def attach_or_create(self, default_issue: Optional[IssueDefault]) -> Issue:
+    def attach_or_create(self, default_issue: Optional[IssueDefault],  options: Optional[Dict[str, str]]) -> Issue:
         pass
 
     @abc.abstractmethod

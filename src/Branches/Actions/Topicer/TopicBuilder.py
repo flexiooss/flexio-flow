@@ -29,7 +29,7 @@ class TopicBuilder:
         self.__branch: Optional[Branches] = branch
         self.__topicer: Optional[Topicer] = None
         self.__topics: Optional[List[Topic]] = None
-        self.options: Dict[str, str] = options
+        self.__options: Dict[str, str] = options
         self.__init_topicer()
 
     def __init_topicer(self):
@@ -57,14 +57,16 @@ class TopicBuilder:
                     for topic in self.__topics:
                         CommonTopic.print_resume_topic(topic)
 
-                    use_default_topic: str = input(
-                        'Use these topics ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
-                    if use_default_topic.lower() == 'n':
-                        self.__topics = None
+                    if self.__options.get('default') is None:
+
+                        use_default_topic: str = input(
+                            'Use these topics ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
+                        if use_default_topic.lower() == 'n':
+                            self.__topics = None
             else:
                 Log.info('No default Topic found')
 
-            if self.__topics is None:
+            if self.__topics is None and self.__options.get('default') is None:
                 self.__topics: List[Topic] = self.__topicer.attach_or_create()
 
         return self
