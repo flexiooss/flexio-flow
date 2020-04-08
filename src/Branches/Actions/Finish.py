@@ -36,9 +36,13 @@ class Finish(Action):
             return branch
 
     def __should_close_issue(self):
-        close_issue: str = input(
-            ' Close Issue Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value + ' ')
-        close_issue_b = False if close_issue.capitalize() == 'N' else True
+        close_issue_b: bool = True
+
+        if self.options.get('default') is None:
+            close_issue: str = input(
+                ' Close Issue Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value + ' ')
+            close_issue_b = False if close_issue.capitalize() == 'N' else True
+
         if close_issue_b:
             self.options.update({'close_issue': True})
 

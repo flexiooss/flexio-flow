@@ -20,14 +20,19 @@ from VersionControl.VersionController import VersionController
 from pathlib import Path
 
 
+def clean_space(txt: str) -> str:
+    return re.sub('[\s+]', '', txt)
+
+
 def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Schemes, bool]]]:
     options: Dict[str, Union[str, Schemes, bool]] = {}
 
     try:
         opts, args = getopt.gnu_getopt(argv, "HV:S:s:rcMNKF:D",
-                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
-                                        'no-cli', 'keep-branch', "repository-id=", "repository-name=",
-                                        "repository-checkout-spec=", "filename=", "version=", "from=", "to=", "default"])
+                                   ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
+                                    'no-cli', 'keep-branch', "repository-id=", "repository-name=",
+                                    "repository-checkout-spec=", "filename=", "version=", "from=", "to=", "default",
+                                    "message="])
     except getopt.GetoptError:
         print(sys.argv[1:])
         print('OUPS !!!')
@@ -35,7 +40,6 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
         sys.exit(2)
 
     for opt, arg in opts:
-        arg = re.sub('[\s+]', '', arg)
 
         if opt in ("-h", "--help"):
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
@@ -67,23 +71,26 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
             options.update({'default': True})
 
         if opt in ("--repository-id"):
-            options.update({'repository_id': arg})
+            options.update({'repository_id': clean_space(arg)})
         if opt in ("--repository-name"):
-            options.update({'repository_name': arg})
+            options.update({'repository_name': clean_space(arg)})
         if opt in ("--repository-checkout-spec"):
-            options.update({'repository_checkout_spec': arg})
+            options.update({'repository_checkout_spec': clean_space(arg)})
 
         if opt in ("--filename", "-F"):
-            options.update({'filename': arg})
+            options.update({'filename': clean_space(arg)})
 
         if opt in ("--version"):
-            options.update({'version': arg})
+            options.update({'version': clean_space(arg)})
 
         if opt in ("--from"):
-            options.update({'from': arg})
+            options.update({'from': clean_space(arg)})
 
         if opt in ("--to"):
-            options.update({'to': arg})
+            options.update({'to': clean_space(arg)})
+
+        if opt in ("--message"):
+            options.update({'message': arg})
 
     return args, options
 
