@@ -34,8 +34,12 @@ Commited and push with message :
         return self
 
     def process(self):
-
-        message: str = self.__input_message()
+        message: str = ''
+        print(self.options)
+        if self.options.get('message') is None:
+            message = self.__input_message()
+        else:
+            message = self.options.get('message')
 
         if self.config_handler.has_issuer():
             issue_number: Optional[int] = self.version_control.get_issue_number()
