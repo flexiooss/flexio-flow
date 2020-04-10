@@ -51,7 +51,7 @@ class StateHandler:
         if file.is_file():
             return cwd
         else:
-            if cwd.parent.is_dir():
+            if cwd.parent.is_dir() and cwd.parent != cwd:
                 return StateHandler.find_file_version(cwd.parent)
             else:
                 return None
