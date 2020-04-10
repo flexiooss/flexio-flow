@@ -44,6 +44,18 @@ class StateHandler:
 
         return ret
 
+    @staticmethod
+    def find_file_version(cwd: Path) -> Optional[Path]:
+        file: Path = cwd / StateHandler.FILE_NAME
+
+        if file.is_file():
+            return cwd
+        else:
+            if cwd.parent.is_dir():
+                return StateHandler.find_file_version(cwd.parent)
+            else:
+                return None
+
     def load_file_config(self) -> StateHandler:
         if not self.file_path().is_file():
             raise FileNotFoundError(self.file_path(), 'Flexio Flow not initialized try : flexio-flow init')

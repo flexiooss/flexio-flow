@@ -35,7 +35,6 @@ Commited and push with message :
 
     def process(self):
         message: str = ''
-        print(self.options)
         if self.options.get('message') is None:
             message = self.__input_message()
         else:
