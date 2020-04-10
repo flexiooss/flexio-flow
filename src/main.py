@@ -12,6 +12,7 @@ from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.FlexioFlow import FlexioFlow
 from Branches.Actions.Actions import Actions
 from Core.Actions.Actions import Actions as ActionsCore
+from FlexioFlow.StateHandler import StateHandler
 from PoomCiDependency.Actions.Actions import Actions as PoomCiActions
 from FlexioFlow.Subject import Subject
 from Schemes.Schemes import Schemes
@@ -29,10 +30,10 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
     try:
         opts, args = getopt.gnu_getopt(argv, "HV:S:s:rcMNKF:D",
-                                   ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
-                                    'no-cli', 'keep-branch', "repository-id=", "repository-name=",
-                                    "repository-checkout-spec=", "filename=", "version=", "from=", "to=", "default",
-                                    "message="])
+                                       ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
+                                        'no-cli', 'keep-branch', "repository-id=", "repository-name=",
+                                        "repository-checkout-spec=", "filename=", "version=", "from=", "to=", "default",
+                                        "message="])
     except getopt.GetoptError:
         print(sys.argv[1:])
         print('OUPS !!!')
@@ -145,7 +146,16 @@ def command_orders(argv: List[str]) -> Tuple[
 
     branch, branch_action, subject, core_actions, issue_action, topic_action, poom_ci_actions = extract_subject_action(
         argv_no_options)
-    version_dir: Path = Path(str(options.get('version-dir'))) if options.get('version-dir') else Path.cwd()
+
+    version_dir: Path
+    if options.get('version-dir'):
+        version_dir = Path(str(options.get('version-dir')))
+    else:
+        file_dir: Optional[Path] = StateHandler.find_file_version(Path.cwd())
+        if file_dir is not None:
+            version_dir = file_dir
+        else:
+            version_dir = Path.cwd()
 
     return branch_action, branch, subject, core_actions, options, version_dir, issue_action, topic_action, poom_ci_actions
 
