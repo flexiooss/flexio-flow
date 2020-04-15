@@ -42,7 +42,7 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
     for opt, arg in opts:
 
-        if opt in ("-h", "--help"):
+        if opt in ("-H", "--help"):
             file = open(os.path.dirname(os.path.abspath(__file__)) + '/help.txt', 'r')
             print(file.read())
             sys.exit()

@@ -34,17 +34,19 @@ flexio-flow
 
               feature
                         start
+                                    -D, --default
+                                    --branch-name   // TODO
                         finish
                                     -K, --keep-branch
                                     -D, --default
-                                    --branch-name   // TODO
 
               hotfix
                         start
+                                    -D, --default
+                                    --branch-name   // TODO
                         finish
                                     -K, --keep-branch
                                     -D, --default
-                                    --branch-name   // TODO
 
               release
                         precheck
@@ -61,8 +63,7 @@ flexio-flow
    --------  <commit>
 
               commit
-                        --message // TODO
-
+                        --message
 
    --------  <issue>
 
