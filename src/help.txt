@@ -14,6 +14,7 @@ https://github.com/flexiooss/flexio-flow
 flexio-flow
               --help, -h
               -V, --version-dir     Directory of repository with flexio-flow.yml at the root
+              --debug               show stack trace & more
 
 
    --------   <core>
