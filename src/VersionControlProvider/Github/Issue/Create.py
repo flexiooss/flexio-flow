@@ -216,12 +216,12 @@ Choose number :
 
         title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
 
-        if self.__options.get('default') is not None and title_default != '':
-            title = title_default
+        if self.__options.get('default') is not None and self.__default_issue.title != '':
+            title = self.__default_issue.title
         else:
             while not len(title) > 0:
 
-                title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Title : ' + title_default)
+                title = input(Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Issue Title : ' + title_default)
                 title = title if title else self.__default_issue.title
 
         issue.title = title

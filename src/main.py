@@ -5,8 +5,10 @@ import re
 import sys
 import os
 
+from ConsoleColors.Fg import Fg
 from Core.ConfigHandler import ConfigHandler
 from Core.Core import Core
+from Exceptions.GitMergeConflictError import GitMergeConflictError
 from FlexioFlow.Actions.IssueActions import IssueActions
 from FlexioFlow.Actions.TopicActions import TopicActions
 from FlexioFlow.FlexioFlow import FlexioFlow
@@ -20,20 +22,25 @@ from Branches.Branches import Branches
 from VersionControl.VersionController import VersionController
 from pathlib import Path
 
+from VersionControlProvider.Flexio.FlexioRequestApiError import FlexioRequestApiError
+from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
+
 
 def clean_space(txt: str) -> str:
     return re.sub('[\s+]', '', txt)
 
 
 def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Schemes, bool]]]:
-    options: Dict[str, Union[str, Schemes, bool]] = {}
+    options: Dict[str, Union[str, Schemes, bool]] = {
+        "debug": False
+    }
 
     try:
         opts, args = getopt.gnu_getopt(argv, "HV:S:s:rcMNKF:D",
                                        ["help", "version-dir=", "scheme=", "scheme-dir=", "create", "read", "major",
                                         'no-cli', 'keep-branch', "repository-id=", "repository-name=",
                                         "repository-checkout-spec=", "filename=", "version=", "from=", "to=", "default",
-                                        "message="])
+                                        "message=", "debug"])
     except getopt.GetoptError:
         print(sys.argv[1:])
         print('OUPS !!!')
@@ -83,6 +90,9 @@ def parse_options(argv: List[str]) -> Tuple[List[str], Dict[str, Union[str, Sche
 
         if opt in ("--version"):
             options.update({'version': clean_space(arg)})
+
+        if opt in ("--debug"):
+            options.update({'debug': True})
 
         if opt in ("--from"):
             options.update({'from': clean_space(arg)})
@@ -177,7 +187,7 @@ def main(argv) -> None:
 
     subject = Subject.BRANCH if subject is None else subject
 
-    FlexioFlow(subject=subject).set_environment(
+    executor: FlexioFlow = FlexioFlow(subject=subject).set_environment(
         version_controller=VersionController.GIT,
         branch_action=branch_action,
         core_action=core_action,
@@ -188,9 +198,29 @@ def main(argv) -> None:
         options=options,
         dir_path=version_dir,
         config_handler=config_handler
-    ).process()
+    )
 
-    sys.exit()
+    if options.get("debug"):
+        executor.process()
+    else:
+        try:
+            executor.process()
+        except (
+        FileNotFoundError, FileExistsError, ImportError, AttributeError, ValueError, KeyError, NotImplementedError,
+        GitMergeConflictError, NotADirectoryError, TypeError, IndexError, GithubRequestApiError, ConnectionError,
+        FlexioRequestApiError) as error:
+            sys.stderr.write("""
+
+{red}#######################################
+# OUPS !!!
+# {type}:{error}
+#######################################{reset}
+
+""".format(red=Fg.FAIL.value, type=error.__class__.__name__, error=error, reset=Fg.RESET.value))
+            sys.stderr.write("Command terminated with wrong status code: 1" + "\n")
+            sys.exit(1)
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
