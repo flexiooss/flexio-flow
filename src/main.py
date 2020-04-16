@@ -1,4 +1,5 @@
 #! /usr/bin/env python3.7
+from ConsoleColors.PrintColor import PrintColor
 from typing import Tuple, List, Optional, Dict, Union
 import getopt
 import re
@@ -205,10 +206,14 @@ def main(argv) -> None:
     else:
         try:
             executor.process()
+        except KeyboardInterrupt:
+            PrintColor.log(Fg.FOCUS.value +"\n\n"+ '###  Flex bye bye budy !  ###' +"\n")
         except (
-        FileNotFoundError, FileExistsError, ImportError, AttributeError, ValueError, KeyError, NotImplementedError,
-        GitMergeConflictError, NotADirectoryError, TypeError, IndexError, GithubRequestApiError, ConnectionError,
-        FlexioRequestApiError) as error:
+                FileNotFoundError, FileExistsError, ImportError, AttributeError, ValueError, KeyError,
+                NotImplementedError,
+                GitMergeConflictError, NotADirectoryError, TypeError, IndexError, GithubRequestApiError,
+                ConnectionError,
+                FlexioRequestApiError) as error:
             sys.stderr.write("""
 
 {red}#######################################
