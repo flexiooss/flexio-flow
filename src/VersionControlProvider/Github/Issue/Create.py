@@ -45,9 +45,9 @@ class Create:
             assignees: List[str] = self.__default_issue.assignees
         else:
             message: str = """ Assignees {default}
-    {bg_help}separator `;`{reset_bg}
-    {bg_help}`-l` to list users{reset_bg}
-    """.format(
+{bg_help}separator `;`{reset_bg}
+{bg_help}`-l` to list users{reset_bg}
+""".format(
                 default=Fg.SUCCESS.value + ';'.join(self.__default_issue.assignees) + Fg.RESET.value + ' :' if len(
                     self.__default_issue.assignees) else '',
                 reset_bg=Fg.RESET.value,
@@ -69,8 +69,8 @@ class Create:
                 if len(members):
                     message: str = """{fg_cyan}{members!s} {reset_fg}
     
-    Choose pseudo :
-    """.format(fg_cyan=Fg.NOTICE.value,
+Choose pseudo :
+""".format(fg_cyan=Fg.NOTICE.value,
                members=' | '.join(members),
                reset_fg=Fg.RESET.value
                )
@@ -189,11 +189,11 @@ Choose number :
 
             if len(labels_repo):
                 message += """
-    {fg_cyan}{labels!s}{fg_reset}
-    
-    Choose label : {fg_green}{default}{fg_reset}
-    {fg_cyan}separator `;` {fg_reset}
-    """.format(
+{fg_cyan}{labels!s}{fg_reset}
+
+Choose label : {fg_green}{default}{fg_reset}
+{fg_cyan}separator `;` {fg_reset}
+""".format(
                     fg_cyan=Fg.NOTICE.value,
                     labels=' | '.join(labels_repo),
                     fg_reset=Fg.RESET.value,
@@ -216,7 +216,7 @@ Choose number :
 
         title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
 
-        if self.__options.get('default') is not None and self.__default_issue.title != '':
+        if self.__options.get('default') is not None and self.__default_issue.title is not None:
             title = self.__default_issue.title
         else:
             while not len(title) > 0:
@@ -248,7 +248,7 @@ Choose number :
         return self
 
     def process(self) -> Issue:
-        self.__start_message()
+        # self.__start_message()
 
         self.__start_message_issue()
 
