@@ -1,3 +1,6 @@
+import re
+from re import Pattern
+
 from requests import Response
 
 
@@ -5,6 +8,7 @@ class GithubRequestApiError(Exception):
     def __init__(self, response: Response, message: str = ''):
         self.response: Response = response
         self.message: str = message
+        self.__token_obfuscer: Pattern = re.compile('\'token [\w]*\'')
 
     def __str__(self):
         return """
@@ -33,5 +37,6 @@ json :
             self.response.content,
             self.response.json(),
             self.response.url,
-            self.response.request,
+            ','.join([self.response.request.method, self.response.request.url, str(self.response.request.body),
+                      self.__token_obfuscer.sub('\'token ********\'',str(self.response.request.headers))]),
         )
