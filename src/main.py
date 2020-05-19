@@ -1,4 +1,4 @@
-#! /usr/bin/env python3.7
+#! /usr/bin/env python3
 from ConsoleColors.PrintColor import PrintColor
 from typing import Tuple, List, Optional, Dict, Union
 import getopt
