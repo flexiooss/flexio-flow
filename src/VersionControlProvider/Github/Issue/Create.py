@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Dict, Type, Optional
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.Options import Options
 from Log.Log import Log
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
@@ -17,20 +18,20 @@ from VersionControlProvider.IssueDefault import IssueDefault
 
 class Create:
     def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault],
-                 options: Optional[Dict[str, str]]):
+                 options: Options):
         self.__config_handler: ConfigHandler = config_handler
         self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
-        self.__options: Optional[Dict[str, str]] = options
+        self.__options: Options = options
 
     def __start_message(self) -> Create:
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             CommonIssue.issuer_message()
         return self
 
     def __start_message_issue(self) -> Create:
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             print(
             """###############################################
 #########     {yellow}Create Github Issue{reset}     #########
@@ -41,7 +42,7 @@ class Create:
         return list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), v)))
 
     def __input_assignees(self, issue: IssueGithub) -> Create:
-        if self.__options.get('default') is not None:
+        if self.__options.default:
             assignees: List[str] = self.__default_issue.assignees
         else:
             message: str = """ Assignees {default}
@@ -171,7 +172,7 @@ Choose number :
     def __input_labels(self, issue: IssueGithub) -> Create:
         labels_lst: List[str]
 
-        if self.__options.get('default') is not None:
+        if self.__options.default:
             labels_lst = self.__default_issue.labels
         else:
             message: str = 'Labels '
@@ -215,8 +216,7 @@ Choose label : {fg_green}{default}{fg_reset}
         title: str = ''
 
         title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
-
-        if self.__options.get('default') is not None and self.__default_issue.title is not None:
+        if self.__options.default and self.__default_issue.title is not None:
             title = self.__default_issue.title
         else:
             while not len(title) > 0:
@@ -226,7 +226,7 @@ Choose label : {fg_green}{default}{fg_reset}
 
         issue.title = title
 
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             body: str = input('Description : ')
             if body:
                 issue.body = body
