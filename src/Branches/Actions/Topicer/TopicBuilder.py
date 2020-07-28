@@ -58,7 +58,7 @@ class TopicBuilder:
                     for topic in self.__topics:
                         CommonTopic.print_resume_topic(topic)
 
-                    if self.__options.default is None:
+                    if not self.__options.default:
 
                         use_default_topic: str = input(
                             'Use these topics ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
@@ -67,7 +67,7 @@ class TopicBuilder:
             else:
                 Log.info('No default Topic found')
 
-            if self.__topics is None and self.__options.default is None:
+            if self.__topics is None and not self.__options.default:
                 self.__topics: List[Topic] = self.__topicer.attach_or_create()
 
         return self

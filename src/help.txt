@@ -1,5 +1,4 @@
 ############################################################
-############################################################
 
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
@@ -7,35 +6,31 @@
  |_|  |_|\___|/_\_\|_|\___/     |_|  |_|\___/ \_/\_/
 
 https://github.com/flexiooss/flexio-flow
-
 ###########################################################
-
 
 flexio-flow
               --help, -h
               -V, --version-dir     Directory of repository with flexio-flow.yml at the root
               --debug               show stack trace & more
 
-
-   --------   <core>
-
+   --------   <core>    --------
               core
                         config
                                     -c, --create [default]
                                     -r, --read
 
 
-   --------   <branch>
-
+   --------   <branch>  --------
               init
-                  --version   // TODO
-                  --scheme    // TODO
-                  --topics    // TODO
-                  -N, --no-cli    // TODO
+                        --version   // TODO
+                        --scheme    // TODO
+                        --topics    // TODO
+                        -N, --no-cli    // TODO
 
               feature
                         start
                                     -D, --default
+                                    --auto-stash
                                     --branch-name   // TODO
                         finish
                                     -K, --keep-branch
@@ -44,6 +39,7 @@ flexio-flow
               hotfix
                         start
                                     -D, --default
+                                    --auto-stash
                                     --branch-name   // TODO
                         finish
                                     -K, --keep-branch
@@ -55,36 +51,34 @@ flexio-flow
                                     -M, --major
                                     -N, --no-cli
                                     -D, --default
+                                    --auto-stash
                                     --branch-name   // TODO
                         finish
                                     -K, --keep-branch
                                     -D, --default
 
 
-   --------  <commit>
-
+   --------  <commit>   --------
               commit
                         --message
 
-   --------  <issue>
-
+   --------  <issue>    --------
               issue
                         read
                         comment // TODO
-   --------  <topics>
 
+   --------  <topics>   --------
               topics
                         read
 
 
-   --------  <scheme>
-
+   --------  <scheme>   --------
               scheme
                         update
                                 -S, --scheme          maven|package|composer|docker
                                 -s, --scheme-dir      Directory with scheme configuration file
-   --------  <version>
 
+   --------  <version>  --------
               version
                                 -S, --scheme          maven|package|composer|docker
 
@@ -93,9 +87,7 @@ flexio-flow
                                 --from                maven|package|composer|docker [required]
                                 --to                  maven|package|composer|docker [required]
 
-
-   --------  <poom ci>
-
+   --------  <poom ci>  --------
               poom-ci
                         full-repository-json
 
@@ -105,14 +97,9 @@ flexio-flow
                                               --repository-name           [required]
                                               --repository-checkout-spec  [required]
 
-
-
-
 #############
-
 Main purpose
 #############
-
 
 master    0.1.0* -- 0.1.1* -------------------- 0.2.0* ------------
           |   \      /  |                       /

@@ -24,5 +24,5 @@ class ExecutorConfig:
     issue_action: Optional[IssueActions] = None
     topic_action: Optional[TopicActions] = None
     version_controller: VersionController
-    poom_ci_actions: Optional[PoomCiActions]= None
+    poom_ci_actions: Optional[PoomCiActions] = None
     config_handler: ConfigHandler

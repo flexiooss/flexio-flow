@@ -5,6 +5,8 @@ from Schemes.Schemes import Schemes
 
 
 class Options:
+    auto_stash: bool = False
+    close_issue: bool = True
     create: bool = False
     default: bool = False
     debug: bool = False

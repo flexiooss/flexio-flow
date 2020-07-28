@@ -46,4 +46,10 @@ class VersionControl:
     def is_current_branch_develop(self) -> bool:
         pass
 
+    @abc.abstractmethod
+    def stash_start(self):
+        pass
 
+    @abc.abstractmethod
+    def stash_end(self):
+        pass

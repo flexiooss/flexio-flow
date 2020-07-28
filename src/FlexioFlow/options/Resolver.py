@@ -21,12 +21,11 @@ from FlexioFlow.options.SchemeDir import SchemeDir
 from FlexioFlow.options.To import To
 from FlexioFlow.options.Version import Version
 from FlexioFlow.options.VersionDir import VersionDir
+from FlexioFlow.options.AutoStash import AutoStash
 
 
 class Resolver:
-    options: List[Option] = [Create, Debug, Default, FileName, From, Help, KeepBranch, Major, Message, NoCli, Read,
-                             RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version,
-                             VersionDir]
+    options: List[Option] = [Create, Debug, Default, FileName, From, Help, KeepBranch, Major, Message, NoCli, Read, RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version, VersionDir, AutoStash]
 
     def resolve(self, opt: str, arg: str, options: Options):
         o: Option

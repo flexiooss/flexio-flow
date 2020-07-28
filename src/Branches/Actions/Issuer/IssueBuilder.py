@@ -26,12 +26,12 @@ class IssueBuilder:
         self.__version_control: VersionControl = version_control
         self.__state_handler: StateHandler = state_handler
         self.__config_handler: ConfigHandler = config_handler
-        self.__issuer: Optional[Issuer] = IssuerHandler(
-            self.__state_handler, self.__config_handler
-        ).issuer()
+        self.__options: Options = options
         self.__branch: Optional[Branches] = branch
         self.__issue: Optional[Issue] = None
-        self.__options: Options = options
+        self.__issuer: Optional[Issuer] = IssuerHandler(
+            self.__state_handler, self.__config_handler, self.__options
+        ).issuer()
 
     def try_ensure_issue(self) -> IssueBuilder:
         if self.__config_handler.has_issuer() and self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:

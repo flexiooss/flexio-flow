@@ -38,13 +38,13 @@ class Finish(Action):
     def __should_close_issue(self):
         close_issue_b: bool = True
 
-        if self.options.get('default') is None:
+        if not self.options.default:
             close_issue: str = input(
                 ' Close Issue Y/N : ' + Fg.SUCCESS.value + 'Y' + Fg.RESET.value + ' ')
             close_issue_b = False if close_issue.capitalize() == 'N' else True
 
         if close_issue_b:
-            self.options.update({'close_issue': True})
+            self.options.close_issue = True
 
     def process(self):
 

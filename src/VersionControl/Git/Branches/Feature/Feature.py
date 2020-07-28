@@ -32,8 +32,8 @@ class Feature(Branch):
                 state_handler=self.state_handler,
                 issue=self.issue,
                 topics=self.topics,
-                keep_branch=self.options.get('keep-branch', False),
-                close_issue=self.options.get('close_issue', False)
+                keep_branch=self.options.keep_branch,
+                close_issue=self.options.close_issue
             ).process()
 
         else:

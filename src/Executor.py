@@ -71,7 +71,7 @@ class Executor:
             if PoomCiActions.has_value(arg):
                 self.__config.poom_ci_actions = PoomCiActions[arg.upper().replace('-', '_')]
 
-            return self
+        return self
 
     def __ensure_version_dir(self):
         version_dir: Path
