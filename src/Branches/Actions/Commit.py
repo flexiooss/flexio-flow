@@ -43,7 +43,7 @@ Commited and push with message :
         if self.config_handler.has_issuer():
             issue_number: Optional[int] = self.version_control.get_issue_number()
             if issue_number is not None:
-                issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler).issuer()
+                issuer: Issuer = IssuerHandler(self.state_handler, self.config_handler, self.options).issuer()
                 message = issuer.message_builder(
                     message=message,
                     issue=issuer.issue_builder().with_number(issue_number)
