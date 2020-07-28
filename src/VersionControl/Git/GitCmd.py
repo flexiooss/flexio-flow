@@ -188,7 +188,7 @@ class GitCmd:
             matches: Optional[Match] = self.match_remote_url_https(url)
             if matches is None:
                 raise ValueError(
-                    '''remote.origin.url not match with : 
+                    '''Git Repository not found, remote.origin.url not match with : 
                     ^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
                     ^https://github\.com/(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
                 ''')

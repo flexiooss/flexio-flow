@@ -37,7 +37,9 @@ class ConfigHandler:
                 'Flexio Flow Core not initialized try : flexio-flow core config'
             )
         f: fileinput = self.file_path().open('r')
-        data: dict = yaml.load(f, Loader=yaml.FullLoader)
+        # TODO: ensure 3.8 compatibility
+        # data: dict = yaml.load(f, Loader=yaml.FullLoader)
+        data: dict = yaml.load(f)
         f.close()
 
         self.__config = Config().with_github(

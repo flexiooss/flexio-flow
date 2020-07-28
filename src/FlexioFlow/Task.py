@@ -2,7 +2,7 @@ from enum import Enum, unique
 
 
 @unique
-class Subject(Enum):
+class Task(Enum):
     BRANCH: str = 'branch'
     CORE: str = 'core'
     ISSUE: str = 'issue'

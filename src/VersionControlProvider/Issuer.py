@@ -3,6 +3,7 @@ import abc
 from typing import Type, Optional, Dict
 
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Github.Repo import Repo
 from VersionControlProvider.Issue import Issue
@@ -30,7 +31,7 @@ class Issuer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def attach_or_create(self, default_issue: Optional[IssueDefault],  options: Optional[Dict[str, str]]) -> Issue:
+    def attach_or_create(self, default_issue: Optional[IssueDefault],  options: Options) -> Issue:
         pass
 
     @abc.abstractmethod

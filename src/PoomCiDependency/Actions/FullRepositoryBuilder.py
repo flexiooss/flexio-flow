@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Union, Type, Optional, List
 
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from PoomCiDependency.FullRepository import FullRepository
 from PoomCiDependency.Module import Module
@@ -14,15 +15,15 @@ from Schemes.Schemes import Schemes
 class FullRepositoryBuilder:
     repository: Optional[Repository] = None
 
-    def __init__(self, state_handler: StateHandler, options: Dict[str, Union[str, Schemes, bool]]):
+    def __init__(self, state_handler: StateHandler, options: Options):
         self.state_handler: StateHandler = state_handler
-        self.options: Dict[str, Union[str, Schemes, bool]] = options
+        self.options: Options = options
 
     def __ensure_have_repo(self):
 
-        repository_id: str = self.options.get('repository_id')
-        repository_name = self.options.get('repository_name')
-        repository_checkout_spec = self.options.get('repository_checkout_spec')
+        repository_id: str = self.options.repository_id
+        repository_name = self.options.repository_name
+        repository_checkout_spec = self.options.repository_checkout_spec
 
         if repository_id is None or repository_name is None or repository_checkout_spec is None:
             raise ValueError('Option missing, repository_id, repository_name, repository_checkout_spec')
@@ -30,7 +31,7 @@ class FullRepositoryBuilder:
         self.repository = Repository(id=repository_id, name=repository_name, checkout_spec=repository_checkout_spec)
 
     def __get_scheme_option_or_default(self) -> Schemes:
-        schemes: Optional[Schemes] = self.options.get('scheme')
+        schemes: Optional[Schemes] = self.options.scheme
         if schemes is None:
             schemes = self.state_handler.first_scheme()
         if schemes is None:

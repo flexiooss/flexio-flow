@@ -6,6 +6,7 @@ from Branches.Actions.Issuer.IssueDefaultBuilder import IssueDefaultBuilder
 from Branches.Branches import Branches
 from Core.ConfigHandler import ConfigHandler
 from Core.IssuerHandler import IssuerHandler
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
@@ -20,7 +21,7 @@ class IssueBuilder:
                  state_handler: StateHandler,
                  config_handler: ConfigHandler,
                  branch: Optional[Branches],
-                 options: Dict[str, str]
+                 options: Options
                  ):
         self.__version_control: VersionControl = version_control
         self.__state_handler: StateHandler = state_handler
@@ -30,7 +31,7 @@ class IssueBuilder:
         ).issuer()
         self.__branch: Optional[Branches] = branch
         self.__issue: Optional[Issue] = None
-        self.__options: Dict[str, str] = options
+        self.__options: Options = options
 
     def try_ensure_issue(self) -> IssueBuilder:
         if self.__config_handler.has_issuer() and self.__issuer is not None and self.__issuer.has_repo() and self.__branch is not None:

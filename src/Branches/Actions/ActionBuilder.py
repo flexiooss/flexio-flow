@@ -12,6 +12,7 @@ from typing import Type, Dict, Optional
 from Branches.Branches import Branches
 from VersionControl.VersionControl import VersionControl
 from FlexioFlow.StateHandler import StateHandler
+from FlexioFlow.Options import Options
 
 
 class ActionBuilder:
@@ -22,7 +23,7 @@ class ActionBuilder:
             version_control: VersionControl,
             branch: Optional[Branches],
             state_handler: StateHandler,
-            options: Dict[str, str],
+            options: Options,
             config_handler: ConfigHandler
     ) -> Action:
 

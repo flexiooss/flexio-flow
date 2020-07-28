@@ -3,6 +3,7 @@ import abc
 from typing import Optional, Dict, List
 
 from Branches.Actions.Actions import Actions
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
@@ -19,7 +20,7 @@ class Branch(abc.ABC):
         self.issue: Optional[Issue] = None
         self.topics: Optional[List[Topic]] = None
         self.name: Optional[str] = None
-        self.options: Dict[str, str] = {}
+        self.options: Options = Options()
 
     def with_issue(self, issue: Issue) -> Branch:
         self.issue = issue
@@ -33,7 +34,7 @@ class Branch(abc.ABC):
         self.name = name
         return self
 
-    def with_options(self, options: Dict[str, str]) -> Branch:
+    def with_options(self, options: Options) -> Branch:
         self.options = options
         return self
 

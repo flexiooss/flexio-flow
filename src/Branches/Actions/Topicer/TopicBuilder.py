@@ -5,6 +5,7 @@ from typing import Optional, Dict, List
 from Branches.Branches import Branches
 from Core.ConfigHandler import ConfigHandler
 from Core.TopicerHandler import TopicerHandler
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from Log.Log import Log
 from VersionControl.VersionControl import VersionControl
@@ -21,7 +22,7 @@ class TopicBuilder:
                  state_handler: StateHandler,
                  config_handler: ConfigHandler,
                  branch: Optional[Branches],
-                 options: Dict[str, str]
+                 options: Options
                  ):
         self.__version_control: VersionControl = version_control
         self.__state_handler: StateHandler = state_handler
@@ -29,7 +30,7 @@ class TopicBuilder:
         self.__branch: Optional[Branches] = branch
         self.__topicer: Optional[Topicer] = None
         self.__topics: Optional[List[Topic]] = None
-        self.__options: Dict[str, str] = options
+        self.__options: Options = options
         self.__init_topicer()
 
     def __init_topicer(self):
@@ -57,7 +58,7 @@ class TopicBuilder:
                     for topic in self.__topics:
                         CommonTopic.print_resume_topic(topic)
 
-                    if self.__options.get('default') is None:
+                    if self.__options.default is None:
 
                         use_default_topic: str = input(
                             'Use these topics ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
@@ -66,7 +67,7 @@ class TopicBuilder:
             else:
                 Log.info('No default Topic found')
 
-            if self.__topics is None and self.__options.get('default') is None:
+            if self.__topics is None and self.__options.default is None:
                 self.__topics: List[Topic] = self.__topicer.attach_or_create()
 
         return self

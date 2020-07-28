@@ -5,6 +5,7 @@ from pprint import pprint
 from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Core.ConfigHandler import ConfigHandler
 from FlexioFlow.Actions.TopicActions import TopicActions
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from typing import Dict, Optional, List
 
@@ -21,13 +22,13 @@ class Topic:
                  state_handler: StateHandler,
                  version_control: VersionControl,
                  config_handler: ConfigHandler,
-                 options: Dict[str, str],
+                 options: Options,
                  ) -> None:
         self.action: TopicActions = action
         self.state_handler: StateHandler = state_handler
         self.version_control: VersionControl = version_control
         self.config_handler: ConfigHandler = config_handler
-        self.options: Dict[str, str] = options
+        self.options: Options = options
 
     def process(self):
 
