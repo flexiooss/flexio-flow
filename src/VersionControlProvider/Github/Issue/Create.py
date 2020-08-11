@@ -60,7 +60,7 @@ class Create:
             if assignees == '-l':
                 r: Response = self.__github.get_users()
                 members: List[str] = []
-                if r.status_code is 200:
+                if r.status_code == 200:
                     members_response: List[Dict[str, str]] = r.json()
                     l: Dict[str, str]
                     for l in members_response:
@@ -132,7 +132,7 @@ url : {url!s}
         if milestone == '-c':
             r1: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []
-            if r1.status_code is 200:
+            if r1.status_code == 200:
                 milestones_response: List[Dict[str, str]] = r1.json()
                 l: Dict[str, str]
                 for l in milestones_response:
@@ -158,7 +158,7 @@ Choose number :
         if milestone == '-c':
             milestone_inst: Milestone = self.__create_milestone()
             r2: Response = self.__github.create_milestone(milestone_inst)
-            if r2.status_code is 201:
+            if r2.status_code == 201:
                 milestone_created: Dict[str, str] = r2.json()
                 milestone = milestone_created.get('number')
                 self.__resume_milestone(milestone_created)
@@ -179,7 +179,7 @@ Choose number :
             r: Response = self.__github.get_labels()
 
             labels_repo: List[str] = []
-            if r.status_code is 200:
+            if r.status_code == 200:
                 labels_response: List[Dict[str, str]] = r.json()
                 l: Dict[str, str]
                 for l in labels_response:
@@ -256,7 +256,7 @@ Choose label : {fg_green}{default}{fg_reset}
 
         r: Response = self.__post_issue(issue)
 
-        if r.status_code is 201:
+        if r.status_code == 201:
             issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
 
             self.__resume_issue_created(issue_created)

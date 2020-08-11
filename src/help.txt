@@ -1,5 +1,4 @@
 ############################################################
-
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
  |  _|| |/ -_)\ \ /| |/ _ \|___||  _|| |/ _ \\ V  V /
@@ -10,16 +9,15 @@ https://github.com/flexiooss/flexio-flow
 
 flexio-flow
               --help, -h
+              --config              Filename of global Flexio-flow configuration
               -V, --version-dir     Directory of repository with flexio-flow.yml at the root
               --debug               show stack trace & more
 
    --------   <core>    --------
               core
                         config
-                                    -c, --create [default]
-                                    -r, --read
-
-
+                                    -C, --create [default]
+                                    -R, --read
    --------   <branch>  --------
               init
                         --version   // TODO
@@ -57,7 +55,6 @@ flexio-flow
                                     -K, --keep-branch
                                     -D, --default
 
-
    --------  <commit>   --------
               commit
                         --message
@@ -70,7 +67,6 @@ flexio-flow
    --------  <topics>   --------
               topics
                         read
-
 
    --------  <scheme>   --------
               scheme

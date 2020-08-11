@@ -66,7 +66,7 @@ class Create:
 
         r: Response = self.__post_topic(topic)
 
-        if r.status_code is 200:
+        if r.status_code == 200:
             topic_created: FlexioTopic = FlexioTopic.build_from_api(r.json())
             print(topic_created.to_api_dict())
             self.__resume_topic(topic_created)

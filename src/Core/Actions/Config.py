@@ -74,7 +74,7 @@ Core already initialized at : {path!s}
 
             use: str = input('Use this file (y)/n : ')
             use = use if use else 'y'
-            if use is 'y':
+            if use == 'y':
                 return self
             else:
                 self.config_handler.reset_config()

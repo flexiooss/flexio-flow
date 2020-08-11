@@ -51,7 +51,7 @@ class Init(Action):
         schemes: List[Schemes] = []
         for scheme in Schemes:
             add: str = input('With ' + scheme.value + ' y/' + Fg.SUCCESS.value + 'n' + Fg.RESET.value + ' : ')
-            if add is 'y':
+            if add == 'y':
                 schemes.append(scheme)
 
         self.state_handler.state.schemes = schemes
@@ -106,7 +106,7 @@ class Init(Action):
             use: str = input('Use this file ' + Fg.SUCCESS.value + 'y' + Fg.RESET.value + '/n : ')
             use = use if use else 'y'
 
-            if use is 'y':
+            if use == 'y':
                 return True
             else:
                 self.state_handler.reset_state()
