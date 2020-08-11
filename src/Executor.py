@@ -90,7 +90,7 @@ class Executor:
         self.__config.task = Task.BRANCH if self.__config.task is None else self.__config.task
 
     def __ensure_config_handler(self):
-        self.__config.config_handler = ConfigHandler(Core.CONFIG_DIR)
+        self.__config.config_handler = ConfigHandler(Core.CONFIG_DIR, self.__config.options.config)
 
     def __ensure_version_controller(self):
         self.__config.version_controller = VersionController.GIT
