@@ -49,3 +49,9 @@ class Git(VersionControl):
 
     def is_current_branch_develop(self) -> bool:
         return GitCmd(self.state_handler).get_current_branch_name() == Branches.DEVELOP.value
+
+    def stash_start(self):
+        GitCmd(self.state_handler).stash()
+
+    def stash_end(self):
+        GitCmd(self.state_handler).stash_pop()

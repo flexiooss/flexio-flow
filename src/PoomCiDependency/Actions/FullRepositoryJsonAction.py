@@ -3,6 +3,7 @@ from pathlib import Path
 
 from typing import Dict, Union, Optional
 
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from PoomCiDependency.Actions.FullRepositoryBuilder import FullRepositoryBuilder
 from PoomCiDependency.FullRepository import FullRepository
@@ -14,15 +15,15 @@ from Schemes.Schemes import Schemes
 class FullRepositoryJsonAction:
     repository: Optional[Repository] = None
 
-    def __init__(self, state_handler: StateHandler, options: Dict[str, Union[str, Schemes, bool]]):
+    def __init__(self, state_handler: StateHandler, options: Options):
         self.state_handler: StateHandler = state_handler
-        self.options: Dict[str, Union[str, Schemes, bool]] = options
+        self.options: Options = options
 
     def process(self):
         full_repository: FullRepository = FullRepositoryBuilder(self.state_handler, self.options).build()
 
-        if self.options.get('filename') is not None:
-            filename: Path = Path(self.options.get('filename'))
+        if self.options.filename is not None:
+            filename: Path = Path(self.options.filename)
 
             if filename.is_file():
                 raise FileExistsError(filename)

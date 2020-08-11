@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Dict, Type, Optional
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.Options import Options
 from Log.Log import Log
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
@@ -17,20 +18,20 @@ from VersionControlProvider.IssueDefault import IssueDefault
 
 class Create:
     def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault],
-                 options: Optional[Dict[str, str]]):
+                 options: Options):
         self.__config_handler: ConfigHandler = config_handler
         self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
-        self.__options: Optional[Dict[str, str]] = options
+        self.__options: Options = options
 
     def __start_message(self) -> Create:
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             CommonIssue.issuer_message()
         return self
 
     def __start_message_issue(self) -> Create:
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             print(
             """###############################################
 #########     {yellow}Create Github Issue{reset}     #########
@@ -41,7 +42,7 @@ class Create:
         return list(filter(lambda x: len(x) > 0, map(lambda x: x.strip(), v)))
 
     def __input_assignees(self, issue: IssueGithub) -> Create:
-        if self.__options.get('default') is not None:
+        if self.__options.default:
             assignees: List[str] = self.__default_issue.assignees
         else:
             message: str = """ Assignees {default}
@@ -59,7 +60,7 @@ class Create:
             if assignees == '-l':
                 r: Response = self.__github.get_users()
                 members: List[str] = []
-                if r.status_code is 200:
+                if r.status_code == 200:
                     members_response: List[Dict[str, str]] = r.json()
                     l: Dict[str, str]
                     for l in members_response:
@@ -131,7 +132,7 @@ url : {url!s}
         if milestone == '-c':
             r1: Response = self.__github.get_open_milestones()
             milestones_repo: List[str] = []
-            if r1.status_code is 200:
+            if r1.status_code == 200:
                 milestones_response: List[Dict[str, str]] = r1.json()
                 l: Dict[str, str]
                 for l in milestones_response:
@@ -157,7 +158,7 @@ Choose number :
         if milestone == '-c':
             milestone_inst: Milestone = self.__create_milestone()
             r2: Response = self.__github.create_milestone(milestone_inst)
-            if r2.status_code is 201:
+            if r2.status_code == 201:
                 milestone_created: Dict[str, str] = r2.json()
                 milestone = milestone_created.get('number')
                 self.__resume_milestone(milestone_created)
@@ -171,14 +172,14 @@ Choose number :
     def __input_labels(self, issue: IssueGithub) -> Create:
         labels_lst: List[str]
 
-        if self.__options.get('default') is not None:
+        if self.__options.default:
             labels_lst = self.__default_issue.labels
         else:
             message: str = 'Labels '
             r: Response = self.__github.get_labels()
 
             labels_repo: List[str] = []
-            if r.status_code is 200:
+            if r.status_code == 200:
                 labels_response: List[Dict[str, str]] = r.json()
                 l: Dict[str, str]
                 for l in labels_response:
@@ -215,8 +216,7 @@ Choose label : {fg_green}{default}{fg_reset}
         title: str = ''
 
         title_default: str = Fg.SUCCESS.value + self.__default_issue.title + Fg.RESET.value if self.__default_issue.title is not None else ''
-
-        if self.__options.get('default') is not None and self.__default_issue.title is not None:
+        if self.__options.default and self.__default_issue.title is not None:
             title = self.__default_issue.title
         else:
             while not len(title) > 0:
@@ -226,7 +226,7 @@ Choose label : {fg_green}{default}{fg_reset}
 
         issue.title = title
 
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             body: str = input('Description : ')
             if body:
                 issue.body = body
@@ -256,7 +256,7 @@ Choose label : {fg_green}{default}{fg_reset}
 
         r: Response = self.__post_issue(issue)
 
-        if r.status_code is 201:
+        if r.status_code == 201:
             issue_created: IssueGithub = IssueGithub.from_api_dict(r.json())
 
             self.__resume_issue_created(issue_created)

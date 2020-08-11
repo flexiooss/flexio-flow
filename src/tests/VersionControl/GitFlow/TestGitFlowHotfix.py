@@ -59,7 +59,7 @@ class TestGitFlowHotfix(unittest.TestCase):
     def __post_issue(self, issue: IssueGithub) -> IssueGithub:
         r: Response = self.github.create_issue(issue)
 
-        if r.status_code is 201:
+        if r.status_code == 201:
             issue_created: Dict[str, str] = r.json()
             return issue.with_number(int(issue_created.get('number')))
         else:

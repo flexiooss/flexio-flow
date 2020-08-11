@@ -12,12 +12,13 @@ from VersionControlProvider.Github.ConfigGithub import ConfigGithub
 
 
 class ConfigHandler:
-    FILE_NAME: str = 'config.yml'
+    DEFAULT_FILE_NAME: str = 'config.yml'
     __config: Optional[Config]
 
-    def __init__(self, dir_path: Path):
+    def __init__(self, dir_path: Path, filename:Optional[str]=None) :
         self.dir_path: Path = dir_path
         self.__config: Optional[Config] = None
+        self.__filename: str = ConfigHandler.DEFAULT_FILE_NAME if filename is None else filename
 
     @property
     def config(self) -> Config:
@@ -37,7 +38,9 @@ class ConfigHandler:
                 'Flexio Flow Core not initialized try : flexio-flow core config'
             )
         f: fileinput = self.file_path().open('r')
-        data: dict = yaml.load(f)
+        # TODO: ensure 3.8 compatibility
+        data: dict = yaml.load(f, Loader=yaml.FullLoader)
+        # data: dict = yaml.load(f)
         f.close()
 
         self.__config = Config().with_github(
@@ -63,7 +66,7 @@ Write file : {0!s}
         return yaml.dump(self.__config.to_dict(), default_flow_style=False)
 
     def file_path(self) -> Path:
-        return self.dir_path / self.FILE_NAME
+        return self.dir_path / self.__filename
 
     def has_issuer(self) -> bool:
         return self.__config.github.activate is True

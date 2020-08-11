@@ -15,7 +15,7 @@ from VersionControlProvider.Github.Repo import Repo
 class GitCmd:
     SPACES_PATTERN: Pattern = re.compile('^\*?\s*')
 
-    def __init__(self, state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler, debug: bool = False):
         self.__state_handler = state_handler
 
     def __exec(self, args: List[str]) -> Popen:
@@ -188,7 +188,7 @@ class GitCmd:
             matches: Optional[Match] = self.match_remote_url_https(url)
             if matches is None:
                 raise ValueError(
-                    '''remote.origin.url not match with : 
+                    '''Git Repository not found, remote.origin.url not match with : 
                     ^git@github\.com:(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
                     ^https://github\.com/(?P<owner>[\w\d._-]*)/(?P<repo>[\w\d._-]*)\.git$
                 ''')
@@ -216,6 +216,12 @@ class GitCmd:
 
     def has_head(self) -> bool:
         return len(self.__exec_for_stdout(['git', 'show-ref', '--heads'])) > 0
+
+    def stash(self):
+        self.__exec(['git', 'stash'])
+
+    def stash_pop(self):
+        self.__exec(['git', 'stash', 'pop'])
 
     def is_branch_ahead(self, branch: str, compare_to: str) -> bool:
         return int(self.__exec_for_stdout(['git', 'rev-list', compare_to + '..' + branch, '--count'])) > 0

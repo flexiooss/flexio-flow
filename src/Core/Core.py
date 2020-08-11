@@ -6,20 +6,21 @@ from pathlib import Path
 
 from Core.Actions.Read import Read
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.Options import Options
 from Schemes.Schemes import Schemes
 
 
 class Core:
     CONFIG_DIR: Path = Path.home().joinpath('.flexio-flow')
 
-    def __init__(self, action: Actions, options: Dict[str, Union[str, Schemes, bool]], config_handler: ConfigHandler):
+    def __init__(self, action: Actions, options: Options, config_handler: ConfigHandler):
         self.action: Actions = action
-        self.options: Dict[str, Union[str, Schemes, bool]] = options
+        self.options: Options = options
         self.config_handler = config_handler
 
     def process(self):
         if self.action is Actions.CONFIG:
-            if self.options.get('read', False):
+            if self.options.read:
                 print('read config')
                 self.read()
             else:

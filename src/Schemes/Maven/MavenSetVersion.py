@@ -21,7 +21,7 @@ class MavenSetVersion:
         )
         p1.wait()
 
-        if p1.returncode is not 0:
+        if p1.returncode != 0:
             print('something went wrong while setting version, trying to rollback')
             status = Popen(
                 ['mvn', 'versions:rollback'],

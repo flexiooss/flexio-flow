@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Dict, Type, Optional
 from requests import Response
 from Core.ConfigHandler import ConfigHandler
+from FlexioFlow.Options import Options
 from Log.Log import Log
 from VersionControlProvider.Github.Github import Github
 from VersionControlProvider.Github.GithubRequestApiError import GithubRequestApiError
@@ -17,16 +18,16 @@ from VersionControlProvider.IssueDefault import IssueDefault
 
 class AttachOrCreate:
 
-    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault], options: Optional[Dict[str, str]]):
+    def __init__(self, config_handler: ConfigHandler, repo: Repo, default_issue: Optional[IssueDefault], options: Options):
         self.__config_handler: ConfigHandler = config_handler
         self.__repo: Repo = repo
         self.__github = Github(self.__config_handler).with_repo(self.__repo)
         self.__default_issue: Optional[IssueDefault] = default_issue
-        self.__options: Optional[Dict[str, str]] = options
+        self.__options: Options = options
         self.__issue: Optional[Issue] = None
 
     def __would_attach_issue(self) -> bool:
-        if self.__options.get('default') is not None:
+        if self.__options.default:
             return False
         else:
             issue: str = input("""Have already an issue y/{green}n{reset_fg} : """.format(
@@ -71,7 +72,7 @@ class AttachOrCreate:
         ).process()
 
     def process(self) -> Issue:
-        if self.__options.get('default') is None:
+        if not self.__options.default:
             CommonIssue.issuer_message()
 
         if self.__attach():

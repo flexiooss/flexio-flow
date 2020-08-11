@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from FlexioFlow.Options import Options
 from Schemes.DevPrefix import DevPrefix
 from Schemes.Schemes import Schemes
 from typing import Dict
@@ -7,14 +9,14 @@ from typing import Dict
 class Convert:
 
     def __init__(self,
-                 options: Dict[str, str],
+                 options: Options,
                  ) -> None:
-        self.options: Dict[str, str] = options
+        self.options: Options = options
 
     def process(self):
-        from_schemes: Schemes = Schemes.value_of(self.options.get('from'))
-        to_schemes: Schemes = Schemes.value_of(self.options.get('to'))
-        version: str = self.options.get('version')
+        from_schemes: Schemes = self.options.from_schemes
+        to_schemes: Schemes = self.options.to_schemes
+        version: str = self.options.version
         if not version:
             raise ValueError('version is empty')
 

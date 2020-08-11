@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.Scheme import Scheme
 from Schemes.SchemeBuilder import SchemeBuilder
@@ -11,19 +12,18 @@ class Version:
 
     def __init__(self,
                  state_handler: StateHandler,
-                 options: Dict[str, str],
+                 options: Options,
                  ) -> None:
         self.state_handler: StateHandler = state_handler
-        self.options: Dict[str, str] = options
+        self.options: Options = options
 
     def __get_scheme_option_or_default(self) -> Optional[Schemes]:
-        schemes: Optional[Schemes] = self.options.get('scheme')
+        schemes: Optional[Schemes] = self.options.scheme
         if schemes is None:
             schemes = self.state_handler.first_scheme()
         if schemes is None:
             schemes = Schemes.PACKAGE
         return schemes
-
 
     def process(self):
         schemes: Optional[Schemes] = self.__get_scheme_option_or_default()

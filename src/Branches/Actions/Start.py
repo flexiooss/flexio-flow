@@ -11,6 +11,7 @@ from ConsoleColors.Fg import Fg
 from Exceptions.NoBranchSelected import NoBranchSelected
 from Log.Log import Log
 from VersionControl.Branch import Branch
+from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Issue import Issue
 from slugify import slugify
 
@@ -43,15 +44,15 @@ class Start(Action):
                 raise NoBranchSelected('Checkout to develop branch before')
             is_major_b: bool = False
 
-            if self.options.get('major') is None and self.options.get('default') is None:
-                if self.options.get('no-cli') is not True:
+            if self.options.major is None and not self.options.default:
+                if self.options.no_cli is not True:
                     is_major: str = input(
                         ' Is major Release Y/N : ' + Fg.SUCCESS.value + 'N' + Fg.RESET.value + ' ')
                     is_major_b = True if is_major.capitalize() == 'Y' else False
-                    self.options.update({'major': is_major_b})
+                    self.options.major = is_major_b
 
             else:
-                is_major_b = self.options.get('major') is True
+                is_major_b = self.options.major is True
                 if is_major_b:
                     Log.info('Release option Major set from options')
 
@@ -67,6 +68,23 @@ class Start(Action):
 
             branch.with_name(name=name)
         return branch
+
+    def __ensure_stash_start(self):
+        if not self.options.auto_stash and not self.options.default:
+            if self.options.no_cli is not True:
+                auto_stash: str = input(
+                    ' Stash your working tree Y/N : ' + Fg.SUCCESS.value + 'N' + Fg.RESET.value + ' ')
+                auto_stash_b = True if auto_stash.capitalize() == 'Y' else False
+                self.options.auto_stash = auto_stash_b
+
+        if self.options.auto_stash:
+            self.version_control.stash_start()
+            Log.info('Working tree stashed')
+
+    def __ensure_stash_end(self):
+        if self.options.auto_stash:
+            self.version_control.stash_end()
+            Log.info('Stashed work restored ')
 
     def process(self):
         branch: Branch = self.version_control.build_branch(self.branch)
@@ -102,4 +120,6 @@ class Start(Action):
         branch = self.__with_issue(branch, issue)
         branch = self.__with_topics(branch, topics)
         branch = self.__ensure_name(branch)
+        self.__ensure_stash_start()
         branch.process()
+        self.__ensure_stash_end()
