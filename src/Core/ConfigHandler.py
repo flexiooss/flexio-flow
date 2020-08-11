@@ -38,8 +38,8 @@ class ConfigHandler:
             )
         f: fileinput = self.file_path().open('r')
         # TODO: ensure 3.8 compatibility
-        # data: dict = yaml.load(f, Loader=yaml.FullLoader)
-        data: dict = yaml.load(f)
+        data: dict = yaml.load(f, Loader=yaml.FullLoader)
+        # data: dict = yaml.load(f)
         f.close()
 
         self.__config = Config().with_github(

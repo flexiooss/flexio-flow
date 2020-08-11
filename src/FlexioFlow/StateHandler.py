@@ -61,8 +61,8 @@ class StateHandler:
             raise FileNotFoundError(self.file_path(), 'Flexio Flow not initialized try : flexio-flow init')
         f: fileinput = self.file_path().open('r')
         # TODO: ensure 3.8 compatibility
-        # data = yaml.load(f, Loader=yaml.FullLoader)
-        data = yaml.load(f)
+        data = yaml.load(f, Loader=yaml.FullLoader)
+        # data = yaml.load(f)
         f.close()
 
         self.__state.version = Version.from_str(data['version'])
