@@ -2,7 +2,7 @@ from __future__ import annotations
 import abc
 import re
 
-from typing import List
+from typing import List, Optional
 
 from FlexioFlow.Options import Options
 
@@ -11,7 +11,7 @@ class Option(abc.ABC):
     arg: str = None
     opt: str = None
     HAS_VALUE: bool
-    SHORT_NAME: str
+    SHORT_NAME: Optional[str]
     NAME: str
 
     def __init__(self, opt: str, arg: str, options: Options) -> None:
