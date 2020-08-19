@@ -46,7 +46,6 @@ class Executor:
             sys.exit(2)
 
         for opt, arg in opts:
-            arg = re.sub('[\s+]', '', arg)
             self.__options_resolver.resolve(opt=opt, arg=arg, options=options)
 
         self.__config.options = options
