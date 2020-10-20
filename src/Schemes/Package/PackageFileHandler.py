@@ -39,6 +39,7 @@ class PackageFileHandler:
     def write(self) -> PackageFileHandler:
         with self.__file_path.open('w') as outfile:
             json.dump(self.__data, outfile, indent=2)
+            outfile.write("\n")
         return self
 
     @staticmethod
