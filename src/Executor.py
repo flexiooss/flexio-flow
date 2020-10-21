@@ -62,7 +62,7 @@ class Executor:
             if Task.has_value(arg):
                 self.__config.task = Task[arg.upper().replace('-', '_')]
             if ActionsCore.has_value(arg):
-                self.__config.core_actions = ActionsCore[arg.upper().replace('-', '_')]
+                self.__config.core_action = ActionsCore[arg.upper().replace('-', '_')]
             if IssueActions.has_value(arg) or TopicActions.has_value(arg):
                 self.__config.issue_action = IssueActions[arg.upper().replace('-', '_')]
             if TopicActions.has_value(arg):
