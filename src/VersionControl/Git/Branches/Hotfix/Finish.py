@@ -17,25 +17,27 @@ from VersionControl.Git.GitCmd import GitCmd
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
+from Core.ConfigHandler import ConfigHandler
 
 
 class Finish:
     def __init__(self,
                  state_handler: StateHandler,
+                 config_handler: ConfigHandler,
                  issue: Optional[Type[Issue]],
                  topics: Optional[List[Topic]],
                  keep_branch: bool,
                  close_issue: bool
                  ):
         self.__state_handler: StateHandler = state_handler
+        self.__config_handler: ConfigHandler = config_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__topics: Optional[List[Topic]] = topics
-        self.__git: GitCmd = GitCmd(self.__state_handler)
-        self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
+        self.__git: GitCmd = GitCmd(self.__state_handler).with_config_handler(config_handler=config_handler)
+        self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler, config_handler)
         self.__keep_branch: bool = keep_branch
         self.__close_issue: bool = close_issue
         self.__current_branch_name: str = self.__git.get_current_branch_name()
-
 
     def __init_gitflow(self) -> Finish:
         self.__gitflow.init_config()
@@ -45,15 +47,15 @@ class Finish:
         self.__git.checkout_with_branch_name(self.__current_branch_name)
 
     def __pull_develop(self) -> Finish:
-        self.__git.checkout(Branches.DEVELOP).try_to_pull()
+        self.__git.checkout(self.__config_handler.develop()).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
-        self.__git.checkout(Branches.MASTER).try_to_pull()
+        self.__git.checkout(self.__config_handler.master()).try_to_pull()
         return self
 
     def __merge_master(self) -> Finish:
-        self.__git.checkout(Branches.HOTFIX)
+        self.__git.checkout(self.__config_handler.hotfix())
         self.__state_handler.set_stable()
         self.__state_handler.write_file()
         UpdateSchemeVersion.from_state_handler(self.__state_handler)
@@ -71,8 +73,8 @@ class Finish:
 
         self.__git.commit(message_str).try_to_push()
 
-        self.__git.checkout(Branches.MASTER).merge_with_version_message(
-            branch=Branches.HOTFIX,
+        self.__git.checkout(self.__config_handler.master()).merge_with_version_message(
+            branch=self.__config_handler.hotfix(),
             message=Message(
                 message='',
                 issue=self.__issue
@@ -82,7 +84,7 @@ class Finish:
             self.__state_handler.version_as_str(),
             ' '.join([
                 "'From Finished hotfix : ",
-                self.__git.get_branch_name_from_git(Branches.HOTFIX),
+                self.__git.get_branch_name_from_git(self.__config_handler.hotfix()),
                 'tag : ',
                 self.__state_handler.version_as_str(),
                 "'"])
@@ -97,7 +99,7 @@ class Finish:
                 fg_fail=Fg.FAIL.value,
                 reset_fg=Fg.RESET.value,
             ))
-            raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
+            raise GitMergeConflictError(self.__config_handler.master(), self.__git.get_conflict())
         return self
 
     def __merge_develop(self) -> Finish:
@@ -113,8 +115,8 @@ class Finish:
             ).with_ref()
         ).try_to_push()
 
-        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
-            branch=Branches.HOTFIX,
+        self.__git.checkout(self.__config_handler.develop()).merge_with_version_message(
+            branch=self.__config_handler.hotfix(),
             message=Message(
                 message='',
                 issue=self.__issue
@@ -129,16 +131,32 @@ class Finish:
                 fg_fail=Fg.FAIL.value,
                 reset_fg=Fg.RESET.value,
             ))
-            raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
+            raise GitMergeConflictError(self.__config_handler.develop(), self.__git.get_conflict())
+
+        self.__git.checkout(self.__config_handler.develop()).merge_with_theirs(
+            branch=self.__config_handler.master()
+        ).try_to_push()
+        if (self.__git.has_conflict()):
+            Log.error("""
+
+        {fg_fail}CONFLICT : resolve conflict, and remove your hotfix branch manually{reset_fg}
+
+                    """.format(
+                fg_fail=Fg.FAIL.value,
+                reset_fg=Fg.RESET.value,
+            ))
+            raise GitMergeConflictError(self.__config_handler.develop(), self.__git.get_conflict())
+
+
         return self
 
     def __delete_hotfix(self) -> Finish:
-        self.__git.delete_branch(Branches.HOTFIX)
+        self.__git.delete_branch(self.__config_handler.hotfix())
         return self
 
     def __finish_hotfix(self):
         if not self.__gitflow.has_hotfix(False):
-            raise BranchNotExist(Branches.HOTFIX.value)
+            raise BranchNotExist(self.__config_handler.hotfix())
         self.__merge_master().__merge_develop()
         if not self.__keep_branch:
             self.__delete_hotfix()
@@ -151,14 +169,14 @@ class Finish:
 
         self.__pull_master()
 
-        if self.__git.is_branch_ahead(Branches.MASTER.value, self.__current_branch_name):
+        if self.__git.is_branch_ahead(self.__config_handler.master(), self.__current_branch_name):
             Log.error("""
 
 {fg_fail}{list}{reset_fg}
 
                                """.format(
                 fg_fail=Fg.FAIL.value,
-                list=self.__git.list_commit_diff(Branches.MASTER.value, self.__current_branch_name),
+                list=self.__git.list_commit_diff(self.__config_handler.master(), self.__current_branch_name),
                 reset_fg=Fg.RESET.value,
             ))
 

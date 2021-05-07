@@ -7,6 +7,7 @@ from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
+from Core.ConfigHandler import ConfigHandler
 
 
 class Branch(abc.ABC):
@@ -15,8 +16,9 @@ class Branch(abc.ABC):
     topics: Optional[Topic]
     name: Optional[str]
 
-    def __init__(self, state_handler: StateHandler) -> None:
+    def __init__(self, state_handler: StateHandler, config_handler: ConfigHandler) -> None:
         self.state_handler: StateHandler = state_handler
+        self.config_handler: ConfigHandler = config_handler
         self.issue: Optional[Issue] = None
         self.topics: Optional[List[Topic]] = None
         self.name: Optional[str] = None

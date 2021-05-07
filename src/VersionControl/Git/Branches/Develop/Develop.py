@@ -10,6 +10,6 @@ class Develop(Branch):
     def process(self):
         if self.action is Actions.INIT:
             self.start_message('Develop Init')
-            Init(self.state_handler).process()
+            Init(self.state_handler, self.config_handler).process()
         else:
             raise NotImplementedError

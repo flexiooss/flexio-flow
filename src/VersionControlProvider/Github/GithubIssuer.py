@@ -18,12 +18,12 @@ from VersionControlProvider.IssueMessage import IssueMessage as AbstractMessage
 
 class GithubIssuer(Issuer):
     def create(self, default_issue: Optional[IssueDefault]) -> Issue:
-        repo: Repo = GitCmd(self.state_handler, self.options.debug).get_repo()
+        repo: Repo = GitCmd(self.state_handler, self.options.debug).with_config_handler(self.config_handler).get_repo()
 
         return Create(self.config_handler, repo, default_issue).process()
 
     def attach_or_create(self, default_issue: Optional[IssueDefault], options: Optional[Dict[str, str]]) -> Issue:
-        repo: Repo = GitCmd(self.state_handler, self.options.debug).get_repo()
+        repo: Repo = GitCmd(self.state_handler, self.options.debug).with_config_handler(self.config_handler).get_repo()
         return AttachOrCreate(
             config_handler=self.config_handler,
             repo=repo,
@@ -44,7 +44,7 @@ class GithubIssuer(Issuer):
         return IssueGithub.from_api_dict(resp.json())
 
     def comment(self, issue: IssueGithub, text: str) -> Issue:
-        repo: Repo = GitCmd(self.state_handler, self.options.debug).get_repo()
+        repo: Repo = GitCmd(self.state_handler, self.options.debug).with_config_handler(self.config_handler).get_repo()
         resp: Response = Github(self.config_handler).with_repo(repo).create_comment(
             issue=issue,
             body=text
@@ -54,7 +54,7 @@ class GithubIssuer(Issuer):
     def has_repo(self) -> bool:
         has_repo: bool = False
         try:
-            repo: Repo = GitCmd(self.state_handler, self.options.debug).get_repo()
+            repo: Repo = GitCmd(self.state_handler, self.options.debug).with_config_handler(self.config_handler).get_repo()
             has_repo = True
         except ValueError as e:
             if self.options.debug:

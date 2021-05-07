@@ -18,24 +18,27 @@ from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
 from ConsoleColors.Fg import Fg
+from Core.ConfigHandler import ConfigHandler
 
 
 class Finish:
     def __init__(self,
                  state_handler: StateHandler,
+                 config_handler: ConfigHandler,
                  issue: Optional[Type[Issue]],
                  topics: Optional[List[Topic]],
                  keep_branch: bool,
                  close_issue: bool
                  ):
         self.__state_handler: StateHandler = state_handler
+        self.__config_handler: ConfigHandler = config_handler
         self.__issue: Optional[Type[Issue]] = issue
         self.__topics: Optional[List[Topic]] = topics
         self.__git: GitCmd = GitCmd(self.__state_handler)
-        self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler)
+        self.__gitflow: GitFlowCmd = GitFlowCmd(self.__state_handler,config_handler)
         self.__keep_branch: bool = keep_branch
         self.__close_issue: bool = close_issue
-        self.__name: str = self.__git.get_branch_name_from_git(Branches.RELEASE)
+        self.__name: str = self.__git.get_branch_name_from_git(config_handler.release())
         self.__version_check: str = self.__state_handler.version_as_str()
 
     def __init_gitflow(self) -> Finish:
@@ -48,19 +51,19 @@ class Finish:
     def __pull_develop(self) -> Finish:
         # if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.DEVELOP.value):
         #     raise RemoteDivergence(Branches.DEVELOP.value + 'should be merged with remote')
-        self.__git.checkout(Branches.DEVELOP).try_to_pull()
+        self.__git.checkout(self.__config_handler.develop()).try_to_pull()
         return self
 
     def __pull_master(self) -> Finish:
         # if self.__git.has_remote() and not self.__git.is_local_remote_equal(Branches.MASTER.value):
         #     raise RemoteDivergence(Branches.MASTER.value + 'should be merged with remote')
-        self.__git.checkout(Branches.MASTER).try_to_pull()
+        self.__git.checkout(self.__config_handler.master()).try_to_pull()
         return self
 
     def __merge_master(self) -> Finish:
 
         message: Message = Message(
-            message='Merge ' + self.__name + 'into ' + Branches.MASTER.value,
+            message='Merge ' + self.__name + 'into ' + self.__config_handler.master(),
             issue=self.__issue
         )
 
@@ -75,20 +78,20 @@ class Finish:
             ['--allow-empty']
         )
 
-        self.__git.checkout(Branches.MASTER).merge_with_version_message(
-            branch=Branches.RELEASE,
+        self.__git.checkout(self.__config_handler.master()).merge_with_version_message(
+            branch=self.__config_handler.release(),
             message=message_str,
             options=['--no-ff', '--strategy-option', 'theirs']
         )
 
         if self.__git.has_conflict():
-            raise GitMergeConflictError(Branches.MASTER.value, self.__git.get_conflict())
+            raise GitMergeConflictError(self.__config_handler.master(), self.__git.get_conflict())
 
         tag: str = self.__state_handler.version_as_str()
 
         if tag != self.__version_check:
             Log.error('Version have diverged during merge : ' + tag + 'should be ' + self.__version_check)
-            raise GitMergeConflictError(Branches.MASTER.value)
+            raise GitMergeConflictError(self.__config_handler.master())
 
         self.__git.tag(
             tag,
@@ -100,7 +103,7 @@ class Finish:
                 "'"])
         ).try_to_push_tag(tag).try_to_push()
 
-        self.__git.checkout(Branches.RELEASE).merge_with_version_message_from_branch_name(
+        self.__git.checkout(self.__config_handler.release()).merge_with_version_message_from_branch_name(
             branch=tag,
             message=Message(
                 message='Merge ' + tag + ' tag into ' + self.__name,
@@ -125,8 +128,8 @@ class Finish:
             ).with_ref()
         )
 
-        self.__git.checkout(Branches.DEVELOP).merge_with_version_message(
-            branch=Branches.RELEASE,
+        self.__git.checkout(self.__config_handler.develop()).merge_with_version_message(
+            branch=self.__config_handler.release(),
             message=Message(
                 message='',
                 issue=self.__issue
@@ -142,11 +145,11 @@ class Finish:
                 fg_fail=Fg.FAIL.value,
                 reset_fg=Fg.RESET.value,
             ))
-            raise GitMergeConflictError(Branches.DEVELOP.value, self.__git.get_conflict())
+            raise GitMergeConflictError(self.__config_handler.develop(), self.__git.get_conflict())
 
-        self.__git.checkout(Branches.RELEASE).undo_last_commit()
+        self.__git.checkout(self.__config_handler.release()).undo_last_commit()
 
-        self.__git.checkout(Branches.DEVELOP).try_to_push()
+        self.__git.checkout(self.__config_handler.develop()).try_to_push()
 
         return self
 
@@ -158,7 +161,7 @@ class Finish:
 
     def __finish_release(self):
         if not self.__gitflow.has_release(False):
-            raise BranchNotExist(Branches.RELEASE.value)
+            raise BranchNotExist(self.__config_handler.release())
         self.__merge_master().__merge_develop()
 
         self.__delete_release()
@@ -172,14 +175,14 @@ class Finish:
 
         self.__pull_master()
 
-        if self.__git.is_branch_ahead(Branches.MASTER.value, self.__name):
+        if self.__git.is_branch_ahead(self.__config_handler.master(), self.__name):
             Log.error("""
 
             {fg_fail}{list}{reset_fg}
 
                         """.format(
                 fg_fail=Fg.FAIL.value,
-                list=self.__git.list_commit_diff(Branches.MASTER.value, self.__name),
+                list=self.__git.list_commit_diff(self.__config_handler.master(), self.__name),
                 reset_fg=Fg.RESET.value,
             ))
             self.__checkout_current_release()
@@ -191,7 +194,7 @@ class Finish:
     
                             """.format(
                     fg_fail=Fg.FAIL.value,
-                    message='Oups !!! Master have commit ahead ' + self.__name + ' merge before',
+                    message='Oups !!! Master:'+self.__config_handler.master()+' have commit ahead ' + self.__name + ' merge before',
                     reset_fg=Fg.RESET.value,
                 )
             )

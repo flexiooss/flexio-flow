@@ -14,6 +14,7 @@ class Release(AbstractRelease):
 
             Start(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics,
                 is_major=self.is_major
@@ -24,6 +25,7 @@ class Release(AbstractRelease):
 
             Finish(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics,
                 keep_branch=self.options.keep_branch,
@@ -35,6 +37,7 @@ class Release(AbstractRelease):
 
             PreCheck(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics
             ).process()

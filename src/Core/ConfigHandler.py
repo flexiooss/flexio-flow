@@ -9,13 +9,14 @@ import fileinput
 
 from VersionControlProvider.Flexio.ConfigFlexio import ConfigFlexio
 from VersionControlProvider.Github.ConfigGithub import ConfigGithub
+from Branches.BranchesConfig import BranchesConfig
 
 
 class ConfigHandler:
     DEFAULT_FILE_NAME: str = 'config.yml'
     __config: Optional[Config]
 
-    def __init__(self, dir_path: Path, filename:Optional[str]=None) :
+    def __init__(self, dir_path: Path, filename: Optional[str] = None):
         self.dir_path: Path = dir_path
         self.__config: Optional[Config] = None
         self.__filename: str = ConfigHandler.DEFAULT_FILE_NAME if filename is None else filename
@@ -52,7 +53,7 @@ class ConfigHandler:
         ).with_flexio(flexio=ConfigFlexio(
             activate=data.get('flexio', {}).get('activate', False),
             user_token=data.get('flexio', {}).get('user_token', '')
-        ))
+        )).with_branches_config(branches_config=BranchesConfig.from_dict(data.get('branches', {})))
         return self
 
     def write_file(self) -> str:
@@ -77,3 +78,18 @@ Write file : {0!s}
     def reset_config(self) -> ConfigHandler:
         self.__config = Config()
         return self
+
+    def master(self) -> str:
+        return self.config.branches_config.master
+
+    def develop(self) -> str:
+        return self.config.branches_config.develop
+
+    def feature(self) -> str:
+        return self.config.branches_config.feature
+
+    def hotfix(self) -> str:
+        return self.config.branches_config.hotfix
+
+    def release(self) -> str:
+        return self.config.branches_config.release

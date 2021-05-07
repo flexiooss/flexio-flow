@@ -4,15 +4,16 @@ import re
 from typing import Optional, Type, Tuple, Match, List
 from FlexioFlow.Level import Level
 from FlexioFlow.Version import Version
-from Branches.Branches import Branches
+from Branches.BranchesConfig import BranchesConfig
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
 
 
 class BranchHandler:
 
-    def __init__(self, branch: Branches):
-        self.branch: Branches = branch
+    def __init__(self, branch: str, branches: BranchesConfig):
+        self.branch: str = branch
+        self.branches: BranchesConfig = branches
         self.issue: Optional[Issue] = None
         self.topics: Optional[List[Topic]] = None
 
@@ -38,24 +39,24 @@ class BranchHandler:
         )
 
     def branch_name_from_version(self, version: Optional[Version] = None) -> str:
-        if self.branch is Branches.HOTFIX:
+        if self.branches.is_hotfix(self.branch):
             return self.__format_branch_name('/'.join([
-                Branches.HOTFIX.value,
+                self.branch,
                 '-'.join([str(version), Level.DEV.value])
             ]))
-        elif self.branch is Branches.RELEASE:
-            return self.__format_branch_name('/'.join([Branches.RELEASE.value, str(version)]))
+        elif self.branches.is_release(self.branch):
+            return self.__format_branch_name('/'.join([self.branch, str(version)]))
         else:
-            return self.branch.value
+            return self.branch
 
     def branch_name_from_version_with_name(self, version: Version, name: str) -> str:
-        if self.branch is Branches.FEATURE:
+        if self.branches.is_feature(self.branch):
             return self.__format_branch_name('/'.join([
-                Branches.FEATURE.value,
+                self.branch,
                 '-'.join([name, str(version), Level.DEV.value])
             ]))
         else:
-            return self.branch.value
+            return self.branch
 
     @staticmethod
     def issue_number_from_branch_name(name: str) -> Optional[int]:
