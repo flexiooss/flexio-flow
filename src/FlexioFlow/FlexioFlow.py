@@ -80,7 +80,6 @@ class FlexioFlow:
 
     def __ensure_config_handler(self):
         self.__config_handler.load_file_config()
-        print(self.__config_handler.config.to_dict())
 
     def __process_subject_core(self):
         if self.__core_action is None:
