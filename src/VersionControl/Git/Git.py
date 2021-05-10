@@ -17,23 +17,23 @@ from VersionControl.Commit import Commit as CommitValueObject
 class Git(VersionControl):
 
     def build_branch(self, branch: Branches) -> Branch:
-        branch_inst: Branch = BranchBuilder.create(branch, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(branch, self.state_handler, self.config_handler)
         return branch_inst
 
     def feature(self) -> Branch:
-        branch_inst: Branch = BranchBuilder.create(Branches.FEATURE, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.FEATURE, self.state_handler, self.config_handler)
         return branch_inst
 
     def hotfix(self) -> Branch:
-        branch_inst: Branch = BranchBuilder.create(Branches.HOTFIX, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.HOTFIX, self.state_handler, self.config_handler)
         return branch_inst
 
     def master(self) -> Branch:
-        branch_inst: Branch = BranchBuilder.create(Branches.MASTER, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.MASTER, self.state_handler, self.config_handler)
         return branch_inst
 
     def release(self) -> Branch:
-        branch_inst: Branch = BranchBuilder.create(Branches.RELEASE, self.state_handler)
+        branch_inst: Branch = BranchBuilder.create(Branches.RELEASE, self.state_handler, self.config_handler)
         return branch_inst
 
     def get_issue_number(self) -> Optional[int]:
@@ -48,7 +48,7 @@ class Git(VersionControl):
         return CommitHandler(self.state_handler).with_commit(commit)
 
     def is_current_branch_develop(self) -> bool:
-        return GitCmd(self.state_handler).get_current_branch_name() == Branches.DEVELOP.value
+        return GitCmd(self.state_handler).get_current_branch_name() == self.config_handler.develop()
 
     def stash_start(self):
         GitCmd(self.state_handler).stash()

@@ -74,7 +74,8 @@ class FlexioFlow:
         if self.__version_control is None:
             self.__version_control: VersionControl = VersionControlBuilder.build(
                 self.__version_controller,
-                self.__state_handler
+                self.__state_handler,
+                self.__config_handler
             )
 
     def __ensure_config_handler(self):
@@ -108,8 +109,8 @@ class FlexioFlow:
             raise ValueError('should have Action')
 
         self.__ensure_state_handler()
-        self.__ensure_version_control()
         self.__ensure_config_handler()
+        self.__ensure_version_control()
 
         if not self.__config_handler.has_issuer():
             raise NoIssuerConfigured()
@@ -127,8 +128,8 @@ class FlexioFlow:
             raise ValueError('should have Action')
 
         self.__ensure_state_handler()
-        self.__ensure_version_control()
         self.__ensure_config_handler()
+        self.__ensure_version_control()
 
         if not self.__config_handler.has_topicer():
             raise NoTopicerConfigured()
@@ -146,8 +147,8 @@ class FlexioFlow:
             raise ValueError('should have Action')
 
         self.__ensure_state_handler()
-        self.__ensure_version_control()
         self.__ensure_config_handler()
+        self.__ensure_version_control()
 
         self.__ensure_precheck()
 

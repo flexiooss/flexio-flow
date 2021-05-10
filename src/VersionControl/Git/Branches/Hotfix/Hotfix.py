@@ -13,6 +13,7 @@ class Hotfix(Branch):
             self.start_message('Hotfix start')
             Start(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics
             ).process()
@@ -22,6 +23,7 @@ class Hotfix(Branch):
 
             Finish(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics,
                 keep_branch=self.options.keep_branch,

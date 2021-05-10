@@ -10,6 +10,7 @@ from Branches.Branches import Branches
 from Log.Log import Log
 from VersionControl.Git.GitConfig import GitConfig
 from VersionControlProvider.Github.Repo import Repo
+from Core.ConfigHandler import ConfigHandler
 
 
 class GitCmd:
@@ -17,6 +18,11 @@ class GitCmd:
 
     def __init__(self, state_handler: StateHandler, debug: bool = False):
         self.__state_handler = state_handler
+        self.__config_handler: Optional[ConfigHandler] = None
+
+    def with_config_handler(self, config_handler: ConfigHandler) -> GitCmd:
+        self.__config_handler: Optional[ConfigHandler] = config_handler
+        return self
 
     def __exec(self, args: List[str]) -> Popen:
         child: Popen = Popen(args, cwd=self.__state_handler.dir_path.as_posix())
@@ -34,14 +40,14 @@ class GitCmd:
         self.__exec(['git', 'add', '.'])
         return self
 
-    def branch_exists_from_branches(self, branch: Branches) -> bool:
+    def branch_exists_from_branches(self, branch: str) -> bool:
         return self.local_branch_exists_from_branches(branch) or self.remote_branch_exists_from_branches(branch)
 
-    def local_branch_exists_from_branches(self, branch: Branches) -> bool:
+    def local_branch_exists_from_branches(self, branch: str) -> bool:
         branch_name: str = self.get_branch_name_from_git(branch)
         return self.local_branch_exists(branch_name)
 
-    def remote_branch_exists_from_branches(self, branch: Branches) -> bool:
+    def remote_branch_exists_from_branches(self, branch: str) -> bool:
         branch_name: str = self.get_branch_name_from_git(branch)
         return self.remote_branch_exists(branch_name)
 
@@ -63,11 +69,11 @@ class GitCmd:
         stdout: str = self.__exec_for_stdout(['git', 'status', '-s'])
         return stdout is not None and len(stdout) > 0
 
-    def checkout(self, branch: Branches, options: List[str] = []) -> GitCmd:
+    def checkout(self, branch: str, options: List[str] = []) -> GitCmd:
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch), options).reload_state()
         return self
 
-    def checkout_without_refresh_state(self, branch: Branches, options: List[str] = []) -> GitCmd:
+    def checkout_without_refresh_state(self, branch: str, options: List[str] = []) -> GitCmd:
         self.checkout_with_branch_name(self.get_branch_name_from_git(branch), options)
         return self
 
@@ -89,7 +95,7 @@ class GitCmd:
 
         return self
 
-    def create_branch_from(self, target_branch_name: str, source: Branches) -> GitCmd:
+    def create_branch_from(self, target_branch_name: str, source: str) -> GitCmd:
         source_branch_name: str = self.get_branch_name_from_git(source)
         self.__exec(['git', 'checkout', '-b', target_branch_name, source_branch_name])
         try:
@@ -118,13 +124,14 @@ class GitCmd:
             self.__exec(['git', 'tag', '-d', tag])
         return self
 
-    def delete_branch(self, branch: Branches) -> GitCmd:
-        branch_name: str = self.__get_branch_name_from_git_list(branch.value)
+    def delete_branch(self, branch: str) -> GitCmd:
+        branch_name: str = self.__get_branch_name_from_git_list(branch)
         self.delete_remote_branch_from_name(branch_name)
         return self.delete_local_branch_from_name(branch_name)
 
     def delete_local_branch_from_name(self, branch: str) -> GitCmd:
         self.__exec(['git', 'branch', '-D', branch])
+        Log.info('Delete local branch : ' + branch)
         return self
 
     def delete_remote_branch_from_name(self, branch: str) -> GitCmd:
@@ -138,10 +145,14 @@ class GitCmd:
             return self.delete_remote_branch_from_name(branch)
         return self
 
-    def get_branch_name_from_git(self, branch: Branches) -> str:
-        if branch in [Branches.MASTER, Branches.DEVELOP]:
-            return branch.value
-        branch_name: str = self.__get_branch_name_from_git_list(branch.value)
+    def get_branch_name_from_git(self, branch: str) -> str:
+        if branch in [Branches.MASTER.value, Branches.DEVELOP.value]:
+            return branch
+        if self.__config_handler is not None:
+            if branch in [self.__config_handler.master(), self.__config_handler.develop()]:
+                return branch
+
+        branch_name: str = self.__get_branch_name_from_git_list(branch)
         return branch_name
 
     def __get_branch_name_from_git_list(self, branch: str) -> str:
@@ -317,7 +328,7 @@ class GitCmd:
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
 
-    def merge(self, branch: Branches, options: List[str] = []) -> GitCmd:
+    def merge(self, branch: str, options: List[str] = []) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
         return self.merge_from_branch_name(target_branch_name, options)
 
@@ -326,7 +337,7 @@ class GitCmd:
         self.__state_handler.load_file_config()
         return self
 
-    def merge_with_version_message(self, branch: Branches, message: str = '', options: List[str] = []) -> GitCmd:
+    def merge_with_version_message(self, branch: str, message: str = '', options: List[str] = []) -> GitCmd:
         commit_message: str = """merge : {branch_name!s}
         {message!s}""".format(branch_name=self.get_branch_name_from_git(branch), message=message)
         return self.merge(
@@ -343,7 +354,7 @@ class GitCmd:
             options=['--commit', '-m', commit_message, *options]
         )
 
-    def merge_with_theirs(self, branch: Branches) -> GitCmd:
+    def merge_with_theirs(self, branch: str) -> GitCmd:
         target_branch_name: str = self.get_branch_name_from_git(branch)
         self.__exec(
             ['git', 'merge', target_branch_name, '-m', '"merge : ' + target_branch_name + '"', '--strategy-option',

@@ -7,12 +7,13 @@ from VersionControl import Commit
 from VersionControl.Branch import Branch as VersionControlBranch
 from Branches.Branches import Branches
 from VersionControl.CommitHandler import CommitHandler
-
+from Core.ConfigHandler import ConfigHandler
 
 class VersionControl:
 
-    def __init__(self, state_handler: StateHandler):
+    def __init__(self, state_handler: StateHandler, config_handler: ConfigHandler):
         self.state_handler: StateHandler = state_handler
+        self.config_handler: ConfigHandler = config_handler
 
     @abc.abstractmethod
     def hotfix(self) -> VersionControlBranch:

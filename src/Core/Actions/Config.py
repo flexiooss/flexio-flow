@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from subprocess import Popen, PIPE
 from typing import List
+
+from Core.Actions.InputBranchesConfig import InputBranchesConfig
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Flexio.InputConfig import InputConfig as FlexioInputConfig
 from VersionControlProvider.Github.InputConfig import InputConfig as GithubInputConfig
@@ -72,12 +74,10 @@ Core already initialized at : {path!s}
 
             )
 
-            use: str = input('Use this file (y)/n : ')
-            use = use if use else 'y'
-            if use == 'y':
+            change: str = input('Change this file y/(n) : ')
+            change = change if change else 'n'
+            if change == 'n':
                 return self
-            else:
-                self.config_handler.reset_config()
         else:
             self.config_handler.reset_config()
 
@@ -86,6 +86,7 @@ Core already initialized at : {path!s}
 
         self.__start_message()
 
+        InputBranchesConfig(self.config_handler).add_to_config_handler()
         GithubInputConfig(self.config_handler).add_to_config_handler()
         FlexioInputConfig(self.config_handler).add_to_config_handler()
 

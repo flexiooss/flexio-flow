@@ -20,6 +20,7 @@ class Feature(Branch):
 
             Start(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics,
                 name=self.name
@@ -30,6 +31,7 @@ class Feature(Branch):
 
             Finish(
                 state_handler=self.state_handler,
+                config_handler=self.config_handler,
                 issue=self.issue,
                 topics=self.topics,
                 keep_branch=self.options.keep_branch,

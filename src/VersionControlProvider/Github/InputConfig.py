@@ -17,8 +17,13 @@ class InputConfig:
         return stdout.strip().decode('utf-8')
 
     def __input_github(self) -> bool:
-        github: str = input('Activate Github automatic issuer (y)/n : ')
-        github = github if github else 'y'
+        if self.config_handler.has_issuer():
+            github: str = input('Activate Github automatic issuer (y)/n : ')
+            github = github if github else 'y'
+        else:
+            github: str = input('Activate Github automatic issuer y/(n) : ')
+            github = github if github else 'n'
+
         return github == 'y'
 
     def __input_user(self) -> str:
@@ -30,12 +35,17 @@ class InputConfig:
         return user
 
     def __input_token(self) -> str:
+        if self.config_handler.has_issuer() and self.config_handler.config.github.token is not None:
+            keep_token: str = input('You already have a token, do you want to keep it? (y)/n : ')
+            keep_token = keep_token if keep_token else 'y'
+            if keep_token == 'y':
+                return self.config_handler.config.github.token
         token: str = input('Token api Github : ')
         return token
 
     def __check_user(self):
         r: Response = Github(self.config_handler).get_user()
-        if r.status_code is not 200:
+        if r.status_code != 200:
             raise ConnectionAbortedError('Bad api github token : retry')
 
     def add_to_config_handler(self) -> ConfigGithub:
