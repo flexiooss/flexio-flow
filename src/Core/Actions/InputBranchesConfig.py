@@ -14,11 +14,11 @@ class InputBranchesConfig:
         return v
 
     def add_to_config_handler(self) -> ConfigHandler:
-        master: str = self.__input(Branches.MASTER, Branches.MASTER.value)
-        develop: str = self.__input(Branches.DEVELOP, Branches.DEVELOP.value)
-        feature: str = self.__input(Branches.FEATURE, Branches.FEATURE.value)
-        hotfix: str = self.__input(Branches.HOTFIX, Branches.HOTFIX.value)
-        release: str = self.__input(Branches.RELEASE, Branches.RELEASE.value)
+        master: str = self.__input(Branches.MASTER, self.config_handler.master())
+        develop: str = self.__input(Branches.DEVELOP, self.config_handler.develop())
+        feature: str = self.__input(Branches.FEATURE, self.config_handler.feature())
+        hotfix: str = self.__input(Branches.HOTFIX, self.config_handler.hotfix())
+        release: str = self.__input(Branches.RELEASE, self.config_handler.release())
 
         self.config_handler.config = self.config_handler.config.with_branches_config(
             BranchesConfig(develop, feature, hotfix, master, release))

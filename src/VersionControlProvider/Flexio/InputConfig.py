@@ -19,11 +19,21 @@ class InputConfig:
         return stdout.strip().decode('utf-8')
 
     def __input_flexio(self) -> bool:
-        flexio: str = input('Activate Flexio automatic topicer (y)/n : ')
-        flexio = flexio if flexio else 'y'
+        if self.config_handler.has_topicer():
+            flexio: str = input('Activate Flexio automatic topicer (y)/n : ')
+            flexio = flexio if flexio else 'y'
+        else:
+            flexio: str = input('Activate Flexio automatic topicer y/(n) : ')
+            flexio = flexio if flexio else 'n'
+
         return flexio == 'y'
 
     def __input_user_token(self) -> str:
+        if self.config_handler.has_topicer() and self.config_handler.config.flexio.user_token is not None:
+            keep_token: str = input('You already have a token, do you want to keep it? (y)/n : ')
+            keep_token = keep_token if keep_token else 'y'
+            if keep_token == 'y':
+                return self.config_handler.config.flexio.user_token
         token: str = input('User token api Flexio : ')
         return token
 
