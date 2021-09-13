@@ -4,6 +4,7 @@ from enum import Enum, unique
 @unique
 class Actions(Enum):
     CONFIG: str = 'config'
+    BRANCH: str = 'branch'
 
     @classmethod
     def has_value(cls, value) -> bool:
