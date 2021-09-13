@@ -7,7 +7,12 @@ from Core.Actions.InputBranchesConfig import InputBranchesConfig
 from Core.ConfigHandler import ConfigHandler
 from VersionControlProvider.Flexio.InputConfig import InputConfig as FlexioInputConfig
 from VersionControlProvider.Github.InputConfig import InputConfig as GithubInputConfig
+from Core.Config import Config as FFConfig
 
+from VersionControlProvider.Flexio.ConfigFlexio import ConfigFlexio
+from VersionControlProvider.Github.ConfigGithub import ConfigGithub
+from Branches.BranchesConfig import BranchesConfig
+from Branches.Branches import Branches
 
 class Config:
     def __init__(self, config_handler: ConfigHandler):
@@ -56,6 +61,21 @@ Enjoy with Flexio FLow
 """)
         return self
 
+    def __default_config(self):
+        self.config_handler.config = FFConfig().with_github(
+            github=ConfigGithub(
+                activate=False,
+                user='',
+                token=''
+            )
+        ).with_flexio(flexio=ConfigFlexio(
+            activate=False,
+            user_token=''
+        )).with_branches_config(branches_config=BranchesConfig.from_dict(
+            {Branches.MASTER.value: Branches.MASTER.value, Branches.DEVELOP.value: Branches.DEVELOP.value,
+             Branches.FEATURE.value: Branches.FEATURE.value, Branches.HOTFIX.value: Branches.HOTFIX.value,
+             Branches.RELEASE.value: Branches.RELEASE.value}))
+
     def __ensure_have_config(self) -> Config:
         if self.__config_handler().file_exists():
             self.__config_handler().load_file_config()
@@ -80,12 +100,12 @@ Core already initialized at : {path!s}
                 return self
         else:
             self.config_handler.reset_config()
+            self.__default_config()
 
         if not self.config_handler.dir_path.exists():
             self.config_handler.dir_path.mkdir()
 
         self.__start_message()
-
         InputBranchesConfig(self.config_handler).add_to_config_handler()
         GithubInputConfig(self.config_handler).add_to_config_handler()
         FlexioInputConfig(self.config_handler).add_to_config_handler()

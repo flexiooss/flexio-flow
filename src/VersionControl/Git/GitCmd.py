@@ -466,3 +466,8 @@ class GitCmd:
             return base + '/{branch!s}'.format(branch=branch)
         else:
             return base
+
+    def local_commits(self) -> List[str]:
+        # git --no-pager log @{u}..develop | grep commit | awk '{print $2}'
+        return self.__exec_for_stdout(['git', '--no-pager', 'log', '@{u}..' + self.local_branch_name(), '|',
+                                       'grep', 'commit', '|', 'awk', '"{print $2}"']).splitlines()
