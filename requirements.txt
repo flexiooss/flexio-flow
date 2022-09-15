@@ -1,5 +1,6 @@
 PyYAML==6.0     
 requests==2.27.1
 sty==1.0.4
-slugify==0.0.1
 mypy==0.950
+text-unidecode>=1.3
+python-slugify==6.1.2
