@@ -9,8 +9,8 @@ cd ${SCRIPT_DIR}
 python3 -m venv ${SCRIPT_DIR}/venv
 source ${SCRIPT_DIR}/venv/bin/activate
 
-#python3 -m pip install --upgrade pip
-python3 -m ensurepip --upgrade
+python3 -m pip install --upgrade pip
+#python3 -m ensurepip --upgrade
 
 
 set +e
