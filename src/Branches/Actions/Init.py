@@ -20,7 +20,7 @@ class Init(Action):
 
     def __start_message(self) -> Init:
         print(
-            """######################################################{fg_yellow}
+            r"""######################################################{fg_yellow}
    __  _            _             __  _
   / _|| | ___ __ __(_) ___  ___  / _|| | ___ __ __ __
  |  _|| |/ -_)\ \ /| |/ _ \|___||  _|| |/ _ \\ V  V /
@@ -59,7 +59,7 @@ class Init(Action):
 
     def __write_file(self) -> Init:
         yml: str = self.state_handler.write_file()
-        print("""#################################################
+        print(r"""#################################################
 {fg_green}Write file : {path!s} 
 {reset_fg}#################################################""".format(
             path=self.state_handler.file_path(),
@@ -94,7 +94,7 @@ class Init(Action):
         if self.state_handler.file_exists():
             self.state_handler.load_file_config()
             print(
-                """###############################################
+                r"""###############################################
 {fg_yellow}Flexio Flow already initialized 
 {reset_fg}###############################################
 """.format(
@@ -117,7 +117,7 @@ class Init(Action):
 
     def __final_message(self) -> Init:
         print(
-            """###############################################
+            r"""###############################################
 {fg_yellow}Enjoy with Flexio FLow 
 {reset_fg}###############################################
 """.format(

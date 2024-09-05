@@ -79,7 +79,7 @@ class GitFlowCmd:
         resp: str = self.__git.get_current_branch_name()
 
         return len(resp) > 0 and re.match(
-            re.compile('^' + self.__config_handler.feature() + '/.*$'),
+            re.compile(r'^' + self.__config_handler.feature() + '/.*$'),
             resp
         ) is not None
 
@@ -87,7 +87,7 @@ class GitFlowCmd:
         resp: str = self.__git.get_current_branch_name()
 
         return len(resp) > 0 and re.match(
-            re.compile('^' + self.__config_handler.release() + '/.*$'),
+            re.compile(r'^' + self.__config_handler.release() + '/.*$'),
             resp
         ) is not None
 
@@ -95,7 +95,7 @@ class GitFlowCmd:
         resp: str = self.__git.get_current_branch_name()
 
         return len(resp) > 0 and re.match(
-            re.compile('^' + self.__config_handler.hotfix() + '/.*$'),
+            re.compile(r'^' + self.__config_handler.hotfix() + '/.*$'),
             resp
         ) is not None
 
@@ -104,7 +104,7 @@ class GitFlowCmd:
             resp: str = self.__exec_for_stdout(
                 ['git', 'ls-remote', GitConfig.REMOTE.value, '"refs/heads/' + branch + '/*"'])
             return len(resp) > 0 and re.match(
-                re.compile('.*refs/heads/' + branch + '/.*$'),
+                re.compile(r'.*refs/heads/' + branch + '/.*$'),
                 resp
             ) is not None
         else:

@@ -7,7 +7,7 @@ class CommonIssue:
     @staticmethod
     def issuer_message():
         print(
-            """###############################################
+            r"""###############################################
 ################ {yellow}GITHUB ISSUER{reset} ################
 ###############################################
 """.format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
@@ -15,7 +15,7 @@ class CommonIssue:
     @staticmethod
     def print_resume_issue(issue: IssueGithub):
         print(
-            """###############################################
+            r"""###############################################
 ########### {green}    Issue {number!s}    {reset}############
 ###############################################{green}
 title : {title!s}

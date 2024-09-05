@@ -20,7 +20,7 @@ class Option(abc.ABC):
         self.options: Options = options
 
     def clean_space(self,txt: str) -> str:
-        return re.sub('[\s+]', '', txt)
+        return re.sub(r'[\s+]', '', txt)
 
     def test(self) -> bool:
         options_name: List[str] = []

@@ -44,4 +44,4 @@ class PackageFileHandler:
 
     @staticmethod
     def is_git_dependency(v: str) -> bool:
-        return re.match('.*(.git)+.*', v) is not None
+        return re.match(r'.*(.git)+.*', v) is not None

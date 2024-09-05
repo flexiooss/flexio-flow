@@ -6,7 +6,7 @@ class CommonTopic:
     @staticmethod
     def print_resume_topic(topic: Topic):
         print(
-            """###############################################
+            r"""###############################################
 ################# {green}Topic {number!s}{reset} #################
 ###############################################{green}
 title : {title!s}

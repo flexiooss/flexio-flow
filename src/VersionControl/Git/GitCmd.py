@@ -14,7 +14,7 @@ from Core.ConfigHandler import ConfigHandler
 
 
 class GitCmd:
-    SPACES_PATTERN: Pattern = re.compile('^\*?\s*')
+    SPACES_PATTERN: Pattern = re.compile(r'^\*?\s*')
 
     def __init__(self, state_handler: StateHandler, debug: bool = False):
         self.__state_handler = state_handler
@@ -62,7 +62,7 @@ class GitCmd:
         if self.has_remote():
             resp: str = self.__exec_for_stdout(
                 ['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/heads/' + branch])
-            return len(resp) > 0 and re.match(re.compile('.*refs/heads/' + branch + '$'), resp) is not None
+            return len(resp) > 0 and re.match(re.compile(r'.*refs/heads/' + branch + '$'), resp) is not None
         return False
 
     def can_commit(self) -> bool:
@@ -323,7 +323,7 @@ class GitCmd:
 
     def has_remote(self) -> bool:
         resp: str = self.__exec_for_stdout(['git', 'remote', '-v'])
-        return len(resp) > 0 and re.match(re.compile('^origin.*'), resp) is not None
+        return len(resp) > 0 and re.match(re.compile(r'^origin.*'), resp) is not None
 
     def last_tag(self) -> str:
         return self.__exec_for_stdout(['git', 'describe', '--abbrev=0', '--tags'])
@@ -385,7 +385,7 @@ class GitCmd:
 
     def remote_tag_exists(self, tag: str) -> bool:
         resp: str = self.__exec_for_stdout(['git', 'ls-remote', GitConfig.REMOTE.value, 'refs/tags/' + tag])
-        return len(resp) > 0 and re.match(re.compile('.*refs/tags/' + tag + '$'), resp) is not None
+        return len(resp) > 0 and re.match(re.compile(r'.*refs/tags/' + tag + '$'), resp) is not None
 
     def local_tag_exists(self, tag: str) -> bool:
         p1 = Popen(
@@ -405,7 +405,7 @@ class GitCmd:
 
         resp = self.__decode_stdout(result)
 
-        return len(resp) > 0 and re.match(re.compile('^' + tag + '$'), resp) is not None
+        return len(resp) > 0 and re.match(re.compile(r'^' + tag + '$'), resp) is not None
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])

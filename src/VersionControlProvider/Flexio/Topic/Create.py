@@ -23,7 +23,7 @@ class Create:
 
     def __start_message(self) -> Create:
         print(
-            """{fg_gray}###############################################
+            r"""{fg_gray}###############################################
 #################### {yellow}TOPIC{fg_gray} ####################
 ###############################################{reset}
 """.format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
@@ -31,7 +31,7 @@ class Create:
 
     def __start_message_topic(self) -> Create:
         print(
-            """{fg_gray}###############################################
+            r"""{fg_gray}###############################################
 #########    {yellow}Create Flexio Topic{fg_gray}     ##########{reset}
 """.format(yellow=fg.yellow, reset=fg.rs, fg_gray=fg(240)))
         return self

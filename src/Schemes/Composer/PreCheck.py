@@ -31,5 +31,5 @@ class PreCheck:
         return re.match(regexp, version) is not None
 
     def is_flexio_dep(self, name: str) -> bool:
-        regexp: Pattern[str] = re.compile('^flexio(?:-(?:corp|oss))?/.*')
+        regexp: Pattern[str] = re.compile(r'^flexio(?:-(?:corp|oss))?/.*')
         return re.match(regexp, name) is not None

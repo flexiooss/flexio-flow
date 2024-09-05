@@ -33,7 +33,7 @@ class Create:
     def __start_message_issue(self) -> Create:
         if not self.__options.default:
             print(
-            """###############################################
+            r"""###############################################
 #########     {yellow}Create Github Issue{reset}     #########
 """.format(yellow=Fg.NOTICE.value, reset=Fg.RESET.value))
         return self
@@ -102,7 +102,7 @@ Choose pseudo :
 
     def __resume_milestone(self, milestone: Dict[str, str]) -> Create:
         print(
-            """###############################################
+            r"""###############################################
 ################ {green}Milestone created{reset} ################
 ###############################################{green}
 title : {title!s}
