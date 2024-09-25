@@ -29,7 +29,7 @@ class PoomCiDependencies:
         if version is None:
             return version
 
-        regexp: Pattern[str] = re.compile('^[\^~=>]')
+        regexp: Pattern[str] = re.compile(r'^[\^~=>]')
         version = re.sub(regexp, '', version)
 
         return version

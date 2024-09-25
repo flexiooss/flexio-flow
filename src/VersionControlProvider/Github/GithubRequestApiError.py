@@ -8,7 +8,7 @@ class GithubRequestApiError(Exception):
     def __init__(self, response: Response, message: str = ''):
         self.response: Response = response
         self.message: str = message
-        self.__token_obfuscer: Pattern = re.compile('\'token [\w]*\'')
+        self.__token_obfuscer: Pattern = re.compile(r'\'token [\w]*\'')
 
     def __str__(self):
         return """

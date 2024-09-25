@@ -11,7 +11,7 @@ class UpdateSchemeVersion:
         for scheme in state_handler.state.schemes:
             SchemeBuilder.create(scheme, state_handler).set_version()
 
-            print("""
+            print(r"""
 New version : {0!s}
 Level : {1!s}
 for scheme : {2!s}

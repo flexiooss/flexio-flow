@@ -15,7 +15,7 @@ class Read:
         if self.__config_handler().file_exists():
             self.__config_handler().load_file_config()
             print(
-                """{fg_gray}###############################################{fg_yellow}
+                r"""{fg_gray}###############################################{fg_yellow}
 Flexio Flow 
 Core configuration
 {path!s}

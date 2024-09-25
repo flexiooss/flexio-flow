@@ -119,7 +119,7 @@ class TestFlexio(unittest.TestCase):
             color1=bg.li_black, color_end=fg.rs))
 
         print(
-            """{yellow}###############################################
+            r"""{yellow}###############################################
 ################# Flexio FLow #################
 ###############################################{reset}
 """.format(yellow=fg.yellow, reset=fg.rs))

@@ -1,5 +1,5 @@
 #PyYAML==6.0     
-requests==2.27.1
+requests==2.32.3
 sty==1.0.4
 mypy==0.950
 text-unidecode>=1.3

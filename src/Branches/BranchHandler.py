@@ -60,7 +60,7 @@ class BranchHandler:
 
     @staticmethod
     def issue_number_from_branch_name(name: str) -> Optional[int]:
-        regexp = re.compile('[\w_\/\d\-\.#]*(?:(?:(?<=[^#])#(?=[^#]))(?P<issue_number>[\d]+)?)$')
+        regexp = re.compile(r'[\w_\/\d\-\.#]*(?:(?:(?<=[^#])#(?=[^#]))(?P<issue_number>[\d]+)?)$')
         matches: Match = re.match(regexp, name)
         if matches is None:
             return None
@@ -69,7 +69,7 @@ class BranchHandler:
 
     @staticmethod
     def topics_number_from_branch_name(name: str) -> Optional[List[int]]:
-        regexp = re.compile('[\w_\/\d\-\.]*(?:##(?P<topic_number>[\d]+))?')
+        regexp = re.compile(r'[\w_\/\d\-\.]*(?:##(?P<topic_number>[\d]+))?')
         matches: List = re.findall(regexp, name)
         ret: List[int] = list(map(lambda x: int(x), filter(lambda x: len(x) > 0, map(lambda x: x.strip(), matches))))
 

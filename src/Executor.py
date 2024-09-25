@@ -53,7 +53,7 @@ class Executor:
     def __extract_task_action(self) -> Executor:
         arg: str
         for arg in self.__argv:
-            arg = re.sub('[\s+]', '', arg).lower()
+            arg = re.sub(r'[\s+]', '', arg).lower()
 
             if Actions.has_value(arg):
                 self.__config.branch_action = Actions[arg.upper()]

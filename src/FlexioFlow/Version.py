@@ -38,7 +38,7 @@ class Version:
 
     @staticmethod
     def parse_str(v: str) -> Match:
-        matches = re.match('^(?P<__major>\d+)\.(?P<__minor>\d+)\.(?P<__patch>\d+)$', v)
+        matches = re.match(r'^(?P<__major>\d+)\.(?P<__minor>\d+)\.(?P<__patch>\d+)$', v)
         if not isinstance(matches, Match):
             raise ValueError(v + 'should be ^\d+\.\d+\.\d+$')
         return matches

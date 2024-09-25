@@ -21,6 +21,6 @@ class IssuerHandler:
         try:
             issuer: Issuer = IssuerFactory.build(self.state_handler, self.config_handler, issuers,self.options)
         except ValueError:
-            print('Can\'t get Issuer')
+            print(r'Can\'t get Issuer')
         finally:
             return issuer
