@@ -1,3 +1,4 @@
+from Schemes.ClaudePlugin.ClaudePluginScheme import ClaudePluginScheme
 from Schemes.Composer.ComposerScheme import ComposerScheme
 from Schemes.Maven.MavenScheme import MavenScheme
 from Schemes.Package.PackageScheme import PackageScheme
@@ -14,5 +15,7 @@ class DevPrefix:
             return PackageScheme.DEV_SUFFIX
         if schemes == Schemes.COMPOSER:
             return ComposerScheme.DEV_SUFFIX
+        if schemes == Schemes.CLAUDE_PLUGIN:
+            return ClaudePluginScheme.DEV_SUFFIX
 
         raise ValueError("Bad SchemeFactory creation: " + schemes.value)

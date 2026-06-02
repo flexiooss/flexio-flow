@@ -1,3 +1,4 @@
+from Schemes.ClaudePlugin.ClaudePluginScheme import ClaudePluginScheme
 from Schemes.Composer.ComposerScheme import ComposerScheme
 from Schemes.Maven.MavenScheme import MavenScheme
 from Schemes.Schemes import Schemes
@@ -15,5 +16,7 @@ class SchemeBuilder:
             return MavenScheme(state_handler)
         if scheme is Schemes.COMPOSER:
             return ComposerScheme(state_handler)
+        if scheme is Schemes.CLAUDE_PLUGIN:
+            return ClaudePluginScheme(state_handler)
 
         raise ValueError("Bad SchemeFactory creation: " + scheme.value)
