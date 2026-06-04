@@ -9,6 +9,7 @@ class Schemes(Enum):
     PACKAGE: str = 'package'
     COMPOSER: str = 'composer'
     DOCKER: str = 'docker'
+    CLAUDE_PLUGIN: str = 'claude-plugin'
 
     @classmethod
     def list_from_value(cls, v: List[str]) -> List[Schemes]:
