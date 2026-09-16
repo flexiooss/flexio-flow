@@ -30,6 +30,7 @@ class IssueDefaultBuilder:
             issue.labels = ['enhancement']
 
         if branch is Branches.HOTFIX:
+            issue.title = 'Hotfix ' + str(state_handler.get_next_patch_version())
             issue.labels = ['bug', 'hotfix']
 
         return issue
