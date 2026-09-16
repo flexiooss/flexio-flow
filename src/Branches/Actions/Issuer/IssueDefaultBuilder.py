@@ -27,6 +27,8 @@ class IssueDefaultBuilder:
             issue.labels = ['release']
 
         if branch is Branches.FEATURE:
+            if options.branch_name is not None:
+                issue.title = options.branch_name
             issue.labels = ['enhancement']
 
         if branch is Branches.HOTFIX:
