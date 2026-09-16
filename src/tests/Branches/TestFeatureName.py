@@ -86,6 +86,20 @@ class TestFeatureName(unittest.TestCase):
     def test_no_feature_name_is_a_value_error(self):
         self.assertTrue(issubclass(NoFeatureName, ValueError))
 
+    def test_ensure_available_raises_when_non_interactive_without_option(self):
+        with self.assertRaises(NoFeatureName):
+            FeatureName(self.__options(default=True)).ensure_available()
+
+    def test_ensure_available_raises_with_no_cli(self):
+        with self.assertRaises(NoFeatureName):
+            FeatureName(self.__options(no_cli=True)).ensure_available()
+
+    def test_ensure_available_passes_with_option(self):
+        FeatureName(self.__options(branch_name='hotfix-graph', default=True)).ensure_available()
+
+    def test_ensure_available_passes_when_interactive(self):
+        FeatureName(self.__options()).ensure_available()
+
     def test_resolver_parses_branch_name(self):
         options: Options = self.__options()
         Resolver().resolve(opt='--branch-name', arg='fix-4283', options=options)

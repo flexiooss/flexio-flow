@@ -60,6 +60,10 @@ class Start(Action):
             branch.with_major(is_major=is_major_b)
         return branch
 
+    def __ensure_name_available(self):
+        if self.branch is Branches.FEATURE:
+            FeatureName(self.options).ensure_available()
+
     def __ensure_name(self, branch: Branch) -> Branch:
         if self.branch is Branches.FEATURE:
             default_name: str = slugify(branch.issue.title) if branch.issue is not None else ''
@@ -84,6 +88,8 @@ class Start(Action):
             Log.info('Stashed work restored ')
 
     def process(self):
+        self.__ensure_name_available()
+
         branch: Branch = self.version_control.build_branch(self.branch)
         branch = self.__with_action(branch)
         branch = self.__ensure_is_major(branch)

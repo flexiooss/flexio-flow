@@ -8,8 +8,9 @@ from FlexioFlow.Options import Options
 
 
 class FeatureName:
+    MISSING: str = 'Set it with --branch-name=<name> or run without --default / --no-cli'
 
-    def __init__(self, options: Options, default_name: str, reader: Callable[[str], str] = input):
+    def __init__(self, options: Options, default_name: str = '', reader: Callable[[str], str] = input):
         self.__options: Options = options
         self.__default_name: str = default_name
         self.__reader: Callable[[str], str] = reader
@@ -24,6 +25,10 @@ class FeatureName:
         return self.__reader(
             Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Feature branch name : ' + Fg.NOTICE.value + self.__default_name + Fg.RESET.value + ' ')
 
+    def ensure_available(self) -> None:
+        if not self.__from_options() and not self.__is_interactive():
+            raise NoFeatureName(self.MISSING)
+
     def resolve(self) -> str:
         name: str = self.__from_options()
 
@@ -33,6 +38,6 @@ class FeatureName:
         name = name if name else self.__default_name
 
         if not name:
-            raise NoFeatureName('Set it with --branch-name=<name> or run without --default / --no-cli')
+            raise NoFeatureName(self.MISSING)
 
         return name
