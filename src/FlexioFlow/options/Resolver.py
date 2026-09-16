@@ -2,6 +2,7 @@ from typing import List
 
 from FlexioFlow.Options import Options
 from FlexioFlow.options.Option import Option
+from FlexioFlow.options.BranchName import BranchName
 from FlexioFlow.options.Config import Config
 from FlexioFlow.options.Create import Create
 from FlexioFlow.options.Debug import Debug
@@ -26,7 +27,7 @@ from FlexioFlow.options.AutoStash import AutoStash
 
 
 class Resolver:
-    options: List[Option] = [Config,Create, Debug, Default, FileName, From, Help, KeepBranch, Major, Message, NoCli, Read, RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version, VersionDir, AutoStash]
+    options: List[Option] = [BranchName, Config,Create, Debug, Default, FileName, From, Help, KeepBranch, Major, Message, NoCli, Read, RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version, VersionDir, AutoStash]
 
     def resolve(self, opt: str, arg: str, options: Options):
         o: Option

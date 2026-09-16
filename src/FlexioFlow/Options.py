@@ -6,6 +6,7 @@ from Schemes.Schemes import Schemes
 
 class Options:
     auto_stash: bool = False
+    branch_name: Optional[str] = None
     close_issue: bool = True
     config:Optional[str] = None
     create: bool = False

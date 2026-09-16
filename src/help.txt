@@ -29,7 +29,7 @@ flexio-flow
                         start
                                     -D, --default
                                     --auto-stash
-                                    --branch-name   // TODO
+                                    --branch-name   Name of the feature branch, required with -D / -N
                         finish
                                     -K, --keep-branch
                                     -D, --default

@@ -4,6 +4,7 @@ from typing import Optional, List
 
 from Branches.Actions.Action import Action
 from Branches.Actions.Actions import Actions
+from Branches.Actions.FeatureName import FeatureName
 from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
 from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Branches.Branches import Branches
@@ -62,11 +63,7 @@ class Start(Action):
     def __ensure_name(self, branch: Branch) -> Branch:
         if self.branch is Branches.FEATURE:
             default_name: str = slugify(branch.issue.title) if branch.issue is not None else ''
-            name: str = input(
-                Fg.FAIL.value + '[required]' + Fg.RESET.value + ' Feature branch name : ' + Fg.NOTICE.value + default_name + Fg.RESET.value + ' ')
-            name = name if name else default_name
-
-            branch.with_name(name=name)
+            branch.with_name(name=FeatureName(self.options, default_name).resolve())
         return branch
 
     def __ensure_stash_start(self):
