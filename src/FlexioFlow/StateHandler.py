@@ -122,6 +122,10 @@ class StateHandler:
     def get_next_patch_version(self) -> Version:
         return self.__state.version.next_patch()
 
+    def next_dev_support(self) -> Version:
+        self.__state.version = self.__state.next_dev_support()
+        return self.__state.version
+
     def next_dev_minor(self) -> Version:
         self.__state.version = self.__state.next_dev_minor()
         return self.__state.version

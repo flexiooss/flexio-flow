@@ -77,6 +77,11 @@ class State:
         self.__version = self.__version.next_patch()
         return self.__version
 
+    def next_dev_support(self) -> Version:
+        self.__level = Level.DEV
+        self.__version = self.__version.next_support()
+        return self.__version
+
     def next_dev_minor(self) -> Version:
         self.__level = Level.DEV
         self.__version = self.__version.next_minor()

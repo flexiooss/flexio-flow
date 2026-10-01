@@ -32,7 +32,6 @@ class TestStateHandlerSupportVersion(unittest.TestCase):
         handler.write_file()
         self.assertIn('version: 1.29.0.1', (self.PATH / 'flexio-flow.yml').read_text())
 
-    @unittest.skip('ajoute en tache 7')
     def test_should_bump_support_through_the_handler(self):
         handler: StateHandler = self.__write('1.29.0')
         handler.next_dev_support()
