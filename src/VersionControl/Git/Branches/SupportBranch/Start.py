@@ -62,30 +62,47 @@ class Start:
         if self.__git.rev_parse(tag + '^{commit}') == self.__git.rev_parse(self.__config_handler.master()):
             raise TagIsMasterTip(tag)
 
+    def __rollback(self, origin_branch: str, origin_revision: str, created_branch: str) -> None:
+        if origin_branch:
+            self.__git.checkout_with_branch_name(origin_branch)
+        else:
+            self.__git.checkout_with_branch_name(origin_revision)
+        self.__git.delete_local_branch_from_name(created_branch)
+
     def __start_support(self, tag: str) -> None:
-        self.__git.create_branch_from_revision('support-start-' + tag, tag)
-        self.__state_handler.load_file_config()
+        origin_branch: str = self.__git.get_current_branch_name()
+        origin_revision: str = self.__git.rev_parse('HEAD')
+        created_branch: str = 'support-start-' + tag
 
-        if self.__state_handler.version_as_str() != tag:
-            raise TagVersionMismatch(tag, self.__state_handler.version_as_str())
+        self.__git.create_branch_from_revision(created_branch, tag)
 
-        branch_name: str = BranchHandler(
-            self.__config_handler.support(),
-            self.__config_handler.config.branches_config
-        ).with_issue(self.__issue).with_topics(self.__topics).branch_name_from_version(
-            self.__state_handler.state.version.next_support())
+        try:
+            self.__state_handler.load_file_config()
 
-        self.__git.rename_current_branch(branch_name)
+            if self.__state_handler.version_as_str() != tag:
+                raise TagVersionMismatch(tag, self.__state_handler.version_as_str())
 
-        self.__state_handler.next_dev_support()
-        self.__state_handler.write_file()
-        UpdateSchemeVersion.from_state_handler(self.__state_handler)
-        self.__git.commit(
-            Message(
-                message='Start support : ' + branch_name,
-                issue=self.__issue
-            ).with_ref()
-        ).try_to_set_upstream()
+            branch_name: str = BranchHandler(
+                self.__config_handler.support(),
+                self.__config_handler.config.branches_config
+            ).with_issue(self.__issue).with_topics(self.__topics).branch_name_from_version(
+                self.__state_handler.state.version.next_support())
+
+            self.__git.rename_current_branch(branch_name)
+            created_branch = branch_name
+
+            self.__state_handler.next_dev_support()
+            self.__state_handler.write_file()
+            UpdateSchemeVersion.from_state_handler(self.__state_handler)
+            self.__git.commit(
+                Message(
+                    message='Start support : ' + branch_name,
+                    issue=self.__issue
+                ).with_ref()
+            ).try_to_set_upstream()
+        except Exception:
+            self.__rollback(origin_branch, origin_revision, created_branch)
+            raise
 
     def process(self):
         if not self.__git.is_clean_working_tree():

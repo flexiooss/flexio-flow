@@ -219,3 +219,22 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         with self.assertRaises(GitMergeConflictError):
             self.__finish(merge=True)
         self.assertIn('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--list']))
+
+    def test_should_not_leave_a_temporary_branch_when_start_fails(self):
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-qb', 'wrong', '1.29.0'])
+        (self.PATH / 'flexio-flow.yml').write_text(
+            'level: stable\nschemes: []\ntopics: []\nversion: 1.28.0\n')
+        LocalRepo.run(self.PATH, ['git', 'commit', '-qam', 'hand made'])
+        LocalRepo.run(self.PATH, ['git', 'tag', '-a', '1.27.0', '-m', '1.27.0'])
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'master'])
+        with self.assertRaises(TagVersionMismatch):
+            self.__start(from_tag='1.27.0')
+        self.assertNotIn('support-start', LocalRepo.run(self.PATH, ['git', 'branch', '--list']))
+        self.assertEqual('master', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
+
+    def test_should_fetch_a_tag_missing_locally_but_present_on_remote(self):
+        LocalRepo.with_remote(self.PATH)
+        LocalRepo.run(self.PATH, ['git', 'tag', '-d', '1.29.0'])
+        self.assertFalse(self.git.local_tag_exists('1.29.0'))
+        self.__start(from_tag='1.29.0')
+        self.assertEqual('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
