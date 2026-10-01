@@ -5,6 +5,7 @@ from Branches.BranchesConfig import BranchesConfig
 from Core.Config import Config
 from Core.ConfigHandler import ConfigHandler
 from Exceptions.AmbiguousTagAtHead import AmbiguousTagAtHead
+from Exceptions.NoChangesInBranch import NoChangesInBranch
 from Exceptions.NoTagAtHead import NoTagAtHead
 from Exceptions.TagIsMasterTip import TagIsMasterTip
 from Exceptions.TagNotFound import TagNotFound
@@ -12,6 +13,7 @@ from Exceptions.TagNotPushed import TagNotPushed
 from Exceptions.TagVersionMismatch import TagVersionMismatch
 from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
+from VersionControl.Git.Branches.SupportBranch.Finish import Finish
 from VersionControl.Git.Branches.SupportBranch.Start import Start
 from VersionControl.Git.GitCmd import GitCmd
 from tests.VersionControl.GitFlow.LocalRepo import LocalRepo
@@ -102,3 +104,52 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         LocalRepo.run(self.PATH, ['git', 'tag', '-a', '1.29.2', '-m', '1.29.2', '1.29.0'])
         with self.assertRaises(TagNotPushed):
             self.__start(from_tag='1.29.2')
+
+    def __finish(self, merge=None) -> None:
+        options: Options = Options()
+        options.merge = merge
+        Finish(
+            state_handler=self.state_handler,
+            config_handler=self.config_handler,
+            issue=None,
+            topics=None,
+            keep_branch=False,
+            close_issue=False,
+            options=options
+        ).process()
+
+    def __fix(self, content: str, message: str) -> None:
+        (self.PATH / 'f.txt').write_text(content)
+        LocalRepo.run(self.PATH, ['git', 'commit', '-qam', message])
+
+    def test_should_tag_on_support_branch_and_leave_master_alone(self):
+        master_before: str = self.git.rev_parse('master')
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        self.__finish(merge=False)
+        self.assertTrue(self.git.local_tag_exists('1.29.0.1'))
+        self.assertEqual(master_before, self.git.rev_parse('master'))
+
+    def test_should_leave_develop_untouched_with_no_merge(self):
+        develop_before: str = self.git.rev_parse('develop')
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        self.__finish(merge=False)
+        self.assertEqual(develop_before, self.git.rev_parse('develop'))
+
+    def test_should_delete_the_support_branch(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        self.__finish(merge=False)
+        self.assertNotIn('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--list']))
+
+    def test_should_refuse_a_support_branch_with_no_fix(self):
+        self.__start(from_tag='1.29.0')
+        with self.assertRaises(NoChangesInBranch):
+            self.__finish(merge=False)
+
+    def test_should_refuse_when_no_merge_choice_given(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        with self.assertRaises(ValueError):
+            self.__finish(merge=None)

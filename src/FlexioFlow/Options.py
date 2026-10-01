@@ -17,6 +17,7 @@ class Options:
     from_tag: Optional[str] = None
     keep_branch: bool = False
     major: bool = False
+    merge: Optional[bool] = None
     message: Optional[str] = None
     no_cli: bool = False
     read: bool = False
