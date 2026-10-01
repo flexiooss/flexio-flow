@@ -5,6 +5,8 @@ from Branches.BranchesConfig import BranchesConfig
 from Core.Config import Config
 from Core.ConfigHandler import ConfigHandler
 from Exceptions.AmbiguousTagAtHead import AmbiguousTagAtHead
+from Exceptions.GitMergeConflictError import GitMergeConflictError
+from Exceptions.MergeCommitBetweenBounds import MergeCommitBetweenBounds
 from Exceptions.NoChangesInBranch import NoChangesInBranch
 from Exceptions.NoTagAtHead import NoTagAtHead
 from Exceptions.TagIsMasterTip import TagIsMasterTip
@@ -153,3 +155,45 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
         with self.assertRaises(ValueError):
             self.__finish(merge=None)
+
+    def test_should_put_one_single_commit_on_develop(self):
+        before: int = int(LocalRepo.run(self.PATH, ['git', 'rev-list', '--count', 'develop']))
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX-A\nl4\nl5\n', 'fix A')
+        self.__fix('l1\nl2\nFIX-A\nl4\nFIX-B\n', 'fix B')
+        self.__finish(merge=True)
+        after: int = int(LocalRepo.run(self.PATH, ['git', 'rev-list', '--count', 'develop']))
+        self.assertEqual(before + 1, after)
+
+    def test_should_not_move_develop_version(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        self.__finish(merge=True)
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'develop'])
+        self.assertIn('version: 1.29.0', (self.PATH / 'flexio-flow.yml').read_text())
+        self.assertNotIn('1.29.0.1', (self.PATH / 'flexio-flow.yml').read_text())
+
+    def test_should_carry_the_fix_content_to_develop(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        self.__finish(merge=True)
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'develop'])
+        self.assertIn('FIX', (self.PATH / 'f.txt').read_text())
+
+    def test_should_refuse_a_merge_commit_between_bounds(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        LocalRepo.run(self.PATH, ['git', 'merge', '-q', '--no-ff', '-m', 'merge develop', 'develop'])
+        with self.assertRaises(MergeCommitBetweenBounds):
+            self.__finish(merge=True)
+
+    def test_should_raise_on_conflict_and_keep_the_branch(self):
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'develop'])
+        (self.PATH / 'f.txt').write_text('l1\nl2\nDEV-DIVERGE\nl4\nl5\n')
+        LocalRepo.run(self.PATH, ['git', 'commit', '-qam', 'develop moved'])
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'master'])
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        with self.assertRaises(GitMergeConflictError):
+            self.__finish(merge=True)
+        self.assertIn('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--list']))

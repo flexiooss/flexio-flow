@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Type, Optional, List
 
 from Core.ConfigHandler import ConfigHandler
+from Exceptions.GitMergeConflictError import GitMergeConflictError
 from Exceptions.MergeCommitBetweenBounds import MergeCommitBetweenBounds
 from Exceptions.NoBranchSelected import NoBranchSelected
 from Exceptions.NoChangesInBranch import NoChangesInBranch
@@ -64,6 +65,26 @@ class Finish:
         self.__git.try_to_push_tag(version)
         return version
 
+    def __synthetic_message(self, version: str, low: str, high: str) -> str:
+        return 'support ' + version + ' : report\n\nFrom support line, tag ' + version \
+               + '\nOrigin commits :\n' + self.__git.log_oneline_between(low, high)
+
+    def __merge_develop(self, version: str, low: str) -> None:
+        high: str = self.__git.rev_parse(self.__current_branch_name + '~1')
+        message: str = self.__synthetic_message(version, low, high)
+        synthetic: str = self.__git.commit_tree(self.__git.tree_of(high), low, message)
+
+        self.__git.checkout(self.__config_handler.develop()).try_to_pull()
+        self.__git.cherry_pick_no_commit(synthetic)
+
+        if self.__git.has_conflict():
+            conflict: str = self.__git.get_conflict()
+            if self.__options.default or self.__options.no_cli:
+                self.__git.cherry_pick_abort()
+            raise GitMergeConflictError(self.__config_handler.develop(), conflict)
+
+        self.__git.commit(message).try_to_push()
+
     def __delete_branch(self) -> None:
         self.__git.checkout(self.__config_handler.develop())
         if self.__git.has_remote():
@@ -84,7 +105,10 @@ class Finish:
         if merge and self.__git.has_merge_commit_between(low, self.__current_branch_name):
             raise MergeCommitBetweenBounds(self.__current_branch_name)
 
-        self.__close_line()
+        version: str = self.__close_line()
+
+        if merge:
+            self.__merge_develop(version, low)
 
         if not self.__keep_branch:
             self.__delete_branch()
