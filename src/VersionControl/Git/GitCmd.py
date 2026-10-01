@@ -6,6 +6,7 @@ from typing import List, Optional, Pattern, Match
 
 from Exceptions.BranchNotExist import BranchNotExist
 from FlexioFlow.StateHandler import StateHandler
+from FlexioFlow.Version import Version
 from Branches.Branches import Branches
 from Log.Log import Log
 from VersionControl.Git.GitConfig import GitConfig
@@ -389,6 +390,73 @@ class GitCmd:
 
     def local_tag_exists(self, tag: str) -> bool:
         return self.__exec_for_stdout(['git', 'tag', '--list', tag]) == tag
+
+    def all_tags(self) -> List[str]:
+        return self.__exec_for_stdout(['git', 'tag', '--list']).splitlines()
+
+    def version_tags_at_head(self) -> List[str]:
+        tags: List[str] = []
+        for line in self.__exec_for_stdout(['git', 'tag', '--points-at', 'HEAD']).splitlines():
+            candidate: str = line.strip()
+            try:
+                Version.parse_str(candidate)
+            except ValueError:
+                continue
+            tags.append(candidate)
+        return tags
+
+    def fetch_tags(self) -> GitCmd:
+        self.__exec(['git', 'fetch', '--tags'])
+        return self
+
+    def try_to_fetch_tags(self) -> GitCmd:
+        Log.info('Try to fetch tags from remote')
+        if self.has_remote():
+            return self.fetch_tags()
+        return self
+
+    def create_branch_from_revision(self, target_branch_name: str, revision: str) -> GitCmd:
+        self.__exec(['git', 'checkout', '-b', target_branch_name, revision])
+        try:
+            self.__state_handler.load_file_config()
+        except FileNotFoundError as e:
+            Log.error(str(e))
+        return self
+
+    def rename_current_branch(self, target_branch_name: str) -> GitCmd:
+        self.__exec(['git', 'branch', '-m', target_branch_name])
+        return self
+
+    def rev_parse(self, revision: str) -> str:
+        return self.__exec_for_stdout(['git', 'rev-parse', revision])
+
+    def merge_base(self, a: str, b: str) -> str:
+        return self.__exec_for_stdout(['git', 'merge-base', a, b])
+
+    def first_commit_after(self, base: str, head: str) -> str:
+        lines: List[str] = self.__exec_for_stdout(
+            ['git', 'rev-list', '--reverse', base + '..' + head]).splitlines()
+        return lines[0].strip() if len(lines) > 0 else ''
+
+    def has_merge_commit_between(self, base: str, head: str) -> bool:
+        return len(self.__exec_for_stdout(['git', 'rev-list', '--merges', base + '..' + head])) > 0
+
+    def tree_of(self, revision: str) -> str:
+        return self.__exec_for_stdout(['git', 'rev-parse', revision + '^{tree}'])
+
+    def commit_tree(self, tree: str, parent: str, message: str) -> str:
+        return self.__exec_for_stdout(['git', 'commit-tree', tree, '-p', parent, '-m', message])
+
+    def cherry_pick_no_commit(self, revision: str) -> GitCmd:
+        self.__exec(['git', 'cherry-pick', '-n', revision])
+        return self
+
+    def cherry_pick_abort(self) -> GitCmd:
+        self.__exec(['git', 'cherry-pick', '--abort'])
+        return self
+
+    def log_oneline_between(self, base: str, head: str) -> str:
+        return self.__exec_for_stdout(['git', 'log', '--oneline', '--no-decorate', base + '..' + head])
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
