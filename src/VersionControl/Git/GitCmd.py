@@ -388,24 +388,7 @@ class GitCmd:
         return len(resp) > 0 and re.match(re.compile(r'.*refs/tags/' + tag + '$'), resp) is not None
 
     def local_tag_exists(self, tag: str) -> bool:
-        p1 = Popen(
-            ['git', 'tag', '-l'],
-            stdout=PIPE,
-            cwd=self.__state_handler.dir_path.as_posix()
-        )
-
-        p2 = Popen(
-            ['grep', '-E', tag],
-            stdin=p1.stdout,
-            stdout=PIPE,
-            cwd=self.__state_handler.dir_path.as_posix())
-        p1.stdout.close()
-        result = p2.communicate()[0]
-        p1.wait()
-
-        resp = self.__decode_stdout(result)
-
-        return len(resp) > 0 and re.match(re.compile(r'^' + tag + '$'), resp) is not None
+        return self.__exec_for_stdout(['git', 'tag', '--list', tag]) == tag
 
     def reset_to_tag(self, tag: str) -> GitCmd:
         self.__exec(['git', 'reset', '--hard', tag])
