@@ -1,4 +1,5 @@
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from Branches.BranchesConfig import BranchesConfig
@@ -150,11 +151,32 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         with self.assertRaises(NoChangesInBranch):
             self.__finish(merge=False)
 
-    def test_should_refuse_when_no_merge_choice_given(self):
+    def test_should_prompt_when_no_choice_given(self):
         self.__start(from_tag='1.29.0')
         self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
-        with self.assertRaises(ValueError):
+        develop_before: str = self.git.rev_parse('develop')
+        with unittest.mock.patch('builtins.input', return_value='N'):
             self.__finish(merge=None)
+        self.assertEqual(develop_before, self.git.rev_parse('develop'))
+
+    def test_should_prompt_even_under_default_option(self):
+        self.__start(from_tag='1.29.0')
+        self.__fix('l1\nl2\nFIX\nl4\nl5\n', 'fix')
+        options: Options = Options()
+        options.merge = None
+        options.default = True
+        options.no_cli = True
+        with unittest.mock.patch('builtins.input', return_value='Y') as prompt:
+            Finish(
+                state_handler=self.state_handler,
+                config_handler=self.config_handler,
+                issue=None,
+                topics=None,
+                keep_branch=False,
+                close_issue=False,
+                options=options
+            ).process()
+        self.assertTrue(prompt.called)
 
     def test_should_put_one_single_commit_on_develop(self):
         before: int = int(LocalRepo.run(self.PATH, ['git', 'rev-list', '--count', 'develop']))

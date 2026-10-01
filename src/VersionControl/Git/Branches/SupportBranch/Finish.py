@@ -38,9 +38,17 @@ class Finish:
         self.__current_branch_name: str = self.__git.get_current_branch_name()
 
     def __ensure_choice(self) -> bool:
-        if self.__options.merge is None:
-            raise ValueError('support-branch finish needs --merge or --no-merge, there is no default')
-        return self.__options.merge
+        if self.__options.merge is not None:
+            return self.__options.merge
+
+        print("""
+This fix was born on an older line. If the code changed on {0!s}, it may not
+make sense there. The support branch is deleted at the end : a later report
+would have to be done by hand, from the tag.
+""".format(self.__config_handler.develop()))
+
+        answer: str = input(' Report the fix to ' + self.__config_handler.develop() + ' Y/N : ')
+        return answer.capitalize() == 'Y'
 
     def __low_bound(self) -> str:
         base: str = self.__git.merge_base(self.__current_branch_name, self.__config_handler.develop())
