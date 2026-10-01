@@ -7,12 +7,13 @@ from Branches.Branches import Branches
 class BranchesConfig:
 
     def __init__(self, develop: Optional[str], feature: Optional[str], hotfix: Optional[str], master: Optional[str],
-                 release: Optional[str]) -> None:
+                 release: Optional[str], support: Optional[str] = None) -> None:
         self.__develop = Branches.DEVELOP.value if develop is None else develop
         self.__feature = Branches.FEATURE.value if feature is None else feature
         self.__hotfix = Branches.HOTFIX.value if hotfix is None else hotfix
         self.__master = Branches.MASTER.value if master is None else master
         self.__release = Branches.RELEASE.value if release is None else release
+        self.__support = 'support' if support is None else support
 
     @staticmethod
     def from_dict(branches: Optional[dict]) -> BranchesConfig:
@@ -21,7 +22,8 @@ class BranchesConfig:
             feature=branches.get('feature', None),
             hotfix=branches.get('hotfix', None),
             master=branches.get('master', None),
-            release=branches.get('release', None)
+            release=branches.get('release', None),
+            support=branches.get('support', None)
         )
 
     @property
@@ -59,6 +61,13 @@ class BranchesConfig:
     def is_release(self, name: str) -> bool:
         return name is self.release
 
+    @property
+    def support(self) -> str:
+        return self.__support
+
+    def is_support(self, name: str) -> bool:
+        return name == self.support
+
     def to_dict(self) -> Dict[str, str]:
         return {
             'develop': self.develop,
@@ -66,4 +75,5 @@ class BranchesConfig:
             'hotfix': self.hotfix,
             'master': self.master,
             'release': self.release,
+            'support': self.support,
         }

@@ -39,7 +39,7 @@ class BranchHandler:
         )
 
     def branch_name_from_version(self, version: Optional[Version] = None) -> str:
-        if self.branches.is_hotfix(self.branch):
+        if self.branches.is_hotfix(self.branch) or self.branches.is_support(self.branch):
             return self.__format_branch_name('/'.join([
                 self.branch,
                 '-'.join([str(version), Level.DEV.value])

@@ -19,7 +19,8 @@ class InputBranchesConfig:
         feature: str = self.__input(Branches.FEATURE, self.config_handler.feature())
         hotfix: str = self.__input(Branches.HOTFIX, self.config_handler.hotfix())
         release: str = self.__input(Branches.RELEASE, self.config_handler.release())
+        support: str = self.__input(Branches.SUPPORT_BRANCH, self.config_handler.support())
 
         self.config_handler.config = self.config_handler.config.with_branches_config(
-            BranchesConfig(develop, feature, hotfix, master, release))
+            BranchesConfig(develop, feature, hotfix, master, release, support))
         return self.config_handler
