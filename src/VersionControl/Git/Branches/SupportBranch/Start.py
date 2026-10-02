@@ -15,6 +15,7 @@ from FlexioFlow.Options import Options
 from FlexioFlow.StateHandler import StateHandler
 from Schemes.UpdateSchemeVersion import UpdateSchemeVersion
 from VersionControl.Git.GitCmd import GitCmd
+from VersionControl.Git.GitConfig import GitConfig
 from VersionControlProvider.Github.Message import Message
 from VersionControlProvider.Issue import Issue
 from VersionControlProvider.Topic import Topic
@@ -47,9 +48,6 @@ class Start:
         return tags[0]
 
     def __ensure_tag_usable(self, tag: str) -> None:
-        if not self.__git.local_tag_exists(tag):
-            self.__git.try_to_fetch_tags()
-
         local: bool = self.__git.local_tag_exists(tag)
         remote: bool = self.__git.remote_tag_exists(tag) if self.__git.has_remote() else local
 
@@ -58,8 +56,13 @@ class Start:
         if local and not remote:
             raise TagNotPushed(tag)
 
+    def __master_ref(self) -> str:
+        if self.__git.has_remote():
+            return GitConfig.REMOTE.value + '/' + self.__config_handler.master()
+        return self.__config_handler.master()
+
     def __ensure_not_master_tip(self, tag: str) -> None:
-        if self.__git.rev_parse(tag + '^{commit}') == self.__git.rev_parse(self.__config_handler.master()):
+        if self.__git.rev_parse(tag + '^{commit}') == self.__git.rev_parse(self.__master_ref()):
             raise TagIsMasterTip(tag)
 
     def __rollback(self, origin_branch: str, origin_revision: str, created_branch: str) -> None:
@@ -107,6 +110,7 @@ class Start:
     def process(self):
         if not self.__git.is_clean_working_tree():
             raise NotCleanWorkingTree()
+        self.__git.try_to_fetch_tags()
         tag: str = self.__resolve_tag()
         self.__ensure_tag_usable(tag)
         self.__ensure_not_master_tip(tag)
