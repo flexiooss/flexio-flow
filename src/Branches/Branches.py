@@ -8,6 +8,7 @@ class Branches(Enum):
     HOTFIX: str = 'hotfix'
     MASTER: str = 'master'
     RELEASE: str = 'release'
+    SUPPORT_BRANCH: str = 'support-branch'
 
     @classmethod
     def has_value(cls, value) -> bool:

@@ -93,3 +93,6 @@ Write file : {0!s}
 
     def release(self) -> str:
         return self.config.branches_config.release
+
+    def support(self) -> str:
+        return self.config.branches_config.support

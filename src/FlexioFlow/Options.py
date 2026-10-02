@@ -14,8 +14,10 @@ class Options:
     debug: bool = False
     filename: Optional[str] = None
     from_schemes: Optional[Schemes] = None
+    from_tag: Optional[str] = None
     keep_branch: bool = False
     major: bool = False
+    merge: Optional[bool] = None
     message: Optional[str] = None
     no_cli: bool = False
     read: bool = False

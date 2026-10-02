@@ -9,10 +9,13 @@ from FlexioFlow.options.Debug import Debug
 from FlexioFlow.options.Default import Default
 from FlexioFlow.options.FileName import FileName
 from FlexioFlow.options.From import From
+from FlexioFlow.options.FromTag import FromTag
 from FlexioFlow.options.Help import Help
 from FlexioFlow.options.KeepBranch import KeepBranch
 from FlexioFlow.options.Major import Major
+from FlexioFlow.options.Merge import Merge
 from FlexioFlow.options.Message import Message
+from FlexioFlow.options.NoMerge import NoMerge
 from FlexioFlow.options.NoCli import NoCli
 from FlexioFlow.options.Read import Read
 from FlexioFlow.options.RepositoryCheckoutSpec import RepositoryCheckoutSpec
@@ -27,7 +30,7 @@ from FlexioFlow.options.AutoStash import AutoStash
 
 
 class Resolver:
-    options: List[Option] = [BranchName, Config,Create, Debug, Default, FileName, From, Help, KeepBranch, Major, Message, NoCli, Read, RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version, VersionDir, AutoStash]
+    options: List[Option] = [BranchName, Config,Create, Debug, Default, FileName, From, FromTag, Help, KeepBranch, Major, Merge, Message, NoCli, NoMerge, Read, RepositoryCheckoutSpec, RepositoryId, RepositoryName, Scheme, SchemeDir, To, Version, VersionDir, AutoStash]
 
     def resolve(self, opt: str, arg: str, options: Options):
         o: Option

@@ -74,7 +74,7 @@ Enjoy with Flexio FLow
         )).with_branches_config(branches_config=BranchesConfig.from_dict(
             {Branches.MASTER.value: Branches.MASTER.value, Branches.DEVELOP.value: Branches.DEVELOP.value,
              Branches.FEATURE.value: Branches.FEATURE.value, Branches.HOTFIX.value: Branches.HOTFIX.value,
-             Branches.RELEASE.value: Branches.RELEASE.value}))
+             Branches.RELEASE.value: Branches.RELEASE.value, 'support': 'support'}))
 
     def __ensure_have_config(self) -> Config:
         if self.__config_handler().file_exists():

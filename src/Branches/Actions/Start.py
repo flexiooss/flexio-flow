@@ -9,6 +9,7 @@ from Branches.Actions.Issuer.IssueBuilder import IssueBuilder
 from Branches.Actions.Topicer.TopicBuilder import TopicBuilder
 from Branches.Branches import Branches
 from ConsoleColors.Fg import Fg
+from Exceptions.FromTagRequired import FromTagRequired
 from Exceptions.NoBranchSelected import NoBranchSelected
 from Log.Log import Log
 from VersionControl.Branch import Branch
@@ -64,6 +65,10 @@ class Start(Action):
         if self.branch is Branches.FEATURE:
             FeatureName(self.options).ensure_available()
 
+    def __ensure_from_tag(self):
+        if self.branch is Branches.SUPPORT_BRANCH and self.options.from_tag is None:
+            raise FromTagRequired()
+
     def __ensure_name(self, branch: Branch) -> Branch:
         if self.branch is Branches.FEATURE:
             default_name: str = slugify(branch.issue.title) if branch.issue is not None else ''
@@ -94,6 +99,8 @@ class Start(Action):
         branch = self.__with_action(branch)
         branch = self.__ensure_is_major(branch)
         branch = self.__with_options(branch)
+
+        self.__ensure_from_tag()
 
         issuer_builder: issuer_builder = IssueBuilder(
             self.version_control,

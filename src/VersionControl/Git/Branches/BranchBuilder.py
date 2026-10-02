@@ -2,6 +2,7 @@ from VersionControl.Git.Branches.Develop.Develop import Develop
 from VersionControl.Git.Branches.Feature.Feature import Feature
 from VersionControl.Git.Branches.Hotfix.Hotfix import Hotfix
 from VersionControl.Git.Branches.Release.Release import Release
+from VersionControl.Git.Branches.SupportBranch.SupportBranch import SupportBranch
 from VersionControl.Git.Branches.Master.Master import Master
 
 from Branches.Branches import Branches
@@ -23,5 +24,7 @@ class BranchBuilder:
             return Master(state_handler, config_handler)
         if branch is Branches.RELEASE:
             return Release(state_handler, config_handler)
+        if branch is Branches.SUPPORT_BRANCH:
+            return SupportBranch(state_handler, config_handler)
 
         raise ValueError("Bad VersionFlowStepFactory creation: " + branch.value)

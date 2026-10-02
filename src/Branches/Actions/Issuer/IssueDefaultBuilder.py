@@ -35,4 +35,8 @@ class IssueDefaultBuilder:
             issue.title = 'Hotfix ' + str(state_handler.get_next_patch_version())
             issue.labels = ['bug', 'hotfix']
 
+        if branch is Branches.SUPPORT_BRANCH:
+            issue.title = 'Support ' + options.from_tag if options.from_tag is not None else 'Support'
+            issue.labels = ['bug', 'support']
+
         return issue
