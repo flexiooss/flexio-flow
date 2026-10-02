@@ -1,8 +1,7 @@
 import unittest
 
-from Exceptions.AmbiguousTagAtHead import AmbiguousTagAtHead
 from Exceptions.MergeCommitBetweenBounds import MergeCommitBetweenBounds
-from Exceptions.NoTagAtHead import NoTagAtHead
+from Exceptions.FromTagRequired import FromTagRequired
 from Exceptions.TagIsMasterTip import TagIsMasterTip
 from Exceptions.TagNotFound import TagNotFound
 from Exceptions.TagNotPushed import TagNotPushed
@@ -21,14 +20,8 @@ class TestSupportBranchExceptions(unittest.TestCase):
         self.assertIn('1.29.0', message)
         self.assertIn('push', message)
 
-    def test_no_tag_at_head_tells_the_option(self):
-        self.assertIn('--from-tag', str(NoTagAtHead()))
-
-    def test_ambiguous_tag_lists_candidates(self):
-        message: str = str(AmbiguousTagAtHead(['1.29.0', '1.30.0']))
-        self.assertIn('1.29.0', message)
-        self.assertIn('1.30.0', message)
-        self.assertIn('--from-tag', message)
+    def test_from_tag_required_names_the_option(self):
+        self.assertIn('--from-tag', str(FromTagRequired()))
 
     def test_tag_version_mismatch_shows_both(self):
         message: str = str(TagVersionMismatch('1.29.0', '1.28.0'))

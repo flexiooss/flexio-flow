@@ -394,17 +394,6 @@ class GitCmd:
     def all_tags(self) -> List[str]:
         return self.__exec_for_stdout(['git', 'tag', '--list']).splitlines()
 
-    def version_tags_at_head(self) -> List[str]:
-        tags: List[str] = []
-        for line in self.__exec_for_stdout(['git', 'tag', '--points-at', 'HEAD']).splitlines():
-            candidate: str = line.strip()
-            try:
-                Version.parse_str(candidate)
-            except ValueError:
-                continue
-            tags.append(candidate)
-        return tags
-
     def fetch_tags(self) -> GitCmd:
         self.__exec(['git', 'fetch', '--tags'])
         return self

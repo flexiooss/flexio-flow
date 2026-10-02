@@ -52,23 +52,6 @@ class TestGitCmdTags(unittest.TestCase):
         self.git.create_branch_from_revision('support/1.29.0.1-dev', '1.29.0')
         self.assertEqual('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
 
-    def test_should_list_version_tags_at_head(self):
-        self.assertEqual(['1.29.0'], self.git.version_tags_at_head())
-
-    def test_should_ignore_tooling_tags_at_head(self):
-        LocalRepo.run(self.PATH, ['git', 'tag', '-a', 'build-4567', '-m', 'ci'])
-        LocalRepo.run(self.PATH, ['git', 'tag', '-a', 'latest', '-m', 'ci'])
-        self.assertEqual(['1.29.0'], self.git.version_tags_at_head())
-
-    def test_should_list_several_version_tags_at_head(self):
-        LocalRepo.run(self.PATH, ['git', 'tag', '-a', '1.30.0', '-m', 'dup'])
-        self.assertEqual(['1.29.0', '1.30.0'], sorted(self.git.version_tags_at_head()))
-
-    def test_should_list_no_version_tag_when_head_moved(self):
-        (self.PATH / 'f.txt').write_text('moved\n')
-        LocalRepo.run(self.PATH, ['git', 'commit', '-qam', 'moved'])
-        self.assertEqual([], self.git.version_tags_at_head())
-
     def test_should_skip_fetch_when_no_remote(self):
         self.assertIs(self.git, self.git.try_to_fetch_tags())
 
