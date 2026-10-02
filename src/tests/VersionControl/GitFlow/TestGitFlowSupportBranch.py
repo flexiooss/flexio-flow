@@ -5,11 +5,10 @@ from pathlib import Path
 from Branches.BranchesConfig import BranchesConfig
 from Core.Config import Config
 from Core.ConfigHandler import ConfigHandler
-from Exceptions.AmbiguousTagAtHead import AmbiguousTagAtHead
 from Exceptions.GitMergeConflictError import GitMergeConflictError
 from Exceptions.MergeCommitBetweenBounds import MergeCommitBetweenBounds
 from Exceptions.NoChangesInBranch import NoChangesInBranch
-from Exceptions.NoTagAtHead import NoTagAtHead
+from Exceptions.FromTagRequired import FromTagRequired
 from Exceptions.TagIsMasterTip import TagIsMasterTip
 from Exceptions.TagNotFound import TagNotFound
 from Exceptions.TagNotPushed import TagNotPushed
@@ -63,20 +62,27 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         self.state_handler.load_file_config()
         self.assertEqual('1.29.0.1', self.state_handler.version_as_str())
 
-    def test_should_resolve_tag_from_head_when_option_absent(self):
+    def test_should_refuse_without_from_tag_even_detached_on_a_tag(self):
         LocalRepo.run(self.PATH, ['git', 'checkout', '-q', '1.29.0'])
-        self.__start()
-        self.assertEqual('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
-
-    def test_should_refuse_when_head_is_not_on_a_version_tag(self):
-        with self.assertRaises(NoTagAtHead):
+        with self.assertRaises(FromTagRequired):
             self.__start()
 
-    def test_should_refuse_when_several_version_tags_at_head(self):
-        LocalRepo.run(self.PATH, ['git', 'tag', '-a', '1.30.0', '-m', 'dup', '1.29.0'])
-        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', '1.29.0'])
-        with self.assertRaises(AmbiguousTagAtHead):
+    def test_should_refuse_without_from_tag_when_head_is_not_on_a_tag(self):
+        with self.assertRaises(FromTagRequired):
             self.__start()
+
+    def test_should_refuse_without_from_tag_on_a_branch_whose_tip_carries_a_tag(self):
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', '-B', 'master', '1.29.0'])
+        self.assertEqual('master', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
+        with self.assertRaises(FromTagRequired):
+            self.__start()
+
+    def test_should_create_no_branch_when_from_tag_is_missing(self):
+        try:
+            self.__start()
+        except FromTagRequired:
+            pass
+        self.assertNotIn('support', LocalRepo.run(self.PATH, ['git', 'branch', '--list']))
 
     def test_should_refuse_unknown_tag(self):
         with self.assertRaises(TagNotFound):

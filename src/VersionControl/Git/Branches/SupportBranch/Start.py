@@ -4,8 +4,7 @@ from typing import Type, Optional, List
 
 from Branches.BranchHandler import BranchHandler
 from Core.ConfigHandler import ConfigHandler
-from Exceptions.AmbiguousTagAtHead import AmbiguousTagAtHead
-from Exceptions.NoTagAtHead import NoTagAtHead
+from Exceptions.FromTagRequired import FromTagRequired
 from Exceptions.NotCleanWorkingTree import NotCleanWorkingTree
 from Exceptions.TagIsMasterTip import TagIsMasterTip
 from Exceptions.TagNotFound import TagNotFound
@@ -37,15 +36,9 @@ class Start:
         self.__git: GitCmd = GitCmd(self.__state_handler).with_config_handler(config_handler)
 
     def __resolve_tag(self) -> str:
-        if self.__options.from_tag is not None:
-            return self.__options.from_tag
-
-        tags: List[str] = self.__git.version_tags_at_head()
-        if len(tags) == 0:
-            raise NoTagAtHead()
-        if len(tags) > 1:
-            raise AmbiguousTagAtHead(tags)
-        return tags[0]
+        if self.__options.from_tag is None:
+            raise FromTagRequired()
+        return self.__options.from_tag
 
     def __ensure_tag_usable(self, tag: str) -> None:
         local: bool = self.__git.local_tag_exists(tag)
