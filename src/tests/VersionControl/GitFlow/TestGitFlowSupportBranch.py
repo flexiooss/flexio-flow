@@ -238,3 +238,22 @@ class TestGitFlowSupportBranch(unittest.TestCase):
         self.assertFalse(self.git.local_tag_exists('1.29.0'))
         self.__start(from_tag='1.29.0')
         self.assertEqual('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
+
+    def test_should_compare_with_remote_master_not_a_stale_local_one(self):
+        LocalRepo.with_remote(self.PATH)
+        LocalRepo.run(self.PATH, ['git', 'checkout', '-q', 'master'])
+        at_tag: str = self.git.rev_parse('1.29.0^{commit}')
+        LocalRepo.run(self.PATH, ['git', 'reset', '-q', '--hard', '1.29.0'])
+        LocalRepo.run(self.PATH, ['git', 'push', '-q', '--force', 'origin', 'master'])
+        (self.PATH / 'later.txt').write_text('released after the tag\n')
+        LocalRepo.run(self.PATH, ['git', 'add', '.'])
+        LocalRepo.run(self.PATH, ['git', 'commit', '-qm', 'master moved on'])
+        LocalRepo.run(self.PATH, ['git', 'push', '-q', 'origin', 'master'])
+        LocalRepo.run(self.PATH, ['git', 'reset', '-q', '--hard', at_tag])
+
+        self.assertEqual(at_tag, self.git.rev_parse('master'))
+        self.assertNotEqual(at_tag, self.git.rev_parse('origin/master'))
+
+        self.__start(from_tag='1.29.0')
+
+        self.assertEqual('support/1.29.0.1-dev', LocalRepo.run(self.PATH, ['git', 'branch', '--show-current']))
